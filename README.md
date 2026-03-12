@@ -1,5 +1,9 @@
 # Archon CCMA
 
+## Captura del juego
+
+![Archon](screenshot.png)
+
 Archon CCMA es un proyecto desarrollado en C++ utilizando OpenGL y FreeGLUT.
 
 El objetivo del proyecto es desarrollar un juego interactivo con representación gráfica y control mediante teclado. El programa permite visualizar un tablero en pantalla y gestionar la interacción del usuario con los distintos elementos del juego.
