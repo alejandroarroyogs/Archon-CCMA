@@ -361,3 +361,18 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Carpetas de compilación
+x64/
+Debug/
+Release/
+
+# Archivos temporales de Visual Studio
+.vs/
+*.user
+*.suo
+
+# Archivos generados
+*.obj
+*.log
+*.tlog
