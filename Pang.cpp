@@ -1,24 +1,11 @@
 #include "freeglut.h"
+#include "codigo/tablero/tablero.h"
+#include "codigo/piezas/piezas.h"
 
 // Callbacks
 void OnDraw(void);
 void OnTimer(int value);
 void OnKeyboardDown(unsigned char key, int x, int y);
-void DibujarPieza(float x, float z, float r, float g, float b);
-void InicializarTablero();
-bool MovimientoValido(int filaO, int colO, int filaD, int colD);
-
-const int TAM_TABLERO = 9;
-int tableroPiezas[TAM_TABLERO][TAM_TABLERO];
-
-int filaSeleccionada = 0;
-int colSeleccionada = 0;
-
-bool piezaSeleccionada = false;
-int filaOrigen;
-int colOrigen;
-
-int turnoActual = 1; // 1 = azul, 2 = rojo
 
 int main(int argc, char* argv[])
 {
@@ -28,6 +15,9 @@ int main(int argc, char* argv[])
     glutCreateWindow("ARCHON");
 
     glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -113,6 +103,8 @@ void OnDraw(void)
         glEnd();
     }
 
+    DibujarMovimientosValidos();
+
     // Dibujar piezas leyendo la matriz
     for (int fila = 0; fila < TAM_TABLERO; fila++)
     {
@@ -121,13 +113,21 @@ void OnDraw(void)
             float x = (col - TAM_TABLERO / 2) * 2.0f + 1.0f;
             float z = (fila - TAM_TABLERO / 2) * 2.0f + 1.0f;
 
-            if (tableroPiezas[fila][col] == 1)
+            if (tableroPiezas[fila][col] == SOLDADO_AZUL)
             {
-                DibujarPieza(x, z, 0.2f, 0.8f, 1.0f);
+                DibujarPieza(x, z, 0.2f, 0.8f, 1.0f, 1);
             }
-            else if (tableroPiezas[fila][col] == 2)
+            else if (tableroPiezas[fila][col] == SOLDADO_ROJO)
             {
-                DibujarPieza(x, z, 1.0f, 0.3f, 0.3f);
+                DibujarPieza(x, z, 1.0f, 0.3f, 0.3f, 1);
+            }
+            else if (tableroPiezas[fila][col] == MAGO_AZUL)
+            {
+                DibujarPieza(x, z, 0.0f, 0.4f, 1.0f, 2);
+            }
+            else if (tableroPiezas[fila][col] == MAGO_ROJO)
+            {
+                DibujarPieza(x, z, 0.8f, 0.0f, 0.8f, 2);
             }
         }
     }
@@ -158,7 +158,8 @@ void OnKeyboardDown(unsigned char key, int x, int y)
     {
         int pieza = tableroPiezas[filaSeleccionada][colSeleccionada];
 
-        if (pieza == turnoActual)
+        if ((turnoActual == 1 && EsAzul(pieza)) ||
+            (turnoActual == 2 && EsRoja(pieza)))
         {
             piezaSeleccionada = true;
             filaOrigen = filaSeleccionada;
@@ -175,11 +176,14 @@ void OnKeyboardDown(unsigned char key, int x, int y)
             int piezaDestino = tableroPiezas[filaSeleccionada][colSeleccionada];
 
        
-            if (piezaDestino != piezaOrigen &&
+            bool mismoBando = (EsAzul(piezaOrigen) && EsAzul(piezaDestino)) ||
+                (EsRoja(piezaOrigen) && EsRoja(piezaDestino));
+
+            if (!mismoBando &&
                 MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada))
             {
                 tableroPiezas[filaSeleccionada][colSeleccionada] = piezaOrigen;
-                tableroPiezas[filaOrigen][colOrigen] = 0;
+                tableroPiezas[filaOrigen][colOrigen] = VACIA;
 
                 piezaSeleccionada = false;
 
@@ -204,50 +208,4 @@ void OnTimer(int value)
 {
     glutPostRedisplay();
     glutTimerFunc(25, OnTimer, 0);
-}
-
-void InicializarTablero()
-{
-    for (int i = 0; i < TAM_TABLERO; i++)
-    {
-        for (int j = 0; j < TAM_TABLERO; j++)
-        {
-            tableroPiezas[i][j] = 0;
-        }
-    }
-
-    // Bando azul
-    tableroPiezas[0][0] = 1;
-    tableroPiezas[0][1] = 1;
-    tableroPiezas[0][2] = 1;
-
-    // Bando rojo
-    tableroPiezas[8][6] = 2;
-    tableroPiezas[8][7] = 2;
-    tableroPiezas[8][8] = 2;
-}
-
-bool MovimientoValido(int filaO, int colO, int filaD, int colD)
-{
-    int df = filaD - filaO;
-    int dc = colD - colO;
-
-    if (df == 0 && dc == 0)
-        return false;
-
-    if (df < -1 || df > 1 || dc < -1 || dc > 1)
-        return false;
-
-    return true;
-}
-
-void DibujarPieza(float x, float z, float r, float g, float b)
-{
-    glPushMatrix();
-
-    glTranslatef(x, 0.8f, z);
-    glColor3f(r, g, b);
-    glutSolidCube(1.2f);
-
-    glPopMatrix();
 }

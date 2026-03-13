@@ -155,10 +155,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="codigo\piezas\piezas.cpp" />
+    <ClCompile Include="codigo\tablero\tablero.cpp" />
     <ClCompile Include="Pang.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="codigo\piezas\piezas.h" />
+    <ClInclude Include="codigo\tablero\tablero.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
