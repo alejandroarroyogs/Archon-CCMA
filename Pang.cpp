@@ -6,6 +6,53 @@
 void OnDraw(void);
 void OnTimer(int value);
 void OnKeyboardDown(unsigned char key, int x, int y);
+void DibujarBarraVida(float x, float y, float z, int vidaActual, int vidaMax);
+
+void DibujarBarraVida(float x, float y, float z, int vidaActual, int vidaMax)
+{
+    float anchoTotal = 4.0f;
+    float alto = 0.35f;
+
+    float porcentaje = 0.0f;
+    if (vidaMax > 0)
+        porcentaje = (float)vidaActual / (float)vidaMax;
+
+    if (porcentaje < 0.0f)
+        porcentaje = 0.0f;
+    if (porcentaje > 1.0f)
+        porcentaje = 1.0f;
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+
+    // Fondo
+    glColor3f(0.2f, 0.2f, 0.2f);
+    glBegin(GL_QUADS);
+    glVertex3f(-anchoTotal / 2.0f, 0.0f, 0.0f);
+    glVertex3f(anchoTotal / 2.0f, 0.0f, 0.0f);
+    glVertex3f(anchoTotal / 2.0f, alto, 0.0f);
+    glVertex3f(-anchoTotal / 2.0f, alto, 0.0f);
+    glEnd();
+
+    // Vida actual
+    if (porcentaje > 0.5f)
+        glColor3f(0.1f, 0.9f, 0.1f);
+    else if (porcentaje > 0.25f)
+        glColor3f(0.95f, 0.75f, 0.1f);
+    else
+        glColor3f(0.9f, 0.1f, 0.1f);
+
+    float anchoVida = anchoTotal * porcentaje;
+
+    glBegin(GL_QUADS);
+    glVertex3f(-anchoTotal / 2.0f, 0.0f, 0.01f);
+    glVertex3f(-anchoTotal / 2.0f + anchoVida, 0.0f, 0.01f);
+    glVertex3f(-anchoTotal / 2.0f + anchoVida, alto, 0.01f);
+    glVertex3f(-anchoTotal / 2.0f, alto, 0.01f);
+    glEnd();
+
+    glPopMatrix();
+}
 
 int main(int argc, char* argv[])
 {
@@ -31,11 +78,58 @@ int main(int argc, char* argv[])
 
     glutMainLoop();
 
+    LiberarTablero();
+
     return 0;
 }
 
 void OnDraw(void)
 {
+    if (enCombate)
+    {
+        glClearColor(0.1f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        gluLookAt(0.0, 5.0, 15.0,
+            0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0);
+
+        // Suelo simple de arena
+        glColor3f(0.25f, 0.08f, 0.08f);
+        glBegin(GL_QUADS);
+        glVertex3f(-8.0f, -1.0f, -4.0f);
+        glVertex3f(8.0f, -1.0f, -4.0f);
+        glVertex3f(8.0f, -1.0f, 4.0f);
+        glVertex3f(-8.0f, -1.0f, 4.0f);
+        glEnd();
+
+        // Dibujar atacante
+        if (atacante != 0)
+        {
+            if (flashAtacante > 0)
+                glColor3f(1.0f, 1.0f, 1.0f);
+
+            atacante->DibujarCombate(-3.0f, 0.0f, flashAtacante > 0);
+            DibujarBarraVida(-3.0f, 2.4f, 0.0f, atacante->GetVida(), 15);
+        }
+
+        // Dibujar defensor
+        if (defensor != 0)
+        {
+            if (flashDefensor > 0)
+                glColor3f(1.0f, 1.0f, 1.0f);
+
+            defensor->DibujarCombate(3.0f, 0.0f, flashDefensor > 0);
+            DibujarBarraVida(3.0f, 2.4f, 0.0f, defensor->GetVida(), 15);
+        }
+
+        glutSwapBuffers();
+        return;
+    }
+
     glClearColor(0.05f, 0.05f, 0.08f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -45,7 +139,8 @@ void OnDraw(void)
     gluLookAt(0.0, 18.0, 28.0,
         0.0, 0.0, 0.0,
         0.0, 1.0, 0.0);
-    // Tablero 
+
+    // Tablero
     float size = 2.0f;
     int tablero = 9;
 
@@ -62,12 +157,10 @@ void OnDraw(void)
             float z0 = (z - tablero / 2) * size;
 
             glBegin(GL_QUADS);
-
             glVertex3f(x0, 0, z0);
             glVertex3f(x0 + size, 0, z0);
             glVertex3f(x0 + size, 0, z0 + size);
             glVertex3f(x0, 0, z0 + size);
-
             glEnd();
         }
     }
@@ -110,24 +203,12 @@ void OnDraw(void)
     {
         for (int col = 0; col < TAM_TABLERO; col++)
         {
-            float x = (col - TAM_TABLERO / 2) * 2.0f + 1.0f;
-            float z = (fila - TAM_TABLERO / 2) * 2.0f + 1.0f;
+            if (tableroPiezas[fila][col] != 0)
+            {
+                float x = (col - TAM_TABLERO / 2) * 2.0f + 1.0f;
+                float z = (fila - TAM_TABLERO / 2) * 2.0f + 1.0f;
 
-            if (tableroPiezas[fila][col] == SOLDADO_AZUL)
-            {
-                DibujarPieza(x, z, 0.2f, 0.8f, 1.0f, 1);
-            }
-            else if (tableroPiezas[fila][col] == SOLDADO_ROJO)
-            {
-                DibujarPieza(x, z, 1.0f, 0.3f, 0.3f, 1);
-            }
-            else if (tableroPiezas[fila][col] == MAGO_AZUL)
-            {
-                DibujarPieza(x, z, 0.0f, 0.4f, 1.0f, 2);
-            }
-            else if (tableroPiezas[fila][col] == MAGO_ROJO)
-            {
-                DibujarPieza(x, z, 0.8f, 0.0f, 0.8f, 2);
+                tableroPiezas[fila][col]->Dibujar(x, z);
             }
         }
     }
@@ -137,6 +218,19 @@ void OnDraw(void)
 
 void OnKeyboardDown(unsigned char key, int x, int y)
 {
+    if (enCombate)
+    {
+        if (key == 13) // ENTER
+        {
+            if (!combateIniciado && !combateResuelto)
+                IniciarCombateAutomatico();
+
+            glutPostRedisplay();
+        }
+
+        return;
+    }
+
     if (key == 27)
         exit(0);
 
@@ -156,7 +250,7 @@ void OnKeyboardDown(unsigned char key, int x, int y)
     // seleccionar pieza
     if (key == ' ')
     {
-        int pieza = tableroPiezas[filaSeleccionada][colSeleccionada];
+        Pieza* pieza = tableroPiezas[filaSeleccionada][colSeleccionada];
 
         if ((turnoActual == 1 && EsAzul(pieza)) ||
             (turnoActual == 2 && EsRoja(pieza)))
@@ -172,18 +266,36 @@ void OnKeyboardDown(unsigned char key, int x, int y)
     {
         if (piezaSeleccionada)
         {
-            int piezaOrigen = tableroPiezas[filaOrigen][colOrigen];
-            int piezaDestino = tableroPiezas[filaSeleccionada][colSeleccionada];
+            Pieza* piezaOrigen = tableroPiezas[filaOrigen][colOrigen];
+            Pieza* piezaDestino = tableroPiezas[filaSeleccionada][colSeleccionada];
 
-       
             bool mismoBando = (EsAzul(piezaOrigen) && EsAzul(piezaDestino)) ||
                 (EsRoja(piezaOrigen) && EsRoja(piezaDestino));
 
             if (!mismoBando &&
                 MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada))
             {
+                if (piezaDestino != 0)
+                {
+                    enCombate = true;
+                    atacante = piezaOrigen;
+                    defensor = piezaDestino;
+
+                    combateFilaOrigen = filaOrigen;
+                    combateColOrigen = colOrigen;
+                    combateFilaDestino = filaSeleccionada;
+                    combateColDestino = colSeleccionada;
+
+                    tiempoEntreRondas = 0;
+                    combateResuelto = false;
+                    combateIniciado = false;
+
+                    glutPostRedisplay();
+                    return;
+                }
+
                 tableroPiezas[filaSeleccionada][colSeleccionada] = piezaOrigen;
-                tableroPiezas[filaOrigen][colOrigen] = VACIA;
+                tableroPiezas[filaOrigen][colOrigen] = 0;
 
                 piezaSeleccionada = false;
 
@@ -206,6 +318,25 @@ void OnKeyboardDown(unsigned char key, int x, int y)
 
 void OnTimer(int value)
 {
+    if (enCombate && combateIniciado)
+    {
+        if (tiempoEntreRondas > 0)
+        {
+            tiempoEntreRondas--;
+        }
+        else
+        {
+            if (!combateResuelto)
+                EjecutarRondaCombate();
+        }
+    }
+
+    if (flashAtacante > 0)
+        flashAtacante--;
+
+    if (flashDefensor > 0)
+        flashDefensor--;
+
     glutPostRedisplay();
     glutTimerFunc(25, OnTimer, 0);
 }
