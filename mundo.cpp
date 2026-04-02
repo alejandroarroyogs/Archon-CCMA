@@ -2,6 +2,8 @@
 #include <iostream>
 #include "codigo/tablero/tablero.h"
 #include "codigo/piezas/piezas.h"
+#include "freeglut.h"
+#include "arena.h"
 
 Mundo::Mundo() {
     estado = JUGANDO; // Ponlo en JUGANDO para probar si se ve el tablero
@@ -13,54 +15,35 @@ Mundo::~Mundo() {
 void Mundo::Inicializar() {
     InicializarTablero();
 }
-
-void Mundo::Dibujar()
-{
-    // Lógica de estados para el menú
-    if (estado == MENU) {
-        glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // Aquí irá tu interfaz chula. Por ahora solo limpia la pantalla.
-        glutSwapBuffers();
-        return;
-    }
-
-    // A partir de aquí es el código original de tu compañero
-    if (enCombate)
-    {
-        glClearColor(0.1f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        gluLookAt(0.0, 5.0, 15.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-
-        glColor3f(0.25f, 0.08f, 0.08f);
-        glBegin(GL_QUADS);
-        glVertex3f(-8.0f, -1.0f, -4.0f); glVertex3f(8.0f, -1.0f, -4.0f);
-        glVertex3f(8.0f, -1.0f, 4.0f); glVertex3f(-8.0f, -1.0f, 4.0f);
-        glEnd();
-
-        if (atacante != 0) {
-            atacante->DibujarCombate(-3.0f, 0.0f, flashAtacante > 0);
-            DibujarBarraVida(-3.0f, 2.4f, 0.0f, atacante->GetVida(), 15);
-        }
-        if (defensor != 0) {
-            defensor->DibujarCombate(3.0f, 0.0f, flashDefensor > 0);
-            DibujarBarraVida(3.0f, 2.4f, 0.0f, defensor->GetVida(), 15);
-        }
-        glutSwapBuffers();
-        return;
-    }
-
+void Mundo::Dibujar() {
+    // Limpiamos la pantalla UNA vez con el color base (oscuro)
+   
     glClearColor(0.05f, 0.05f, 0.08f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    switch (estado) {
+    case MENU:
+        interfaz.dibujaMenu();
+        break;
+    case INSTRUC:
+        interfaz.dibujaInstrucciones();
+        break;
+    case JUGANDO:
+            DibujarJuego();
+        break;
+    }
+
+    // El swap final que muestra todo lo dibujado
+    glutSwapBuffers();
+}
+
+void Mundo::DibujarJuego() {
+    // 1. Configuración de cámara 3D para el tablero
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0.0, 18.0, 28.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
-    // Tablero
+    // 2. Dibujar el Tablero
     float size = 2.0f;
     int tablero = 9;
     for (int x = 0; x < tablero; x++) {
@@ -76,7 +59,8 @@ void Mundo::Dibujar()
         }
     }
 
-    // Selección
+    // 3. Dibujar Selección (Amarillo) y Origen (Verde)
+    // // Selección
     float xSel = (colSeleccionada - TAM_TABLERO / 2) * 2.0f;
     float zSel = (filaSeleccionada - TAM_TABLERO / 2) * 2.0f;
     glColor3f(1.0f, 1.0f, 0.0f);
@@ -107,8 +91,21 @@ void Mundo::Dibujar()
             }
         }
     }
-    
+
+
+    // 4. Dibujar Piezas
+    for (int fila = 0; fila < TAM_TABLERO; fila++) {
+        for (int col = 0; col < TAM_TABLERO; col++) {
+            if (tableroPiezas[fila][col] != 0) {
+                float x = (col - TAM_TABLERO / 2) * 2.0f + 1.0f;
+                float z = (fila - TAM_TABLERO / 2) * 2.0f + 1.0f;
+                tableroPiezas[fila][col]->Dibujar(x, z);
+            }
+        }
+    }
+    glutSwapBuffers();
 };
+
 
 void Mundo::tecla(unsigned char key)
 {
@@ -166,38 +163,6 @@ void Mundo::tecla(unsigned char key)
     glutPostRedisplay();
 };
 
-// Esta función debe pertenecer a Mundo si quieres usarla dentro de Dibujar
-void Mundo::DibujarBarraVida(float x, float y, float z, int vidaActual, int vidaMax)
-{
-    float anchoTotal = 4.0f;
-    float alto = 0.35f;
-    float porcentaje = (vidaMax > 0) ? (float)vidaActual / (float)vidaMax : 0.0f;
-    if (porcentaje < 0.0f) porcentaje = 0.0f;
-    if (porcentaje > 1.0f) porcentaje = 1.0f;
-
-    glPushMatrix();
-    glTranslatef(x, y, z);
-    glColor3f(0.2f, 0.2f, 0.2f);
-    glBegin(GL_QUADS);
-    glVertex3f(-anchoTotal / 2.0f, 0.0f, 0.0f);
-    glVertex3f(anchoTotal / 2.0f, 0.0f, 0.0f);
-    glVertex3f(anchoTotal / 2.0f, alto, 0.0f);
-    glVertex3f(-anchoTotal / 2.0f, alto, 0.0f);
-    glEnd();
-
-    if (porcentaje > 0.5f) glColor3f(0.1f, 0.9f, 0.1f);
-    else if (porcentaje > 0.25f) glColor3f(0.95f, 0.75f, 0.1f);
-    else glColor3f(0.9f, 0.1f, 0.1f);
-
-    float anchoVida = anchoTotal * porcentaje;
-    glBegin(GL_QUADS);
-    glVertex3f(-anchoTotal / 2.0f, 0.0f, 0.01f);
-    glVertex3f(-anchoTotal / 2.0f + anchoVida, 0.0f, 0.01f);
-    glVertex3f(-anchoTotal / 2.0f + anchoVida, alto, 0.01f);
-    glVertex3f(-anchoTotal / 2.0f, alto, 0.01f);
-    glEnd();
-    glPopMatrix();
-};
 void Mundo::Timer(int value)
 {
     if (enCombate && combateIniciado)

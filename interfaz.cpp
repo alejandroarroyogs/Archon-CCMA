@@ -3,14 +3,32 @@
 
 void Interfaz::dibujaTexto(float x, float y, const char* texto)
 {
+    //nopodemos romper el tablero 3D de después
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0); // Establecemos un sistema de coordenadas de -1 a 1
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    // 2. Dibujamos el texto
     glRasterPos2f(x, y);
-    while (*texto)
+    while (texto && *texto) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *texto++);
-}
+    }
+    // 3. Restauramos las matrices para que el tablero 3D se vea bien
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+};
+
 
 void Interfaz::dibujaMenu()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+
 
     // Color verde
     glColor3f(0.0f, 1.0f, 0.0f);
@@ -22,8 +40,9 @@ void Interfaz::dibujaMenu()
     dibujaTexto(-0.3f, 0.2f, "1. Jugar");
     dibujaTexto(-0.3f, 0.0f, "2. Instrucciones");
     dibujaTexto(-0.3f, -0.2f, "ESC. Salir");
+    glutSwapBuffers();
 
-    glFlush();
+
 }
 
 void Interfaz::dibujaInstrucciones()
@@ -51,4 +70,5 @@ void Interfaz::dibujaInstrucciones()
     dibujaTexto(-0.9f, -0.9f, "- ESC: volver");
 
     glFlush();
+    glutSwapBuffers();
 }

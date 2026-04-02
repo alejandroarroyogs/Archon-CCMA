@@ -3,6 +3,7 @@
 #include "codigo/tablero/tablero.h"
 #include "codigo/Piezas/piezas.h"
 #include "interfaz.h"
+#include "arena.h"
 
 class Mundo
 {
@@ -12,16 +13,18 @@ public:
 
     void Inicializar();
     void Dibujar();
-
-    // Estado del juego
-    enum Estado { MENU, JUGANDO, GAMEOVER };
-    Estado estado;
-    Interfaz interfaz;
-
+    void DibujarJuego();
     void tecla(unsigned char key);
-    void DibujarBarraVida(float x, float y, float z, int vidaActual, int vidaMax);
     void Timer(int value);
 
+private:
+    // Estado del juego
+    enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, SELEC_MODO, GAMEOVER };
+    Estado estado;
+    Interfaz interfaz;
+    Arena arena;
+
+    
 
 };
 
