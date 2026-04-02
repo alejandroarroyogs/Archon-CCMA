@@ -34,7 +34,6 @@ int main(int argc, char* argv[])
     glutDisplayFunc(OnDraw);
     glutTimerFunc(25, OnTimer, 0);
     glutKeyboardFunc(OnKeyboardDown);
-   
 
     glutMainLoop();
 
@@ -49,8 +48,7 @@ void OnDraw(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    
-
+   
     mundo.Dibujar();
 
     //no borrar esta linea ni poner nada despues
