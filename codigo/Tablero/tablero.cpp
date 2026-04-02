@@ -219,6 +219,24 @@ void EjecutarRondaCombate()
     tiempoEntreRondas = 20;
 }
 
+void DibujaTablero()
+{
+    float size = 2.0f;
+    int tablero = 9;
+    for (int x = 0; x < tablero; x++) {
+        for (int z = 0; z < tablero; z++) {
+            if ((x + z) % 2 == 0) glColor3f(0.8f, 0.8f, 0.8f);
+            else glColor3f(0.2f, 0.2f, 0.2f);
+            float x0 = (x - tablero / 2) * size;
+            float z0 = (z - tablero / 2) * size;
+            glBegin(GL_QUADS);
+            glVertex3f(x0, 0, z0); glVertex3f(x0 + size, 0, z0);
+            glVertex3f(x0 + size, 0, z0 + size); glVertex3f(x0, 0, z0 + size);
+            glEnd();
+        }
+    }
+}
+
 void ResolverCombateAutomatico()
 {
     IniciarCombateAutomatico();

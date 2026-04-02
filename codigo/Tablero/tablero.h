@@ -44,3 +44,4 @@ void ResolverCombateAutomatico();
 
 void IniciarCombateAutomatico();
 void EjecutarRondaCombate();
+void DibujaTablero();
