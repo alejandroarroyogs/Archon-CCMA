@@ -5,6 +5,9 @@
 #include "interfaz.h"
 #include "arena.h"
 
+ enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, SELEC_MODO, GAMEOVER };
+
+
 class Mundo
 {
 public:
@@ -19,7 +22,7 @@ public:
 
 private:
     // Estado del juego
-    enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, SELEC_MODO, GAMEOVER };
+   
     Estado estado;
     Interfaz interfaz;
     Arena arena;

@@ -4,9 +4,10 @@
 #include "codigo/piezas/piezas.h"
 #include "freeglut.h"
 #include "arena.h"
+#include "interfaz.h"
 
 Mundo::Mundo() {
-    estado = JUGANDO; // Ponlo en JUGANDO para probar si se ve el tablero
+    estado = MENU; // Ponlo en JUGANDO para probar si se ve el tablero
 }
 
 Mundo::~Mundo() {
@@ -17,9 +18,9 @@ void Mundo::Inicializar() {
 }
 void Mundo::Dibujar() {
     // Limpiamos la pantalla UNA vez con el color base (oscuro)
-   
-    glClearColor(0.05f, 0.05f, 0.08f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   //menciono porque está en el ondrax
+    //glClearColor(0.05f, 0.05f, 0.08f, 1.0f);
+   // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     switch (estado) {
     case MENU:
@@ -33,8 +34,8 @@ void Mundo::Dibujar() {
         break;
     }
 
-    // El swap final que muestra todo lo dibujado
-    glutSwapBuffers();
+    //glutSwapBuffers();// El swap final que muestra todo lo dibujado
+
 }
 
 void Mundo::DibujarJuego() {
