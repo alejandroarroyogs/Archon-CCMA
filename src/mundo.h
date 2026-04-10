@@ -1,7 +1,7 @@
 #pragma once
 #include "freeglut.h"
-#include "codigo/tablero/tablero.h"
-#include "codigo/Piezas/piezas.h"
+#include "tablero.h"
+#include "piezas.h"
 #include "interfaz.h"
 
 class Mundo

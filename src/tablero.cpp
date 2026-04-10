@@ -1,6 +1,6 @@
-#include "../../freeglut.h"
+#include "freeglut.h"
 #include "tablero.h"
-#include "../piezas/piezas.h"
+#include "piezas.h"
 
 Pieza* tableroPiezas[TAM_TABLERO][TAM_TABLERO];
 
