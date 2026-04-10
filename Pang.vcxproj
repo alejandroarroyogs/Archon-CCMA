@@ -82,12 +82,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IntDir>tmp\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>.vs\tmp\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)\bin</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IntDir>tmp\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>.vs\tmp\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)\bin</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -129,11 +129,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>lib;src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)</ProgramDatabaseFile>
+      <AdditionalLibraryDirectories>lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,6 +147,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>lib;src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,25 +155,26 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)</ProgramDatabaseFile>
+      <AdditionalLibraryDirectories>lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="codigo\piezas\piezas.cpp" />
-    <ClCompile Include="codigo\tablero\tablero.cpp" />
-    <ClCompile Include="interfaz.cpp" />
-    <ClCompile Include="mundo.cpp" />
-    <ClCompile Include="Pang.cpp" />
-    <ClCompile Include="src\arena.cpp" />
-  </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="codigo\piezas\piezas.h" />
-    <ClInclude Include="codigo\tablero\tablero.h" />
-    <ClInclude Include="interfaz.h" />
-    <ClInclude Include="mundo.h" />
+    <ClCompile Include="src\arena.cpp" />
+    <ClCompile Include="src\interfaz.cpp" />
+    <ClCompile Include="src\mundo.cpp" />
+    <ClCompile Include="src\Pang.cpp" />
+    <ClCompile Include="src\piezas.cpp" />
+    <ClCompile Include="src\tablero.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="src\arena.h" />
+    <ClInclude Include="src\interfaz.h" />
+    <ClInclude Include="src\mundo.h" />
+    <ClInclude Include="src\piezas.h" />
+    <ClInclude Include="src\tablero.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

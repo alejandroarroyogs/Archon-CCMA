@@ -1,7 +1,7 @@
 #include "mundo.h"
 #include <iostream>
-#include "codigo/tablero/tablero.h"
-#include "codigo/piezas/piezas.h"
+#include "tablero.h"
+#include "piezas.h"
 
 Mundo::Mundo() {
     estado = JUGANDO; // Ponlo en JUGANDO para probar si se ve el tablero
