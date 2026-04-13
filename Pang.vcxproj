@@ -24,6 +24,7 @@
     <ProjectGuid>{e575fade-b6eb-4154-a1ed-8067a12eae98}</ProjectGuid>
     <RootNamespace>Pang</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Archon</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -165,7 +166,7 @@
     <ClCompile Include="src\arena.cpp" />
     <ClCompile Include="src\interfaz.cpp" />
     <ClCompile Include="src\mundo.cpp" />
-    <ClCompile Include="src\Pang.cpp" />
+    <ClCompile Include="src\Archon.cpp" />
     <ClCompile Include="src\piezas.cpp" />
     <ClCompile Include="src\tablero.cpp" />
   </ItemGroup>

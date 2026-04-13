@@ -23,7 +23,7 @@
     <ClCompile Include="src\mundo.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="src\Pang.cpp">
+    <ClCompile Include="src\Archon.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\piezas.cpp">
