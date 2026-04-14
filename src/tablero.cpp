@@ -2,17 +2,7 @@
 #include "freeglut.h"
 #include "piezas.h"
 
-Pieza* tableroPiezas[TAM_TABLERO][TAM_TABLERO];
-
-int filaSeleccionada = 0;
-int colSeleccionada = 0;
-
-bool piezaSeleccionada = false;
-int filaOrigen = 0;
-int colOrigen = 0;
-
-int turnoActual = 1; // 1 = azul, 2 = rojo
-
+Pieza* tableroPiezas[9][9];
 
 
 // Constructor: pone todas las casillas a vacío (puntero nulo) al empezar
@@ -22,7 +12,15 @@ Tablero::Tablero() {
             casillas[i][j] = 0; 
         }
     }
+    filaSeleccionada = 0;
+    colSeleccionada = 0;
+    piezaSeleccionada = false;
+    filaOrigen = 0;
+    colOrigen = 0;
+    turnoActual = 1;
 }
+
+
 
 // Destructor: borra las piezas de la memoria cuando cerramos el juego (Capítulo de Clases)
 Tablero::~Tablero() {
@@ -56,7 +54,18 @@ void Tablero::inicializa() {
 // Dibuja el tablero y manda a las piezas a dibujarse a sí mismas
 void Tablero::dibuja() {
     glDisable(GL_LIGHTING); // Desactivamos luces para ver los colores planos de las casillas
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, 1.0, 1.0, 100.0);
 
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    gluLookAt(
+        10, 20, 25,   // cámara
+        0, 0, 0,     // mira al centro
+        0, 1, 0      // eje Y arriba
+    );
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
 
@@ -93,8 +102,6 @@ void Tablero::dibuja() {
         }
     }
     glEnable(GL_LIGHTING);
-}
-        }
-    }
+
 }
 

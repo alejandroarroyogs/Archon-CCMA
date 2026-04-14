@@ -20,6 +20,7 @@ public:
     void Inicializar();
     void Dibujar();
     Interfaz interfaz;
+    Tablero tablero;
     
 
     void tecla(unsigned char key);

@@ -1,6 +1,6 @@
 #include "freeglut.h"
 #include "mundo.h"
-
+#include "tablero.h"
 
 Mundo mundo; //centralizamos la información en este objeto
 
@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     glLoadIdentity();
     gluPerspective(40.0, 1000 / 800.0f, 0.1, 150);
 
-    InicializarTablero();
+    
 
     glutDisplayFunc(OnDraw);
     glutTimerFunc(25, OnTimer, 0);
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 
     glutMainLoop();
 
-    LiberarTablero();
+
 
     return 0;
 }

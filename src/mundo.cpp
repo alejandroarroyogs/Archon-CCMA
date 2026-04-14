@@ -11,10 +11,10 @@ Mundo::Mundo() {
 }
 
 Mundo::~Mundo() {
-    LiberarTablero();
+    
 }
 void Mundo::Inicializar() {
-    InicializarTablero();
+    tablero.inicializa();
 }
 
 void Mundo::Dibujar()
@@ -35,6 +35,8 @@ void Mundo::Dibujar()
         break;
     case GAMEOVER:
         break;
+    case JUGANDO:
+        tablero.dibuja();
     }
     
 };
