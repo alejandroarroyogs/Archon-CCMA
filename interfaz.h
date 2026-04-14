@@ -4,7 +4,7 @@
 class Interfaz
 {
 private:
-    unsigned int fondoID;
+    ETSIDI::Sprite fondo{ "fondo.png", 0, 0, 16, 12 };
 public:
     void dibujaFondo();
     void dibujaMenu();

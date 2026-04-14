@@ -2,7 +2,7 @@
 #include "freeglut.h"
 #include "mundo.h"
 #include "ETSIDI.h"
-
+using ETSIDI::SpriteSequence;
 Estado estado = MENU;
 int modoJuego = 0;
 
@@ -61,45 +61,28 @@ void Interfaz::eligeModo()
 
 void Interfaz::dibujaFondo()
 {
-    glEnable(GL_TEXTURE_2D);
+    // Si necesitas que el fondo esté siempre centrado:
+    fondo.setPos(0, 0);
 
-    // IMPORTANTE: La ruta debe ser relativa a la carpeta donde esté el .exe (bin)
-    // Si tu imagen está en bin/imagenes/fondo.png, la ruta es:
-    glBindTexture(GL_TEXTURE_2D, ETSIDI::getTexture("imagenes/fondo.png").id);
+    // Si el fondo sale muy pequeño, puedes ajustar el tamaño aquí:
+    // fondo.setSize(20, 15); 
 
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST); // Para que el fondo no sea tapado por nada
-
-    glBegin(GL_POLYGON);
-    glColor3f(1, 1, 1);
-    glTexCoord2d(0, 1); glVertex2f(-1, -1);
-    glTexCoord2d(1, 1); glVertex2f(1, -1);
-    glTexCoord2d(1, 0); glVertex2f(1, 1);
-    glTexCoord2d(0, 0); glVertex2f(-1, 1);
-    glEnd();
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
+    fondo.draw(); // Este método es el que pertenece a ETSIDI::Sprite
 }
 
 void Interfaz::dibujaMenu()
 {
-    // 1. Dibujamos el fondo primero
     dibujaFondo();
-
-    // 2. Texto con la librería ETSIDI
-    // Ponemos una sombra negra para que se lea mejor sobre cualquier imagen
+    // 2. Configuración de texto
     ETSIDI::setTextColor(0, 0, 0);
-    ETSIDI::printxy("ARCHON", -0.19, 0.59); // Sombra ligeramente desplazada
+    ETSIDI::printxy("ARCHON", -0.19, 0.59); // Sombra
 
-    ETSIDI::setTextColor(1, 1, 0); // Amarillo para el título
-    // Si no tienes la fuente Bitwise.ttf en la carpeta bin/fuentes, 
-    // usa "fuentes/Arial.ttf" o quita la línea setFont para usar la de defecto.
+    ETSIDI::setTextColor(1, 1, 0); // Amarillo
     ETSIDI::setFont("fuentes/Bitwise.ttf", 24);
     ETSIDI::printxy("ARCHON", -0.2, 0.6);
 
-    ETSIDI::setTextColor(1, 1, 1); // Blanco para las opciones
+    // Opciones del menú
+    ETSIDI::setTextColor(1, 1, 1);
     ETSIDI::printxy("1. Instrucciones del juego", -0.3, 0.2);
     ETSIDI::printxy("2. Elegir modo de juego", -0.3, 0.0);
     ETSIDI::printxy("ESC. Salir", -0.3, -0.2);
