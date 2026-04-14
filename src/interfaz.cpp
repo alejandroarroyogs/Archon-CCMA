@@ -4,7 +4,7 @@
 #include "mundo.h"
 
 using ETSIDI::SpriteSequence;
-
+extern int estado;
 void Interfaz::dibujaTexto(float x, float y, const char* texto)
 {
     glRasterPos2f(x, y);
@@ -24,40 +24,29 @@ void Interfaz::eligeModo()
 
 void Interfaz::tecladoinicio(unsigned char key, int x, int y)
 {
-    if (estado == SELEC_MODO) {
-        switch (key) {
-        case'1':
-            modoJuego = 1;
-            estado = JUGANDO;
-            break;
-        case '2':
-            modoJuego = 2;
-            estado = JUGANDO;
-            break;
-        case 27: //escape
-            estado = MENU;
-            break;
-        }
-    }
-    glutPostRedisplay();
+   
+    
 }
 
 void Interfaz::dibujaFondo()
 {
     // Si necesitas que el fondo esté siempre centrado:
-    fondo.setPos(0, 0);
+   // fondo.setPos(0, 0);
 
     // Si el fondo sale muy pequeño, puedes ajustar el tamaño aquí:
     // fondo.setSize(20, 15); 
 
-    fondo.draw(); // Este método es el que pertenece a ETSIDI::Sprite
+   // fondo.draw(); // Este método es el que pertenece a ETSIDI::Sprite
 }
 
 void Interfaz::dibujaMenu()
 {
-    dibujaFondo();
-
-    glClear(GL_COLOR_BUFFER_BIT);
+   // dibujaFondo();
+    //forzar vista 2D
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
 
     // Color verde
     glColor3f(0.0f, 1.0f, 0.0f);
@@ -70,13 +59,16 @@ void Interfaz::dibujaMenu()
     dibujaTexto(-0.3f, 0.0f, "2. Instrucciones");
     dibujaTexto(-0.3f, -0.2f, "ESC. Salir");
 
-    glFlush();
 }
 
 void Interfaz::dibujaInstrucciones()
 {
-    dibujaFondo();
-    glClear(GL_COLOR_BUFFER_BIT);
+    //dibujaFondo();
+   //forzar vista 2D
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
 
     // Título
     dibujaTexto(-0.2f, 0.8f, "ARCHON - INSTRUCCIONES");
@@ -98,5 +90,4 @@ void Interfaz::dibujaInstrucciones()
     dibujaTexto(-0.9f, -0.8f, "- Enter: seleccionar");
     dibujaTexto(-0.9f, -0.9f, "- ESC: volver");
 
-    glFlush();
 }

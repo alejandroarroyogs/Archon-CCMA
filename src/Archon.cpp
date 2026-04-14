@@ -2,7 +2,6 @@
 #include "mundo.h"
 
 
-
 Mundo mundo; //centralizamos la información en este objeto
 
 // Callbacks
@@ -48,7 +47,12 @@ void OnDraw(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-   
+   //forzar vista 2D
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+
     mundo.Dibujar();
 
     //no borrar esta linea ni poner nada despues

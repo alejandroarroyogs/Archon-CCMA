@@ -1,5 +1,19 @@
 #include "tablero.h"
 #include "freeglut.h"
+#include "piezas.h"
+
+Pieza* tableroPiezas[TAM_TABLERO][TAM_TABLERO];
+
+int filaSeleccionada = 0;
+int colSeleccionada = 0;
+
+bool piezaSeleccionada = false;
+int filaOrigen = 0;
+int colOrigen = 0;
+
+int turnoActual = 1; // 1 = azul, 2 = rojo
+
+
 
 // Constructor: pone todas las casillas a vacío (puntero nulo) al empezar
 Tablero::Tablero() {
@@ -80,3 +94,7 @@ void Tablero::dibuja() {
     }
     glEnable(GL_LIGHTING);
 }
+        }
+    }
+}
+
