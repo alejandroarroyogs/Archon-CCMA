@@ -1,5 +1,9 @@
 #include "interfaz.h"
 #include "freeglut.h"
+#include "ETSIDI.h"
+#include "mundo.h"
+
+using ETSIDI::SpriteSequence;
 
 void Interfaz::dibujaTexto(float x, float y, const char* texto)
 {
@@ -8,8 +12,51 @@ void Interfaz::dibujaTexto(float x, float y, const char* texto)
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *texto++);
 }
 
+void Interfaz::eligeModo()
+{
+    glColor3f(0.0f, 1.0f, 1.0f);
+
+    dibujaTexto(-0.3f, 0.6f, "SELECCION DE MODO");
+    dibujaTexto(-0.4f, 0.2f, "1. Jugador vs Jugador");
+    dibujaTexto(-0.4f, 0.0f, "2. Jugador vs IA");
+    dibujaTexto(-0.4f, -0.2f, "ESC. Volver");
+}
+
+void Interfaz::tecladoinicio(unsigned char key, int x, int y)
+{
+    if (estado == SELEC_MODO) {
+        switch (key) {
+        case'1':
+            modoJuego = 1;
+            estado = JUGANDO;
+            break;
+        case '2':
+            modoJuego = 2;
+            estado = JUGANDO;
+            break;
+        case 27: //escape
+            estado = MENU;
+            break;
+        }
+    }
+    glutPostRedisplay();
+}
+
+void Interfaz::dibujaFondo()
+{
+    // Si necesitas que el fondo esté siempre centrado:
+    fondo.setPos(0, 0);
+
+    // Si el fondo sale muy pequeño, puedes ajustar el tamaño aquí:
+    // fondo.setSize(20, 15); 
+
+    fondo.draw(); // Este método es el que pertenece a ETSIDI::Sprite
+}
+
 void Interfaz::dibujaMenu()
 {
+    dibujaFondo();
+
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Color verde
@@ -28,6 +75,7 @@ void Interfaz::dibujaMenu()
 
 void Interfaz::dibujaInstrucciones()
 {
+    dibujaFondo();
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Título

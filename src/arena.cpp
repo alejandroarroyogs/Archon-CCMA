@@ -37,6 +37,112 @@ void Arena::dibujaCombate()
     glutSwapBuffers();
     return;
 }
+void Arena::tiempoCombate()
+{
+
+    if (enCombate && combateIniciado)
+    {
+        if (tiempoEntreRondas > 0)
+        {
+            tiempoEntreRondas--;
+        }
+        else
+        {
+            if (!combateResuelto)
+                EjecutarRondaCombate();
+        }
+    }
+
+    if (flashAtacante > 0)
+        flashAtacante--;
+
+    if (flashDefensor > 0)
+        flashDefensor--;
+
+    glutPostRedisplay();
+}
+void Arena::EjecutarRondaCombate()
+{
+    if (!enCombate)
+        return;
+
+    if (atacante == 0 || defensor == 0)
+        return;
+
+    if (combateResuelto)
+        return;
+
+    defensor->RecibirDanio(atacante->GetDanio());
+    flashDefensor = 8;
+
+    if (!defensor->EstaViva())
+    {
+        combateResuelto = true;
+        ResolverCombate(true);
+        return;
+    }
+
+    atacante->RecibirDanio(defensor->GetDanio());
+    flashAtacante = 8;
+
+    if (!atacante->EstaViva())
+    {
+        combateResuelto = true;
+        ResolverCombate(false);
+        return;
+    }
+
+    tiempoEntreRondas = 20;
+}
+void Arena::ResolverCombate()
+{
+    if (!enCombate)
+        return;
+
+    if (ganaAtacante)
+    {
+        if (tableroPiezas[combateFilaDestino][combateColDestino] != 0)
+        {
+            delete tableroPiezas[combateFilaDestino][combateColDestino];
+            tableroPiezas[combateFilaDestino][combateColDestino] = 0;
+        }
+
+        tableroPiezas[combateFilaDestino][combateColDestino] = tableroPiezas[combateFilaOrigen][combateColOrigen];
+        tableroPiezas[combateFilaOrigen][combateColOrigen] = 0;
+    }
+    else
+    {
+        if (tableroPiezas[combateFilaOrigen][combateColOrigen] != 0)
+        {
+            delete tableroPiezas[combateFilaOrigen][combateColOrigen];
+            tableroPiezas[combateFilaOrigen][combateColOrigen] = 0;
+        }
+    }
+
+    piezaSeleccionada = false;
+
+    if (turnoActual == 1)
+        turnoActual = 2;
+    else
+        turnoActual = 1;
+
+    enCombate = false;
+    atacante = 0;
+    defensor = 0;
+
+    combateFilaOrigen = -1;
+    combateColOrigen = -1;
+    combateFilaDestino = -1;
+    combateColDestino = -1;
+
+    tiempoEntreRondas = 0;
+    combateResuelto = false;
+
+    combateIniciado = false;
+
+    flashAtacante = 0;
+    flashDefensor = 0;
+}
 void Arena::dibujaBarraVida(float x, float y, float z, int vidaActual, int vidaMax)
 {
     float anchoTotal = 4.0f;
