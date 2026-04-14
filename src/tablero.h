@@ -1,46 +1,15 @@
 #pragma once
+#include "piezas.h" // Necesitamos conocer las piezas
 
-class Pieza;
+class Tablero {
+private:
+    // La matriz 9x9 de punteros a la clase base Pieza (Polimorfismo perfecto)
+    Pieza* casillas[9][9];
 
-const int TAM_TABLERO = 9;
+public:
+    Tablero();          // Constructor
+    virtual ~Tablero(); // Destructor (vital para no dejar basura en memoria)
 
-extern Pieza* tableroPiezas[TAM_TABLERO][TAM_TABLERO];
-
-extern int filaSeleccionada;
-extern int colSeleccionada;
-
-extern bool piezaSeleccionada;
-extern int filaOrigen;
-extern int colOrigen;
-
-extern int turnoActual;
-
-extern bool enCombate;
-extern Pieza* atacante;
-extern Pieza* defensor;
-
-extern int combateFilaOrigen;
-extern int combateColOrigen;
-extern int combateFilaDestino;
-extern int combateColDestino;
-
-extern int tiempoEntreRondas;
-extern bool combateResuelto;
-
-extern bool combateIniciado;
-
-extern int flashAtacante;
-extern int flashDefensor;
-
-void InicializarTablero();
-void LiberarTablero();
-
-bool MovimientoValido(int filaO, int colO, int filaD, int colD);
-void DibujarMovimientosValidos();
-
-void ResolverCombate(bool ganaAtacante);
-
-void ResolverCombateAutomatico();
-
-void IniciarCombateAutomatico();
-void EjecutarRondaCombate();
+    void inicializa();
+    void dibuja();
+};
