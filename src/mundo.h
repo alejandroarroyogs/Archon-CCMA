@@ -19,7 +19,7 @@ public:
     
     Estado estado;
     Interfaz interfaz;
-    Arena arena;
+    
     
 
     void tecla(unsigned char key);

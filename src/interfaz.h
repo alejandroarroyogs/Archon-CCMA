@@ -4,7 +4,7 @@
 class Interfaz
 {
 private:
-    ETSIDI::Sprite fondo{ "imageners/fondo.png" };
+    //ETSIDI::Sprite fondo{ "imageners/fondo.png" };
     int modoJuego;
 public:
     void dibujaFondo();
@@ -13,5 +13,6 @@ public:
     void dibujaTexto(float x, float y, const char* texto);
     void eligeModo();
     void tecladoinicio(unsigned char key, int x, int y);
+
 };
 
