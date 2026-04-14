@@ -4,6 +4,7 @@
 #include "mundo.h"
 
 using ETSIDI::SpriteSequence;
+extern int estado;
 
 void Interfaz::dibujaTexto(float x, float y, const char* texto)
 {

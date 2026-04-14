@@ -5,7 +5,7 @@
 #include "interfaz.h"
 
 // Estado del juego
-enum Estado { MENU, JUGANDO, GAMEOVER, INSTRUC, GAMEOVER, MENU, SELEC_MODO };
+enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO };
 
 class Mundo
 {
@@ -19,9 +19,10 @@ public:
     
     Estado estado;
     Interfaz interfaz;
+    Arena arena;
+    
 
     void tecla(unsigned char key);
-    void DibujarBarraVida(float x, float y, float z, int vidaActual, int vidaMax);
     void Timer(int value);
 
 };

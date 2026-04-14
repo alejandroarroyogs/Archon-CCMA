@@ -4,7 +4,7 @@
 class Interfaz
 {
 private:
-    ETSIDI::Sprite fondo{ "fondo.png" };
+    ETSIDI::Sprite fondo{ "imageners/fondo.png" };
     int modoJuego;
 public:
     void dibujaFondo();
