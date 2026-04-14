@@ -6,7 +6,8 @@
 #include "arena.h"
 
 Mundo::Mundo() {
-    estado =SELEC_MODO; // Ponlo en JUGANDO para probar si se ve el tablero
+    estado =MENU;// Ponlo en JUGANDO para probar si se ve el tablero
+    modoJuego = 0;
 }
 
 Mundo::~Mundo() {
@@ -40,22 +41,24 @@ void Mundo::Dibujar()
 
 void Mundo::tecla(unsigned char key)
 {
-    switch (estado) {
+    switch (estado)
+    {
     case MENU:
-        interfaz.tecladoinicio(key,0,0);
+        if (key == '1') estado = SELEC_MODO;
+        else if (key == '2') estado = INSTRUC;
         break;
+
     case INSTRUC:
-        interfaz.tecladoinicio(key,0,0);
+        if (key == 13) estado = SELEC_MODO;
         break;
+
     case SELEC_MODO:
-        interfaz.tecladoinicio(key,0,0);
-        break;
-    case COMBATE:
-        //arena.dibujaCombate();
-        break;
-    case GAMEOVER:
+        if (key == '1') { modoJuego = 1; estado = JUGANDO; }
+        if (key == '2') { modoJuego = 2; estado = JUGANDO; }
         break;
     }
+
+    glutPostRedisplay();
  
 }
 

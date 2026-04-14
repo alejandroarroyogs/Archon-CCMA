@@ -4,8 +4,7 @@
 #include "mundo.h"
 
 using ETSIDI::SpriteSequence;
-int estado = MENU;
-
+extern int estado;
 void Interfaz::dibujaTexto(float x, float y, const char* texto)
 {
     glRasterPos2f(x, y);
@@ -25,35 +24,8 @@ void Interfaz::eligeModo()
 
 void Interfaz::tecladoinicio(unsigned char key, int x, int y)
 {
-    switch (estado) {
-    case MENU:
-        if (key == '1') {
-            estado = SELEC_MODO;
-        }
-        else if (key == '2') {
-            estado = INSTRUC;
-        }
-        else if (key == 27) {
-            exit(0); // Cerrar app
-        }
-        break; 
-
-    case SELEC_MODO:
-        switch (key) {
-        case '1': modoJuego = 1; estado = JUGANDO; break;
-        case '2': modoJuego = 2; estado = JUGANDO; break;
-        case 27:  estado = MENU; break;
-        }
-        break;
-
-    case INSTRUC:
-        if (key == 13) estado = SELEC_MODO;
-        if (key == 27) estado = MENU;
-        break;
-
-    }
-
-    glutPostRedisplay();
+   
+    
 }
 
 void Interfaz::dibujaFondo()

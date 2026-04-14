@@ -9,17 +9,17 @@ enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO };
 
 class Mundo
 {
+private:
+    Estado estado;
+    int modoJuego;
+
 public:
     Mundo();
     virtual ~Mundo();
 
     void Inicializar();
     void Dibujar();
-
-    
-    Estado estado;
     Interfaz interfaz;
-    
     
 
     void tecla(unsigned char key);
