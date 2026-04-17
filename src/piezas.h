@@ -2,7 +2,7 @@
 
 class Pieza
 {
-protected:
+
     int bando; // 1 = azul, 2 = rojo
     int vida;
     int danio;

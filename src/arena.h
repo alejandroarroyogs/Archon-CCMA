@@ -4,7 +4,6 @@
 
 class Arena
 {
-private:
 	Pieza* atacante;
 	Pieza* defensor;
 	int flashAtacante;

@@ -9,9 +9,8 @@ enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO };
 
 class Mundo
 {
-private:
     Estado estado;
-    int modoJuego;
+    int modoJuego=0;
 
 public:
     Mundo();

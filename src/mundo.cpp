@@ -7,7 +7,7 @@
 
 Mundo::Mundo() {
     estado =MENU;// Ponlo en JUGANDO para probar si se ve el tablero
-    modoJuego = 0;
+   extern int modoJuego;
 }
 
 Mundo::~Mundo() {
