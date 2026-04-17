@@ -2,7 +2,7 @@
 #include "piezas.h" // Necesitamos conocer las piezas
 
 class Tablero {
-//private: por ahora nada a ver si funciona
+
     // uso static para el tamaño del tablero
     static const int TAM_TABLERO = 9;
     Pieza* casillas[TAM_TABLERO][TAM_TABLERO];
@@ -13,6 +13,8 @@ public:
 
     void inicializa();
     void dibuja();
+    //acceso a la variable tam_tablero
+    static int getTamTablero();
 
     int filaSeleccionada;
     int colSeleccionada;

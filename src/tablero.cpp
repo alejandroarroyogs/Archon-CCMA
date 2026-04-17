@@ -2,13 +2,11 @@
 #include "freeglut.h"
 #include "piezas.h"
 
-Pieza* tableroPiezas[9][9];
-
 
 // Constructor: pone todas las casillas a vacío (puntero nulo) al empezar
 Tablero::Tablero() {
-    for (int i = 0; i < 9; i++) {
-        for (int j = 0; j < 9; j++) {
+    for (int i = 0; i < TAM_TABLERO; i++) {
+        for (int j = 0; j < TAM_TABLERO; j++) {
             casillas[i][j] = 0; 
         }
     }
@@ -20,12 +18,10 @@ Tablero::Tablero() {
     turnoActual = 1;
 }
 
-
-
 // Destructor: borra las piezas de la memoria cuando cerramos el juego (Capítulo de Clases)
 Tablero::~Tablero() {
-    for (int i = 0; i < 9; i++) {
-        for (int j = 0; j < 9; j++) {
+    for (int i = 0; i < TAM_TABLERO; i++) {
+        for (int j = 0; j < TAM_TABLERO; j++) {
             if (casillas[i][j] != 0) {
                 delete casillas[i][j];
                 casillas[i][j] = 0;
@@ -103,5 +99,10 @@ void Tablero::dibuja() {
     }
     glEnable(GL_LIGHTING);
 
+}
+
+int Tablero::getTamTablero()
+{
+    return TAM_TABLERO;
 }
 
