@@ -12,7 +12,5 @@ public:
     void dibujaInstrucciones();
     void dibujaTexto(float x, float y, const char* texto);
     void eligeModo();
-    void tecladoinicio(unsigned char key, int x, int y);
-
 };
 

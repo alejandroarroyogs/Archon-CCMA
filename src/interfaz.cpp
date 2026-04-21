@@ -4,6 +4,7 @@
 #include "mundo.h"
 
 using ETSIDI::SpriteSequence;
+
 extern int estado;
 void Interfaz::dibujaTexto(float x, float y, const char* texto)
 {
@@ -14,24 +15,30 @@ void Interfaz::dibujaTexto(float x, float y, const char* texto)
 
 void Interfaz::eligeModo()
 {
-    glColor3f(0.0f, 1.0f, 1.0f);
+    dibujaFondo();
+    // Vista 2D
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1, 1, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
+    // Asegurar estados correctos
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+
+    glColor3f(0.0f, 1.0f, 1.0f);
     dibujaTexto(-0.3f, 0.6f, "SELECCION DE MODO");
     dibujaTexto(-0.4f, 0.2f, "1. Jugador vs Jugador");
     dibujaTexto(-0.4f, 0.0f, "2. Jugador vs IA");
     dibujaTexto(-0.4f, -0.2f, "ESC. Volver");
 }
 
-void Interfaz::tecladoinicio(unsigned char key, int x, int y)
-{
-   
-    
-}
-
 void Interfaz::dibujaFondo()
 {
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, ETSIDI::getTexture("imagenes/fondo.png").id);
+    glBindTexture(GL_TEXTURE_2D, ETSIDI::getTexture("imagenes/estrella.png").id);
     glDisable(GL_LIGHTING);
     glBegin(GL_POLYGON);
     glColor3f(1, 1, 1);
@@ -47,18 +54,21 @@ void Interfaz::dibujaFondo()
 void Interfaz::dibujaMenu()
 {
     dibujaFondo();
-    //forzar vista 2D
-    //glMatrixMode(GL_PROJECTION);
-    //glLoadIdentity();
-    //gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
-    //glMatrixMode(GL_MODELVIEW);
+    // Vista 2D
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1, 1, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
+    // Asegurar estados correctos
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
     // Color verde
     glColor3f(0.0f, 1.0f, 0.0f);
-
     // Título
     dibujaTexto(-0.2f, 0.6f, "ARCHON");
-
     // Opciones
     dibujaTexto(-0.3f, 0.2f, "1. Jugar");
     dibujaTexto(-0.3f, 0.0f, "2. Instrucciones");
@@ -69,6 +79,7 @@ void Interfaz::dibujaMenu()
 void Interfaz::dibujaInstrucciones()
 {
     dibujaFondo();
+
    //forzar vista 2D
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
