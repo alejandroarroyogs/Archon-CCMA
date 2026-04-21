@@ -30,23 +30,28 @@ void Interfaz::tecladoinicio(unsigned char key, int x, int y)
 
 void Interfaz::dibujaFondo()
 {
-    // Si necesitas que el fondo esté siempre centrado:
-   // fondo.setPos(0, 0);
-
-    // Si el fondo sale muy pequeño, puedes ajustar el tamaño aquí:
-    // fondo.setSize(20, 15); 
-
-   // fondo.draw(); // Este método es el que pertenece a ETSIDI::Sprite
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, ETSIDI::getTexture("imagenes/fondo.png").id);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_POLYGON);
+    glColor3f(1, 1, 1);
+    glTexCoord2f(0, 1); glVertex2f(-1, -1);
+    glTexCoord2f(1, 1); glVertex2f(1, -1);
+    glTexCoord2f(1, 0); glVertex2f(1, 1);
+    glTexCoord2f(0, 0); glVertex2f(-1, 1);
+    glEnd();
+    glEnable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
 }
 
 void Interfaz::dibujaMenu()
 {
-   // dibujaFondo();
+    dibujaFondo();
     //forzar vista 2D
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
+    //glMatrixMode(GL_PROJECTION);
+    //glLoadIdentity();
+    //gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+    //glMatrixMode(GL_MODELVIEW);
 
     // Color verde
     glColor3f(0.0f, 1.0f, 0.0f);
@@ -63,7 +68,7 @@ void Interfaz::dibujaMenu()
 
 void Interfaz::dibujaInstrucciones()
 {
-    //dibujaFondo();
+    dibujaFondo();
    //forzar vista 2D
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
