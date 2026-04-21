@@ -62,5 +62,5 @@ void OnDraw(void)
 void OnTimer(int value)
 {
     mundo.Timer(value);
-    glutTimerFunc(25, OnTimer, 0);
+    glutTimerFunc(16, OnTimer, 0);
 }
