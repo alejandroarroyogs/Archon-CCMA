@@ -11,6 +11,8 @@ class Arena
 	void dibujaBarraVida(float x, float y, float z, int vidaActual, int vidaMax);
 
 public:
+	Arena();
+	virtual ~Arena();
 	void CargaCombate(Pieza* a, Pieza* d, int fA, int fD);
 	void dibujaCombate();
 	void tiempoCombate();
