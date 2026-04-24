@@ -1,21 +1,33 @@
 #pragma once
 #include "freeglut.h"
 #include "piezas.h"
+#include <ETSIDI.h>
+#include <vector>
+#include <string>
 
 class Arena
 {
 	Pieza* atacante;
 	Pieza* defensor;
+
 	int flashAtacante;
 	int flashDefensor;
-	void dibujaBarraVida(float x, float y, float z, int vidaActual, int vidaMax);
+
+	std::vector<std::string> fondos;
+	int fondoActual;
 
 public:
 	Arena();
 	virtual ~Arena();
-	void CargaCombate(Pieza* a, Pieza* d, int fA, int fD);
-	void dibujaCombate();
-	void tiempoCombate();
-	void EjecutarRondaCombate();
-	void ResolverCombate();
+	
+	//void inicializa(Pieza* a, Pieza* b);
+	void cargarFondos();
+	void elegirFondo();
+	void ponMusica();
+	void dibuja();
+	void dibujaFondo();
+	void dibujaPlataforma();
+	void dibujaUI();
+	void BarraVida();
+	
 };
