@@ -3,6 +3,7 @@
 #include "tablero.h"
 #include "piezas.h"
 #include "interfaz.h"
+#include "jugador.h" // AÑADIDO
 
 // Estado del juego
 enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO };
@@ -10,7 +11,11 @@ enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO };
 class Mundo
 {
     Estado estado;
-    int modoJuego=0;
+    int modoJuego;
+
+    // AÑADIDO: Punteros a los jugadores
+    jugador* j1;
+    jugador* j2;
 
 public:
     Mundo();
