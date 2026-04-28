@@ -27,46 +27,94 @@ public:
     virtual void DibujarCombate(float x, float z, bool flash) = 0;
 };
 
-class Soldado : public Pieza
+//Jedi/sith  7 por equipo
+class Jedi : public Pieza
 {
 public:
-    Soldado(int b);
+    Jedi(int b);
+
     bool MovimientoValido(int filaO, int colO, int filaD, int colD);
     void Dibujar(float x, float z);
     void DibujarCombate(float x, float z, bool flash);
 };
 
-class Mago : public Pieza
+//Baby yoda  1 en los buenos
+class BabyYoda : public Pieza
 {
 public:
-    Mago(int b);
+    BabyYoda(int b);
+
     bool MovimientoValido(int filaO, int colO, int filaD, int colD);
     void Dibujar(float x, float z);
     void DibujarCombate(float x, float z, bool flash);
 };
 
-class Arquero : public Pieza
+//Darth vader  1 en los  malos
+class DarthVader : public Pieza
 {
 public:
-    Arquero(int b);
+    DarthVader(int b);
+
     bool MovimientoValido(int filaO, int colO, int filaD, int colD);
     void Dibujar(float x, float z);
     void DibujarCombate(float x, float z, bool flash);
 };
 
-class Caballero : public Pieza
+//Caballero jedi/sith 2 por equipo
+class CaballeroJedi : public Pieza
 {
 public:
-    Caballero(int b);
+    CaballeroJedi(int b);
+
     bool MovimientoValido(int filaO, int colO, int filaD, int colD);
     void Dibujar(float x, float z);
     void DibujarCombate(float x, float z, bool flash);
 };
 
-class Rey : public Pieza
+
+//Tirador 2 por equipo
+class Tirador : public Pieza
 {
 public:
-    Rey(int b);
+    Tirador(int b);
+
+    bool MovimientoValido(int filaO, int colO, int filaD, int colD);
+    void Dibujar(float x, float z);
+    void DibujarCombate(float x, float z, bool flash);
+};
+
+
+
+//Skywalker/ kylo ren  2 por equipo
+class Skywalker : public Pieza
+{
+public:
+    Skywalker(int b);
+
+    bool MovimientoValido(int filaO, int colO, int filaD, int colD);
+    void Dibujar(float x, float z);
+    void DibujarCombate(float x, float z, bool flash);
+};
+
+//Drones 2 por equipo
+
+class Drone : public Pieza
+{
+public:
+    Drone(int b);
+
+    bool MovimientoValido(int filaO, int colO, int filaD, int colD);
+    void Dibujar(float x, float z);
+    void DibujarCombate(float x, float z, bool flash);
+};
+
+//Chewbacca/ Jabba the hut  2 por equipo
+
+class Chewbacca : public Pieza
+{
+public:
+    Chewbacca(int b);
+
     bool MovimientoValido(int filaO, int colO, int filaD, int colD);
     void Dibujar(float x, float z);
     void DibujarCombate(float x, float z, bool flash);
