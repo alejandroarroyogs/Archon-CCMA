@@ -20,6 +20,7 @@ public:
     void Dibujar();
     Interfaz interfaz;
     Tablero tablero;
+    Arena arena;
     
 
     void tecla(unsigned char key);

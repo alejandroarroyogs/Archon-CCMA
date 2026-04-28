@@ -3,7 +3,6 @@
 
 class Interfaz
 {
-    //ETSIDI::Sprite fondo{ "imagenes/fondo.png" };
     int modoJuego;
     int estado;
 public:

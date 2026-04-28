@@ -31,7 +31,8 @@ void Mundo::Dibujar()
         interfaz.eligeModo();
         break;
     case COMBATE:
-       //arena.dibujaCombate();
+        arena.ponMusica();
+        arena.dibuja();
         break;
     case GAMEOVER:
         break;

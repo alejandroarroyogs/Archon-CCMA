@@ -1,6 +1,4 @@
-#ifndef _HECHIZOS_H
-#define _HECHIZOS_H
-
+#pragma once
 #include <string>
 #include <vector>
 
@@ -68,4 +66,3 @@ public:
     bool aplica(Mundo& m, Pieza* p) override;
 };
 
-#endif
