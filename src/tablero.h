@@ -13,6 +13,10 @@ public:
 
     void inicializa();
     void dibuja();
+
+    // NUEVO: Función para manejar el teclado
+    void tecla(unsigned char key);
+
     //acceso a la variable tam_tablero
     static int getTamTablero();
 
@@ -24,4 +28,7 @@ public:
     int colOrigen;
 
     int turnoActual;
+
+    // NUEVO: Función para que la máquina haga su jugada
+    void moverIA();
 };

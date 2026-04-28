@@ -91,6 +91,41 @@ void Tablero::dibuja() {
             glVertex3f(x - 1.0f, 0.0f, z + 1.0f);
             glEnd();
 
+            // ==========================================
+            //                  NUEVO
+            // ==========================================
+
+            // 1. Cursor de movimiento (Cuadrado Rojo)
+            if (i == filaSeleccionada && j == colSeleccionada) {
+                glDisable(GL_LIGHTING);
+                glColor3ub(255, 0, 0); // Color Rojo
+                glLineWidth(4.0f);     // Grosor de la línea
+
+                glBegin(GL_LINE_LOOP);
+                // Ponemos la Y en 0.1f para que se dibuje un pelín por encima del suelo y se vea bien
+                glVertex3f(x - 1.0f, 0.1f, z - 1.0f);
+                glVertex3f(x + 1.0f, 0.1f, z - 1.0f);
+                glVertex3f(x + 1.0f, 0.1f, z + 1.0f);
+                glVertex3f(x - 1.0f, 0.1f, z + 1.0f);
+                glEnd();
+                glEnable(GL_LIGHTING);
+            }
+
+            // 2. Casilla origen cuando hemos agarrado una pieza (Cuadrado Verde)
+            if (piezaSeleccionada == true && i == filaOrigen && j == colOrigen) {
+                glDisable(GL_LIGHTING);
+                glColor3ub(0, 255, 0); // Color Verde
+                glLineWidth(4.0f);
+
+                glBegin(GL_LINE_LOOP);
+                glVertex3f(x - 1.0f, 0.1f, z - 1.0f);
+                glVertex3f(x + 1.0f, 0.1f, z - 1.0f);
+                glVertex3f(x + 1.0f, 0.1f, z + 1.0f);
+                glVertex3f(x - 1.0f, 0.1f, z + 1.0f);
+                glEnd();
+                glEnable(GL_LIGHTING);
+            }
+
             // Dibujamos la pieza si existe (Polimorfismo)
             if (casillas[i][j] != 0) {
                 casillas[i][j]->Dibujar(x, z);
@@ -106,3 +141,90 @@ int Tablero::getTamTablero()
     return TAM_TABLERO;
 }
 
+// ==========================================
+//                   NUEVO
+// ==========================================
+void Tablero::moverIA() {
+    // Solo se ejecuta si es el turno de la IA (Bando 2)
+    if (turnoActual != 2) return;
+
+    bool movido = false;
+
+    // 1. La IA escanea tu tablero 9x9 desde abajo hacia arriba
+    for (int i = TAM_TABLERO - 1; i >= 0; i--) {
+        for (int j = 0; j < TAM_TABLERO; j++) {
+
+            // 2. Busca si en esa casilla hay una pieza suya (Bando 2)
+            if (casillas[i][j] != 0 && casillas[i][j]->GetBando() == 2) {
+
+                // 3. Evalúa opciones: Intenta mover una casilla hacia arriba (i - 1)
+                // Comprueba que no se sale del tablero y que la casilla destino está vacía
+                if (i - 1 >= 0 && casillas[i - 1][j] == 0) {
+
+                    // Ejecuta el movimiento
+                    casillas[i - 1][j] = casillas[i][j]; // Copia el puntero a la nueva casilla
+                    casillas[i][j] = 0;                  // Borra la pieza de la casilla antigua
+
+                    movido = true;
+                    break; // Corta el bucle, ya ha movido
+                }
+            }
+        }
+        if (movido) break; // Si ya movió, sale del escaneo total
+    }
+
+    // 4. Pasa el turno de vuelta al jugador humano (Bando 1)
+    if (movido) {
+        turnoActual = 1;
+    }
+}
+
+// ==========================================
+//                  NUEVO
+// ==========================================
+void Tablero::tecla(unsigned char key) {
+    // 1. MOVER EL CURSOR (W, A, S, D)
+    if (key == 'w' || key == 'W') { if (filaSeleccionada < TAM_TABLERO - 1) filaSeleccionada++; }
+    if (key == 's' || key == 'S') { if (filaSeleccionada > 0) filaSeleccionada--; }
+    if (key == 'a' || key == 'A') { if (colSeleccionada > 0) colSeleccionada--; }
+    if (key == 'd' || key == 'D') { if (colSeleccionada < TAM_TABLERO - 1) colSeleccionada++; }
+
+    // 2. SELECCIONAR Y MOVER PIEZA (Barra Espaciadora)
+    if (key == ' ') {
+
+        // Fase A: Si no tenemos ninguna pieza agarrada, intentamos agarrar una
+        if (piezaSeleccionada == false) {
+            Pieza* p = casillas[filaSeleccionada][colSeleccionada];
+
+            // Comprobamos que hay pieza y que es de nuestro bando
+            if (p != 0 && p->GetBando() == turnoActual) {
+                piezaSeleccionada = true;
+                filaOrigen = filaSeleccionada;
+                colOrigen = colSeleccionada;
+            }
+        }
+        // Fase B: Si ya tenemos una pieza en la mano, intentamos soltarla
+        else {
+           
+            // (Más adelante aquí añadiremos lo de comer/iniciar combate)
+            if (casillas[filaSeleccionada][colSeleccionada] == 0) {
+
+                // Movemos el puntero a la nueva casilla
+                casillas[filaSeleccionada][colSeleccionada] = casillas[filaOrigen][colOrigen];
+                // Vaciamos la casilla de origen
+                casillas[filaOrigen][colOrigen] = 0;
+
+                // Soltamos la pieza
+                piezaSeleccionada = false;
+
+                // ¡Cambio de turno!
+                if (turnoActual == 1) turnoActual = 2;
+                else turnoActual = 1;
+            }
+            // Si el jugador se arrepiente y pulsa espacio sobre la misma pieza, se suelta
+            else if (filaSeleccionada == filaOrigen && colSeleccionada == colOrigen) {
+                piezaSeleccionada = false;
+            }
+        }
+    }
+}
