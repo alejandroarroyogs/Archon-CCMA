@@ -1,5 +1,6 @@
 #pragma once
 #include "freeglut.h"
+#include "hechizos.h"
 #include "piezas.h"
 #include <ETSIDI.h>
 #include <vector>
@@ -13,21 +14,15 @@ class Arena
 	int flashAtacante;
 	int flashDefensor;
 
-	std::vector<std::string> fondos;
-	int fondoActual;
-
 public:
 	Arena();
 	virtual ~Arena();
 	
-	//void inicializa(Pieza* a, Pieza* b);
-	void cargarFondos();
-	void elegirFondo();
+	void inicializa(Pieza* a, Pieza* b);
 	void ponMusica();
 	void dibuja();
-	void dibujaFondo();
 	void dibujaPlataforma();
-	void dibujaUI();
 	void BarraVida();
+	void dibujoHechizos();
 	
 };
