@@ -3,6 +3,7 @@
 #include "tablero.h"
 #include "piezas.h"
 #include "interfaz.h"
+#include "hechizos.h"
 #include "arena.h"
 #include "jugador.h" // NUEVO
 
@@ -53,34 +54,7 @@ void Mundo::Dibujar()
 
 void Mundo::tecla(unsigned char key)
 {
-    switch (estado)
-    {
-    case MENU:
-        if (key == '1') estado = SELEC_MODO;
-        else if (key == '2') estado = INSTRUC;
-        break;
-
-    case INSTRUC:
-        if (key == 13) estado = SELEC_MODO;
-        break;
-
-    case SELEC_MODO: // NUEVO Comprobar ahora con lo del ratón!!!!!!! 
-        if (j1) delete j1;
-        if (j2) delete j2;
-
-        if (key == '1') { // Jugador vs Jugador
-            modoJuego = 1;
-            j1 = new jugador(1, false); // Humano
-            j2 = new jugador(2, false); // Humano
-            estado = JUGANDO;
-        }
-        if (key == '2') { // Jugador vs IA
-            modoJuego = 2;
-            j1 = new jugador(1, false); // Humano
-            j2 = new jugador(2, true);  // IA
-            estado = JUGANDO;
-        }
-        break;
+    switch (estado){
 
     case JUGANDO: // NUEVO
         // Solo dejamos usar el teclado si el turno actual es de un jugador humano
@@ -107,4 +81,8 @@ void Mundo::Timer(int value) // NUEVO
             glutPostRedisplay();
         }
     }
+}
+
+void Mundo::cambiaCiclo()
+{
 }

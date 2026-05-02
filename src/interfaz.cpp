@@ -5,11 +5,13 @@
 
 void Interfaz::dibujaTexto(float x, float y, const char* texto)
 { 
+    glEnable(GL_TEXTURE_2D);
     //Usaré la fuente Starjedi.ttx
     ETSIDI::setTextColor(1.0f, 1.0f, 0.0f);
     ETSIDI::setFont("bin/Starjedi.ttf", 24);
     ETSIDI::printxy(texto, x, y);
-   
+    glDisable(GL_LIGHTING);
+    glBegin(GL_POLYGON);
 }
 void Interfaz::dibujaFondo()
 {

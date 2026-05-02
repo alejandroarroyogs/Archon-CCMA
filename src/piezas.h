@@ -1,5 +1,6 @@
 #pragma once
 
+
 class Pieza
 {
 
@@ -7,6 +8,7 @@ class Pieza
     int vida;
     int danio;
     friend class Arena;
+    friend class Hechizos;
 
 public:
     Pieza(int b, int v, int d);

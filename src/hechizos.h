@@ -1,13 +1,11 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "piezas.h"
 
-class Mundo; 
-class Pieza;
 
-/**
- * Clase Base Abstracta Hechizo
- */
+class Mundo;
+
 class Hechizo {
 protected:
     std::string _nombre;

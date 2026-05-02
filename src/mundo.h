@@ -18,6 +18,7 @@ class Mundo
     jugador* j1;
     jugador* j2;
 
+
 public:
     Mundo();
     virtual ~Mundo();
@@ -31,6 +32,7 @@ public:
 
     void tecla(unsigned char key);
     void Timer(int value);
+    void cambiaCiclo();
 
 };
 

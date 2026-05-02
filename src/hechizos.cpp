@@ -1,6 +1,6 @@
-#include "Hechizos.h"
-//#include "mundo.h" Cuando este programada la estructuración de los menus
-//#include "pieza.h" Cuando esten las piezas
+#include "hechizos.h"
+#include "mundo.h" //Cuando este programada la estructuración de los menus
+//Cuando esten las piezas
 
 bool HechizoTeleport::aplica(Mundo& m, Pieza* p) {
     if (_yaUsado || !p) return false;
@@ -10,7 +10,7 @@ bool HechizoTeleport::aplica(Mundo& m, Pieza* p) {
 
 bool HechizoHeal::aplica(Mundo& m, Pieza* p) {
     if (_yaUsado || !p) return false;
-    p->setVida(100); 
+    p->SetVida(100); 
     _yaUsado = true;
     return true;
 }

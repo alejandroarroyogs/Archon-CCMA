@@ -65,9 +65,9 @@ void Arena::BarraVida()
 {
     if (!atacante || !defensor) return;
 
-    float vidaA = (float)atacante->getVida() / atacante->getVidaMax(); 
+    float vidaA = (float)atacante->GetVida() / atacante->vida+1; 
     // se llama a la vida de uno
-    float vidaD = (float)defensor->getVida() / defensor->getVidaMax();
+    float vidaD = (float)defensor->GetVida() / defensor->vida+1;
     //se llama a la vida de dos
 
     //
