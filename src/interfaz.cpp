@@ -3,25 +3,14 @@
 #include "ETSIDI.h"
 #include "mundo.h"
 
-using ETSIDI::SpriteSequence;
-
-
-void Interfaz::eligeModo()
-{
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, ETSIDI::getTexture("imagenes/modojuego.png").id);
-    glDisable(GL_LIGHTING);
-    glBegin(GL_POLYGON);
-    glColor3f(1, 1, 1);
-    glTexCoord2f(0, 1); glVertex2f(-1, -1);
-    glTexCoord2f(1, 1); glVertex2f(1, -1);
-    glTexCoord2f(1, 0); glVertex2f(1, 1);
-    glTexCoord2f(0, 0); glVertex2f(-1, 1);
-    glEnd();
-    glEnable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
+void Interfaz::dibujaTexto(float x, float y, const char* texto)
+{ 
+    //Usaré la fuente Starjedi.ttx
+    ETSIDI::setTextColor(1.0f, 1.0f, 0.0f);
+    ETSIDI::setFont("bin/Starjedi.ttf", 24);
+    ETSIDI::printxy(texto, x, y);
+   
 }
-
 void Interfaz::dibujaFondo()
 {
     glEnable(GL_TEXTURE_2D);
@@ -38,66 +27,68 @@ void Interfaz::dibujaFondo()
     glDisable(GL_TEXTURE_2D);
 }
 
+bool Interfaz::clickEnRectangulo(int mouseX, int mouseY, int x, int y, int ancho, int alto)
+{
+    if (mouseX >= x && mouseX <= (x + ancho) && mouseY >= y && mouseY <= (y + alto)) {
+        return true;
+    }
+    return false;
+}
+
+void Interfaz::gestionRaton(int boton, int estado, int x, int y)
+{
+    if (boton == GLUT_LEFT_BUTTON && estado == GLUT_DOWN) {
+        //en el menu principal:
+        if (this->estado == MENU) {
+            if (clickEnRectangulo(x, y, 300, 250, 200, 50)) {
+                this->estado = SELEC_MODO; // Pasamos a la siguiente interfaz
+                ETSIDI::play("bin/click.wav");
+            }
+        }
+        else if (clickEnRectangulo(x, y, 300, 350, 200, 50)) {
+            this->estado = INSTRUC;
+        }
+    }
+    //seleccion de modo
+    else if(this->estado==SELEC_MODO){
+        if (clickEnRectangulo(x, y, 100, 300, 250, 100)) {
+            this->modoJuego = 1; // 1 jugador
+            this->estado = JUGANDO;
+        }
+        else if (clickEnRectangulo(x, y, 450, 300, 250, 100)) {
+            this->modoJuego = 2; // 2 jugadores
+            this->estado = JUGANDO;
+        }
+    }
+    //si estamos en instrucciones
+    else if (this->estado == INSTRUC) {
+        // Un botón de "VOLVER" en la esquina
+        if (clickEnRectangulo(x, y, 10, 10, 100, 50)) {
+            this->estado = MENU;
+        }
+    }
+}
 void Interfaz::dibujaMenu()
 {
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, ETSIDI::getTexture("imagenes/menu.png").id);
-    glDisable(GL_LIGHTING);
-    glBegin(GL_POLYGON);
-    glColor3f(1, 1, 1);
-    glTexCoord2f(0, 1); glVertex2f(-1, -1);
-    glTexCoord2f(1, 1); glVertex2f(1, -1);
-    glTexCoord2f(1, 0); glVertex2f(1, 1);
-    glTexCoord2f(0, 0); glVertex2f(-1, 1);
-    glEnd();
-    glEnable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
+    dibujaFondo();
+    dibujaTexto(0, 5, "ARCHON CONTRATACA");
+    ETSIDI::setFont("bin/StarJedi.ttf", 18);
+    dibujaTexto(0, 0, "JUGAR");
+    dibujaTexto(0, -2, "INSTRUCCIONES");
+}
+void Interfaz::eligeModo()
+{
+    dibujaFondo();
+    dibujaTexto(0, 5, "MODO DE JUEGO");
+    ETSIDI::setFont("bin/StarJedi.ttf", 18);
+    dibujaTexto(-4, 0, "JEDI");
+    dibujaTexto(4, -2, "JEDI vs SITH");
+
 }
 
 void Interfaz::dibujaInstrucciones()
 {
     dibujaFondo();
-    //reset
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(-1, 1, -1, 1);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glColor3f(1.0f, 1.0f, 0.0f); // Amarillo Star Wars
-
-    // Título
-    dibujaTexto(-0.6f, 0.8f, "INSTRUCCIONES DEL JUEGO");
-
-    // Objetivo
-    dibujaTexto(-0.9f, 0.55f, "OBJETIVO:");
-    dibujaTexto(-0.9f, 0.45f, "Derrota todas las piezas del enemigo.");
-
-    // Tablero
-    dibujaTexto(-0.9f, 0.25f, "TABLERO:");
-    dibujaTexto(-0.9f, 0.15f, "- Selecciona una pieza y muevela.");
-    dibujaTexto(-0.9f, 0.05f, "- Si coincide con una pieza rival, hay combate.");
-
-    // Combate
-    dibujaTexto(-0.9f, -0.15f, "COMBATE:");
-    dibujaTexto(-0.9f, -0.25f, "- La pieza que sobreviva gana la casilla.");
-
-    // Controles
-    dibujaTexto(-0.9f, -0.45f, "CONTROLES:");
-    dibujaTexto(-0.9f, -0.55f, "- Flechas: mover cursor.");
-    dibujaTexto(-0.9f, -0.65f, "- Enter: seleccionar.");
-   
-
-
+    //Tengo que redactar mejorlas instrucciones
 }
-void Interfaz::dibujaTexto(float x, float y, const char* texto)
-{ 
-    glRasterPos2f(x, y);
-    while (*texto)
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *texto++);
-}
+

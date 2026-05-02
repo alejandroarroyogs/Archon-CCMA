@@ -12,7 +12,8 @@ Mundo::Mundo() {
     modoJuego = 0; 
     j1 = 0;
     j2 = 0;
-  // extern int modoJuego; // En lugar de tener la variable flotando globalmente, se convierte modoJuego en un atributo privado de la clase Mundo.
+  // extern int modoJuego; 
+  // En lugar de tener la variable flotando globalmente, se convierte modoJuego en un atributo privado de la clase Mundo.
 }
 
 Mundo::~Mundo() {
@@ -63,7 +64,7 @@ void Mundo::tecla(unsigned char key)
         if (key == 13) estado = SELEC_MODO;
         break;
 
-    case SELEC_MODO: // NUEVO 
+    case SELEC_MODO: // NUEVO Comprobar ahora con lo del ratón!!!!!!! 
         if (j1) delete j1;
         if (j2) delete j2;
 
@@ -104,4 +105,6 @@ void Mundo::Timer(int value) // NUEVO
         if (j2 != 0 && j2->esIA() && tablero.turnoActual == 2) {
             tablero.moverIA(); // La función que creamos antes
             glutPostRedisplay();
-};
+        }
+    }
+}

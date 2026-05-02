@@ -6,6 +6,7 @@ class Pieza
     int bando; // 1 = azul, 2 = rojo
     int vida;
     int danio;
+    friend class Arena;
 
 public:
     Pieza(int b, int v, int d);

@@ -1,4 +1,5 @@
 #pragma once
+#include "arena.h"
 #include "freeglut.h"
 #include "tablero.h"
 #include "piezas.h"
