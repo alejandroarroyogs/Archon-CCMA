@@ -104,4 +104,6 @@ void Mundo::Timer(int value) // NUEVO
         if (j2 != 0 && j2->esIA() && tablero.turnoActual == 2) {
             tablero.moverIA(); // La función que creamos antes
             glutPostRedisplay();
-};
+        }
+    }
+}
