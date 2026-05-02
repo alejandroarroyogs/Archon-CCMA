@@ -1,4 +1,5 @@
 #include "arena.h"
+#include "piezas.h"
 
 //Constructor arena
 Arena::Arena()
@@ -64,9 +65,9 @@ void Arena::BarraVida()
 {
     if (!atacante || !defensor) return;
 
-    //float vidaA = (float)atacante->getVida() / atacante->getVidaMax(); 
+    float vidaA = (float)atacante->getVida() / atacante->getVidaMax(); 
     // se llama a la vida de uno
-    //float vidaD = (float)defensor->getVida() / defensor->getVidaMax();
+    float vidaD = (float)defensor->getVida() / defensor->getVidaMax();
     //se llama a la vida de dos
 
     //
