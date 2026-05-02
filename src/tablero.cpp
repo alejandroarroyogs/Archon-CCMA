@@ -33,18 +33,51 @@ Tablero::~Tablero() {
 // Inicializa las piezas iniciales
 void Tablero::inicializa() {
     // Bando AZUL (1)
-    casillas[0][0] = new Soldado(1);
-    casillas[0][1] = new Mago(1);
-    casillas[0][2] = new Arquero(1);
-    casillas[0][3] = new Caballero(1);
-    casillas[0][4] = new Rey(1);
+    for (int j = 1; j <= 7; j++)
+    {
+        casillas[1][j] = new Jedi(1);
+    }
+
+    casillas[1][0] = new Drone(1);
+    casillas[1][8] = new Drone(1);
+
+    casillas[0][0] = new Skywalker(1);
+    casillas[0][8] = new Skywalker(1);
+
+    casillas[0][1] = new Chewbacca(1);
+    casillas[0][7] = new Chewbacca(1);
+
+    casillas[0][2] = new Tirador(1);
+    casillas[0][6] = new Tirador(1);
+
+    casillas[0][3] = new CaballeroJedi(1);
+    casillas[0][5] = new CaballeroJedi(1);
+
+    casillas[0][4] = new BabyYoda(1);
+
 
     // Bando ROJO (2)
-    casillas[8][4] = new Rey(2);
-    casillas[8][5] = new Caballero(2);
-    casillas[8][6] = new Arquero(2);
-    casillas[8][7] = new Mago(2);
-    casillas[8][8] = new Soldado(2);
+    for (int j = 1; j <= 7; j++)
+    {
+        casillas[7][j] = new Jedi(2);
+    }
+
+    casillas[7][0] = new Drone(2);
+    casillas[7][8] = new Drone(2);
+
+    casillas[8][0] = new Skywalker(2);
+    casillas[8][8] = new Skywalker(2);
+
+    casillas[8][1] = new Chewbacca(2);
+    casillas[8][7] = new Chewbacca(2);
+
+    casillas[8][2] = new Tirador(2);
+    casillas[8][6] = new Tirador(2);
+
+    casillas[8][3] = new CaballeroJedi(2);
+    casillas[8][5] = new CaballeroJedi(2);
+
+    casillas[8][4] = new DarthVader(2);
 }
 
 // Dibuja el tablero y manda a las piezas a dibujarse a sí mismas

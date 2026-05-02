@@ -1,5 +1,6 @@
 #include "freeglut.h"
 #include "piezas.h"
+#include <cmath>
 
 // ====================
 // CLASE BASE PIEZA
@@ -58,15 +59,13 @@ bool Pieza::EsRoja()
     return bando == 2;
 }
 
-// ====================
-// SOLDADO
-// ====================
-
-Soldado::Soldado(int b) : Pieza(b, 10, 4)
+//Jedi 
+//constructor
+Jedi::Jedi(int b) : Pieza(b, 5, 2)
 {
 }
-
-bool Soldado::MovimientoValido(int filaO, int colO, int filaD, int colD)
+//1 casilla en cualquier direccion
+bool Jedi::MovimientoValido(int filaO, int colO, int filaD, int colD)
 {
     int df = filaD - filaO;
     int dc = colD - colO;
@@ -74,16 +73,13 @@ bool Soldado::MovimientoValido(int filaO, int colO, int filaD, int colD)
     if (df == 0 && dc == 0)
         return false;
 
-    int absDf = df < 0 ? -df : df;
-    int absDc = dc < 0 ? -dc : dc;
 
-    if (absDf <= 1 && absDc <= 1)
+    if (abs(df) <= 1 && abs(dc) <= 1)
         return true;
 
     return false;
 }
-
-void Soldado::Dibujar(float x, float z)
+void Jedi::Dibujar(float x, float z)
 {
     glPushMatrix();
 
@@ -92,16 +88,16 @@ void Soldado::Dibujar(float x, float z)
     if (EsAzul())
         glColor3f(0.2f, 0.8f, 1.0f);
     else
-        glColor3f(1.0f, 0.3f, 0.3f);
+        glColor3f(1.0f, 0.2f, 0.2f);
 
-    glutSolidCube(1.2f);
+    glutSolidCube(1.0f);
 
     glPopMatrix();
 }
-
-void Soldado::DibujarCombate(float x, float z, bool flash)
+void Jedi::DibujarCombate(float x, float z, bool flash)
 {
     glPushMatrix();
+
     glTranslatef(x, 0.8f, z);
 
     if (flash)
@@ -109,145 +105,158 @@ void Soldado::DibujarCombate(float x, float z, bool flash)
     else if (EsAzul())
         glColor3f(0.2f, 0.8f, 1.0f);
     else
-        glColor3f(1.0f, 0.3f, 0.3f);
+        glColor3f(1.0f, 0.2f, 0.2f);
 
-    glutSolidCube(1.2f);
+    glutSolidCube(1.0f);
+
     glPopMatrix();
 }
 
-// ====================
-// MAGO
-// ====================
 
-Mago::Mago(int b) : Pieza(b, 8, 5)
+//Baby yoda
+BabyYoda::BabyYoda(int b) : Pieza(b, 25, 6)
 {
 }
 
-bool Mago::MovimientoValido(int filaO, int colO, int filaD, int colD)
+//2 casillas en cualquier direccion
+bool BabyYoda::MovimientoValido(int filaO, int colO, int filaD, int colD)
 {
-    int df = filaD - filaO;
-    int dc = colD - colO;
+    int df = abs(filaD - filaO);
+    int dc = abs(colD - colO);
 
-    if (df == 0 && dc == 0)
-        return false;
 
-    int absDf = df < 0 ? -df : df;
-    int absDc = dc < 0 ? -dc : dc;
-
-    if (absDf <= 2 && absDc <= 2)
+    if (df <= 2 && dc <= 2 && (df != 0 || dc != 0))
         return true;
 
     return false;
 }
 
-void Mago::Dibujar(float x, float z)
+void BabyYoda::Dibujar(float x, float z)
+{
+    glPushMatrix();
+
+    glTranslatef(x, 0.8f, z);
+
+    glColor3f(0.3f, 1.0f, 0.3f);
+
+    glutSolidSphere(0.6, 20, 20);
+
+    glPopMatrix();
+}
+
+void BabyYoda::DibujarCombate(float x, float z, bool flash)
+{
+    Dibujar(x, z);
+}
+
+//Darth vader
+DarthVader::DarthVader(int b) : Pieza(b, 30, 7)
+{
+}
+//Movimiento estilo reina ajedrez
+bool DarthVader::MovimientoValido(int filaO, int colO, int filaD, int colD)
+{
+    int df = filaD - filaO;
+    int dc = colD - colO;
+
+
+    if (df == 0 || dc == 0)
+        return true;
+
+    if (abs(df) == abs(dc))
+        return true;
+
+    return false;
+}
+
+void DarthVader::Dibujar(float x, float z)
+{
+    glPushMatrix();
+
+    glTranslatef(x, 0.8f, z);
+
+    glColor3f(0.1f, 0.1f, 0.1f);
+
+    glutSolidCone(0.6, 1.2, 20, 20);
+
+    glPopMatrix();
+}
+void DarthVader::DibujarCombate(float x, float z, bool flash)
+{
+    Dibujar(x, z);
+}
+
+//Caballero jedi/sith 
+
+CaballeroJedi::CaballeroJedi(int b) : Pieza(b, 10, 4)
+{
+}
+//Se mueve recto en todas las direcciones de dos en dos
+bool CaballeroJedi::MovimientoValido(int filaO, int colO, int filaD, int colD)
+{
+    int df = filaD - filaO;
+    int dc = colD - colO;
+
+
+    if (df == 0 && abs(dc) <= 2 && dc != 0)
+        return true;
+
+
+    if (dc == 0 && abs(df) <= 2 && df != 0)
+        return true;
+
+    return false;
+}
+//Forma toroide
+void CaballeroJedi::Dibujar(float x, float z)
 {
     glPushMatrix();
 
     glTranslatef(x, 0.8f, z);
 
     if (EsAzul())
-        glColor3f(0.0f, 0.4f, 1.0f);
+        glColor3f(0.0f, 0.0f, 1.0f);
     else
-        glColor3f(0.8f, 0.0f, 0.8f);
+        glColor3f(1.0f, 0.0f, 0.0f);
 
-    glutSolidSphere(0.7f, 20, 20);
+
+    glRotatef(90, 1, 0, 0);
+    glutSolidTorus(0.2, 0.5, 20, 20);
 
     glPopMatrix();
 }
-
-void Mago::DibujarCombate(float x, float z, bool flash)
+void CaballeroJedi::DibujarCombate(float x, float z, bool flash)
 {
-    glPushMatrix();
-    glTranslatef(x, 0.8f, z);
-
-    if (flash)
-        glColor3f(1.0f, 1.0f, 1.0f);
-    else if (EsAzul())
-        glColor3f(0.0f, 0.4f, 1.0f);
-    else
-        glColor3f(0.8f, 0.0f, 0.8f);
-
-    glutSolidSphere(0.7f, 20, 20);
-    glPopMatrix();
+    Dibujar(x, z);
 }
 
-// ====================
-// ARQUERO
-// ====================
-
-Arquero::Arquero(int b) : Pieza(b, 7, 4) {}
-
-bool Arquero::MovimientoValido(int filaO, int colO, int filaD, int colD)
+//Tirador
+Tirador::Tirador(int b) : Pieza(b, 6, 5)
 {
-    int df = filaD - filaO;
-    int dc = colD - colO;
+}
+//Se mueve  casilla en cualquier direccion o dos en linea recta
+bool Tirador::MovimientoValido(int filaO, int colO, int filaD, int colD)
+{
+    int df = abs(filaD - filaO);
+    int dc = abs(colD - colO);
 
-    int absDf = df < 0 ? -df : df;
-    int absDc = dc < 0 ? -dc : dc;
 
-    // Solo recto (tipo torre) hasta 3 casillas
-    if ((df == 0 || dc == 0) && (absDf <= 3 && absDc <= 3))
+    if (df <= 1 && dc <= 1 && (df != 0 || dc != 0))
+        return true;
+
+
+    if ((df == 2 && dc == 0) || (df == 0 && dc == 2))
         return true;
 
     return false;
 }
 
-void Arquero::Dibujar(float x, float z)
+//Mezcla de cubo y cono
+
+void Tirador::Dibujar(float x, float z)
 {
     glPushMatrix();
-    glTranslatef(x, 0.8f, z);
 
-    if (EsAzul())
-        glColor3f(0.0f, 1.0f, 0.5f);
-    else
-        glColor3f(1.0f, 0.5f, 0.0f);
-
-    glutSolidCone(0.7f, 1.5f, 20, 20);
-
-    glPopMatrix();
-}
-
-void Arquero::DibujarCombate(float x, float z, bool flash)
-{
-    glPushMatrix();
-    glTranslatef(x, 0.8f, z);
-
-    if (flash)
-        glColor3f(1.0f, 1.0f, 1.0f);
-    else if (EsAzul())
-        glColor3f(0.0f, 1.0f, 0.5f);
-    else
-        glColor3f(1.0f, 0.5f, 0.0f);
-
-    glutSolidCone(0.7f, 1.5f, 20, 20);
-    glPopMatrix();
-}
-
-// ====================
-// CABALLERO
-// ====================
-
-Caballero::Caballero(int b) : Pieza(b, 12, 3) {}
-
-bool Caballero::MovimientoValido(int filaO, int colO, int filaD, int colD)
-{
-    int df = filaD - filaO;
-    int dc = colD - colO;
-
-    int absDf = df < 0 ? -df : df;
-    int absDc = dc < 0 ? -dc : dc;
-
-    // Movimiento en L
-    if ((absDf == 2 && absDc == 1) || (absDf == 1 && absDc == 2))
-        return true;
-
-    return false;
-}
-
-void Caballero::Dibujar(float x, float z)
-{
-    glPushMatrix();
     glTranslatef(x, 0.8f, z);
 
     if (EsAzul())
@@ -255,81 +264,170 @@ void Caballero::Dibujar(float x, float z)
     else
         glColor3f(1.0f, 0.3f, 0.3f);
 
-    glutSolidTeapot(0.6f);
+
+    glutSolidCube(0.6);
+
+
+    glTranslatef(0, 0.5f, 0);
+    glutSolidCone(0.3, 0.8, 20, 20);
 
     glPopMatrix();
 }
 
-void Caballero::DibujarCombate(float x, float z, bool flash)
+void Tirador::DibujarCombate(float x, float z, bool flash)
 {
-    glPushMatrix();
-    glTranslatef(x, 0.8f, z);
-
-    if (flash)
-        glColor3f(1.0f, 1.0f, 1.0f);
-    else if (EsAzul())
-        glColor3f(0.3f, 0.3f, 1.0f);
-    else
-        glColor3f(1.0f, 0.3f, 0.3f);
-
-    glutSolidTeapot(0.6f);
-    glPopMatrix();
+    Dibujar(x, z);
 }
 
-// ====================
-// REY
-// ====================
-
-Rey::Rey(int b) : Pieza(b, 15, 4) {}
-
-bool Rey::MovimientoValido(int filaO, int colO, int filaD, int colD)
+//Skywalker/ kylo ren
+Skywalker::Skywalker(int b) : Pieza(b, 12, 5)
 {
-    int df = filaD - filaO;
-    int dc = colD - colO;
+}
+//se mueve 2 casillas en cualuiqe direccion
+bool Skywalker::MovimientoValido(int filaO, int colO, int filaD, int colD)
+{
+    int df = abs(filaD - filaO);
+    int dc = abs(colD - colO);
 
-    int absDf = df < 0 ? -df : df;
-    int absDc = dc < 0 ? -dc : dc;
 
-    if (absDf <= 1 && absDc <= 1)
+    if (df <= 2 && dc <= 2 && (df != 0 || dc != 0))
         return true;
 
     return false;
 }
 
-void Rey::Dibujar(float x, float z)
+void Skywalker::Dibujar(float x, float z)
 {
     glPushMatrix();
-    glTranslatef(x, 1.0f, z);
+
+    glTranslatef(x, 0.8f, z);
 
     if (EsAzul())
-        glColor3f(1.0f, 1.0f, 0.0f);
+        glColor3f(0.5f, 0.5f, 1.0f);
     else
-        glColor3f(1.0f, 0.0f, 0.0f);
+        glColor3f(1.0f, 0.5f, 0.5f);
 
-    glutSolidOctahedron();
+
+    glutSolidCube(0.8);
+
+
+    glTranslatef(0, 0.6f, 0);
+    glutSolidSphere(0.3, 20, 20);
 
     glPopMatrix();
 }
 
-void Rey::DibujarCombate(float x, float z, bool flash)
+void Skywalker::DibujarCombate(float x, float z, bool flash)
+{
+    Dibujar(x, z);
+}
+
+
+//drones
+
+Drone::Drone(int b) : Pieza(b, 4, 2)
+{
+}
+//· casillas en cualquier direccion
+bool Drone::MovimientoValido(int filaO, int colO, int filaD, int colD)
+{
+    int df = filaD - filaO;
+    int dc = colD - colO;
+
+    int adf = abs(df);
+    int adc = abs(dc);
+
+
+    if ((df == 0 && adc <= 3 && dc != 0) ||
+        (dc == 0 && adf <= 3 && df != 0))
+        return true;
+
+
+    if (adf == adc && adf <= 3)
+        return true;
+
+    return false;
+}
+
+void Drone::Dibujar(float x, float z)
 {
     glPushMatrix();
-    glTranslatef(x, 1.0f, z);
 
-    if (flash)
-        glColor3f(1.0f, 1.0f, 1.0f);
-    else if (EsAzul())
-        glColor3f(1.0f, 1.0f, 0.0f);
+
+    glTranslatef(x, 1.2f, z);
+
+    if (EsAzul())
+        glColor3f(0.2f, 0.8f, 1.0f);
     else
-        glColor3f(1.0f, 0.0f, 0.0f);
+        glColor3f(1.0f, 0.4f, 0.4f);
 
-    glutSolidOctahedron();
+
+    glutSolidSphere(0.3, 20, 20);
+
+
+    glColor3f(0.8f, 0.8f, 0.8f);
+
+    glPushMatrix();
+    glScalef(1.5f, 0.1f, 0.1f);
+    glutSolidCube(1.0f);
+    glPopMatrix();
+
+    glPushMatrix();
+    glScalef(0.1f, 0.1f, 1.5f);
+    glutSolidCube(1.0f);
+    glPopMatrix();
+
+    glPopMatrix();
+}
+void Drone::DibujarCombate(float x, float z, bool flash)
+{
+    Dibujar(x, z);
+}
+//Chewbacca/ Jabba the hut
+
+Chewbacca::Chewbacca(int b) : Pieza(b, 22, 4)
+{
+}
+
+//se mueve 1 casilla en cualquier direccion
+bool Chewbacca::MovimientoValido(int filaO, int colO, int filaD, int colD)
+{
+    int df = abs(filaD - filaO);
+    int dc = abs(colD - colO);
+
+
+    if (df <= 1 && dc <= 1 && (df != 0 || dc != 0))
+        return true;
+
+    return false;
+}
+void Chewbacca::Dibujar(float x, float z)
+{
+    glPushMatrix();
+
+    glTranslatef(x, 0.8f, z);
+
+
+    if (EsAzul())
+        glColor3f(0.6f, 0.4f, 0.2f);
+    else
+        glColor3f(0.4f, 0.2f, 0.1f);
+
+
+    glScalef(1.2f, 1.4f, 1.2f);
+    glutSolidCube(1.0f);
+
     glPopMatrix();
 }
 
-// ====================
-// AUXILIARES
-// ====================
+void Chewbacca::DibujarCombate(float x, float z, bool flash)
+{
+    Dibujar(x, z);
+}
+
+
+
+
 
 bool EsAzul(Pieza* pieza)
 {
@@ -346,3 +444,4 @@ bool EsRoja(Pieza* pieza)
 
     return pieza->EsRoja();
 }
+   
