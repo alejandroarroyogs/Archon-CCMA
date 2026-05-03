@@ -84,12 +84,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>.vs\tmp\$(Platform)\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)\bin</OutDir>
+    <OutDir>$(SolutionDir)\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>.vs\tmp\$(Platform)\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)\bin</OutDir>
+    <OutDir>$(SolutionDir)\bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -167,6 +167,7 @@
     <ClCompile Include="src\hechizos.cpp" />
     <ClCompile Include="src\interfaz.cpp" />
     <ClCompile Include="src\jugador.cpp" />
+    <ClCompile Include="src\modeloobj.cpp" />
     <ClCompile Include="src\mundo.cpp" />
     <ClCompile Include="src\Archon.cpp" />
     <ClCompile Include="src\piezas.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="src\hechizos.h" />
     <ClInclude Include="src\interfaz.h" />
     <ClInclude Include="src\jugador.h" />
+    <ClInclude Include="src\modeloobj.h" />
     <ClInclude Include="src\mundo.h" />
     <ClInclude Include="src\piezas.h" />
     <ClInclude Include="src\tablero.h" />

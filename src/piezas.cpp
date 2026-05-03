@@ -59,12 +59,12 @@ bool Pieza::EsRoja()
     return bando == 2;
 }
 
-//Jedi 
-//constructor
-Jedi::Jedi(int b) : Pieza(b, 5, 2)
+// JEDI 
+
+Jedi::Jedi(int b) : Pieza(b, 5, 2), modelo("recursos/jedi.obj")
 {
 }
-//1 casilla en cualquier direccion
+
 bool Jedi::MovimientoValido(int filaO, int colO, int filaD, int colD)
 {
     int df = filaD - filaO;
@@ -83,22 +83,29 @@ void Jedi::Dibujar(float x, float z)
 {
     glPushMatrix();
 
-    glTranslatef(x, 0.8f, z);
+    glTranslatef(x, 0.0f, z);
+
+    glDisable(GL_LIGHTING);
 
     if (EsAzul())
-        glColor3f(0.2f, 0.8f, 1.0f);
+        glColor3f(0.2f, 0.8f, 1.0f); // Azul claro brillante
     else
-        glColor3f(1.0f, 0.2f, 0.2f);
+        glColor3f(1.0f, 0.2f, 0.2f); // Rojo brillante
 
-    glutSolidCube(1.0f);
+    glScalef(2.5f, 2.5f, 2.5f);
+
+    modelo.dibuja();
+
+    glEnable(GL_LIGHTING);
 
     glPopMatrix();
 }
+
 void Jedi::DibujarCombate(float x, float z, bool flash)
 {
     glPushMatrix();
 
-    glTranslatef(x, 0.8f, z);
+    glTranslatef(x, 0.0f, z);
 
     if (flash)
         glColor3f(1.0f, 1.0f, 1.0f);
@@ -107,7 +114,7 @@ void Jedi::DibujarCombate(float x, float z, bool flash)
     else
         glColor3f(1.0f, 0.2f, 0.2f);
 
-    glutSolidCube(1.0f);
+    modelo.dibuja();
 
     glPopMatrix();
 }
