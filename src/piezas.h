@@ -1,5 +1,5 @@
 #pragma once
-
+#include "modeloobj.h"
 
 class Pieza
 {
@@ -33,6 +33,8 @@ public:
 //Jedi/sith  7 por equipo
 class Jedi : public Pieza
 {
+    ModeloOBJ modelo;
+
 public:
     Jedi(int b);
 

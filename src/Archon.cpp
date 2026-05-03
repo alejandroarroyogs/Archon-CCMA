@@ -11,6 +11,9 @@ void OnTimer(int value);
 void OnKeyboardDown(unsigned char key, int x, int y) {
     mundo.tecla(key);
 }
+void OnMouseClick(int button, int state, int x, int y) {
+    mundo.interfaz.gestionRaton(button, state, x, y); 
+}
 
 int main(int argc, char* argv[])
 {
@@ -20,6 +23,10 @@ int main(int argc, char* argv[])
     glutCreateWindow("ARCHON");
 
     glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_LIGHTING);      
+    glEnable(GL_LIGHT0);         
+    glEnable(GL_COLOR_MATERIAL);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -33,10 +40,11 @@ int main(int argc, char* argv[])
     glutDisplayFunc(OnDraw);
     glutTimerFunc(25, OnTimer, 0);
     glutKeyboardFunc(OnKeyboardDown);
+    glutMouseFunc(OnMouseClick);
+
+    mundo.Inicializar();
 
     glutMainLoop();
-
-
 
     return 0;
 }
