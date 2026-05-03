@@ -9,7 +9,7 @@
 
 Mundo::Mundo() : interfaz()
 {
-    estado = JUGANDO;
+    estado = MENU;
     // NUEVO
     modoJuego = 0; 
     j1 = 0;

@@ -8,7 +8,7 @@ void Interfaz::dibujaTexto(float x, float y, const char* texto)
     glEnable(GL_TEXTURE_2D);
     //Usaré la fuente Starjedi.ttx
     ETSIDI::setTextColor(1.0f, 1.0f, 0.0f);
-    ETSIDI::setFont("bin/starjedi.ttf", 24);
+    ETSIDI::setFont("fuentes/Starjedi.ttf", 60);
     ETSIDI::printxy(texto, x, y);
     glDisable(GL_TEXTURE_2D); // Mejor desactivarlo al salir
 }
@@ -74,10 +74,10 @@ void Interfaz::gestionRaton(int boton, int estado, int x, int y)
 void Interfaz::dibujaMenu()
 {
     dibujaFondo();
-    dibujaTexto(0, 5, "ARCHON CONTRATACA");
-    ETSIDI::setFont("bin/starjedi.ttf", 18);
+    dibujaTexto(300, 500, "ARCHON CONTRATACA");
+    ETSIDI::setFont("bin/starjedi.ttf", 40);
     dibujaTexto(0, 0, "JUGAR");
-    dibujaTexto(0, -2, "INSTRUCCIONES");
+    dibujaTexto(0, -300, "INSTRUCCIONES");
 }
 void Interfaz::eligeModo()
 {
