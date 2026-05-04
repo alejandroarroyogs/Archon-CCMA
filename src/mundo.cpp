@@ -60,11 +60,11 @@ void Mundo::tecla(unsigned char key)
 
     case JUGANDO: // NUEVO
         // Solo dejamos usar el teclado si el turno actual es de un jugador humano
-      //-  if ((tablero.turnoActual == 1 && j1 != 0 && !j1->esIA()) ||
-      //-      (tablero.turnoActual == 2 && j2 != 0 && !j2->esIA()))
-      // -  {
+     if ((tablero.turnoActual == 1 && j1 != 0 && !j1->esIA()) ||
+        (tablero.turnoActual == 2 && j2 != 0 && !j2->esIA()))
+     {
             tablero.tecla(key);
-      //-  }
+      }
         break;
     }
 
