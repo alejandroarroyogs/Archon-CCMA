@@ -107,6 +107,8 @@ public:
 
 class Drone : public Pieza
 {
+    ModeloOBJ modelo;
+
 public:
     Drone(int b);
 

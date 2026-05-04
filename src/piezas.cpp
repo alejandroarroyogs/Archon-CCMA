@@ -273,12 +273,14 @@ void Tirador::Dibujar(float x, float z)
 
     glTranslatef(x, 0.0f, z);
 
-    if (EsAzul()) {
-        glTranslatef(0.5f, 0.0f, 0.0f);
+    if (EsRoja()) {
+        glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+   
+        glTranslatef(0.6f, 0.0f, 0.2f);
     }
     else {
-        glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-        glTranslatef(-0.5f, 0.0f, 0.0f);
+        
+        glTranslatef(0.6f, 0.0f, 0.2f);
     }
 
     glDisable(GL_LIGHTING);
@@ -288,8 +290,8 @@ void Tirador::Dibujar(float x, float z)
     glScalef(3.5f, 3.5f, 3.5f);
 
     modelo.dibuja();
-    glEnable(GL_LIGHTING);
 
+    glEnable(GL_LIGHTING);
     glPopMatrix();
 }
 
@@ -344,7 +346,7 @@ void Skywalker::DibujarCombate(float x, float z, bool flash)
 
 //drones
 
-Drone::Drone(int b) : Pieza(b, 4, 2)
+Drone::Drone(int b) : Pieza(b, 4, 2), modelo("recursos/drone.obj")
 {
 }
 //· casillas en cualquier direccion
@@ -372,31 +374,23 @@ void Drone::Dibujar(float x, float z)
 {
     glPushMatrix();
 
+    glTranslatef(x, 0.0f, z);
 
-    glTranslatef(x, 1.2f, z);
+    if (EsRoja()) {
+        glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+    }
 
-    if (EsAzul())
-        glColor3f(0.2f, 0.8f, 1.0f);
-    else
-        glColor3f(1.0f, 0.4f, 0.4f);
+    glDisable(GL_LIGHTING);
+    if (EsAzul()) glColor3f(0.2f, 0.8f, 1.0f);
+    else glColor3f(1.0f, 0.4f, 0.4f);
 
+    glScalef(0.03f, 0.03f, 0.03f);
 
-    glutSolidSphere(0.3, 20, 20);
+    modelo.dibuja();
 
-
-    glColor3f(0.8f, 0.8f, 0.8f);
-
-    glPushMatrix();
-    glScalef(1.5f, 0.1f, 0.1f);
-    glutSolidCube(1.0f);
+    glEnable(GL_LIGHTING);
     glPopMatrix();
 
-    glPushMatrix();
-    glScalef(0.1f, 0.1f, 1.5f);
-    glutSolidCube(1.0f);
-    glPopMatrix();
-
-    glPopMatrix();
 }
 void Drone::DibujarCombate(float x, float z, bool flash)
 {
