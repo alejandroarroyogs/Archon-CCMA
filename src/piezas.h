@@ -1,13 +1,11 @@
 #pragma once
 #include "modeloobj.h"
 
-
 class Pieza
 {
 
     int bando; // 1 = azul, 2 = rojo
     int vida;
-    int vidaMax;
     int danio;
     friend class Arena;
     friend class Hechizos;
@@ -15,7 +13,6 @@ class Pieza
 public:
     Pieza(int b, int v, int d);
     virtual ~Pieza();
-    Pieza(int v) : vida(v), vidaMax(v) {}
 
     int GetBando();
     int GetVida();
@@ -31,8 +28,6 @@ public:
     virtual bool MovimientoValido(int filaO, int colO, int filaD, int colD) = 0;
     virtual void Dibujar(float x, float z) = 0;
     virtual void DibujarCombate(float x, float z, bool flash) = 0;
-
-    void recuperarVida(int cantidad);
 };
 
 //Jedi/sith  7 por equipo

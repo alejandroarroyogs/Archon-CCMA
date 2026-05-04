@@ -11,8 +11,7 @@ Pieza::Pieza(int b, int v, int d)
 {
 
     bando = b;
-    vida = 100;
-    vidaMax = 100; // La vida máxima al empezar es la vida completa
+    vida = v;
     danio = d;
 }
 
@@ -45,10 +44,6 @@ void Pieza::RecibirDanio(int d)
     vida = vida - d;
     if (vida < 0)
         vida = 0;
-}
-void Pieza::recuperarVida(int cantidad) {
-    vida += cantidad;
-    if (vida > vidaMax) vida = vidaMax;
 }
 
 bool Pieza::EstaViva()
