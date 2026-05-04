@@ -3,14 +3,49 @@
 #include "ETSIDI.h"
 #include "mundo.h"
 
-void Interfaz::dibujaTexto(float x, float y, const char* texto)
+void Interfaz::dibujaTexto(float x, float y, const char* texto, int idBoton)
 { 
+    // 1. Guardamos la configuración actual de la cámara
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, 1000, 0, 800); // Forzamos 1000x800 píxeles
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glDisable(GL_LIGHTING);
+    // Forzamos a OpenGL a olvidar la textura del fondo antes de que ETSIDI intente usar la de la fuente.
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glEnable(GL_TEXTURE_2D); // ETSIDI la necesita activa para la fuente
+
+    // Modo de mezcla para evitar bordes raros
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // color si pulsado o no:
+    if (ratontexto == idBoton && idBoton != -1) {
+        glColor3f(1.0f, 0.4f, 0.0f); // Naranja
+        ETSIDI::setTextColor(1.0f, 0.4f, 0.0f);
+    }
+    else {
+        glColor3f(1.0f, 1.0f, 0.0f); // Amarillo
+        ETSIDI::setTextColor(1.0f, 1.0f, 0.0f);
+    }
+
+    ETSIDI::setFont("fuentes/jedisf.ttf", 55);
+    ETSIDI::printxy(texto, x, y, 0);
+ // Mejor desactivarlo al salir
     glEnable(GL_TEXTURE_2D);
-    //Usaré la fuente Starjedi.ttx
-    ETSIDI::setTextColor(1.0f, 1.0f, 0.0f);
-    ETSIDI::setFont("fuentes/Starjedi.ttf", 60);
-    ETSIDI::printxy(texto, x, y);
-    glDisable(GL_TEXTURE_2D); // Mejor desactivarlo al salir
+    glEnable(GL_LIGHTING);
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+
 }
 void Interfaz::dibujaFondo()
 {
@@ -28,64 +63,85 @@ void Interfaz::dibujaFondo()
     glDisable(GL_TEXTURE_2D);
 }
 
-bool Interfaz::clickEnRectangulo(int mouseX, int mouseY, int x, int y, int ancho, int alto)
+void Interfaz::gestionRaton(int boton, int estadoRaton, int x, int y)
 {
-    if (mouseX >= x && mouseX <= (x + ancho) && mouseY >= y && mouseY <= (y + alto)) {
-        return true;
-    }
-    return false;
-}
+    // Solo actuamos si es el botón izquierdo y se acaba de pulsar (DOWN)
+    if (boton == GLUT_LEFT_BUTTON && estadoRaton == GLUT_DOWN)
+    {
+        ETSIDI::play("sonidos/laser.wav");
+        // Si ratontexto es -1, es que el clic ha sido fuera de cualquier botón
+        if (ratontexto == -1) return;
 
-void Interfaz::gestionRaton(int boton, int estado, int x, int y)
-{
-    if (boton == GLUT_LEFT_BUTTON && estado == GLUT_DOWN) {
-        //en el menu principal:
-        if (this->estado == MENU) {
-            if (clickEnRectangulo(x, y, 300, 250, 200, 50)) {
-                this->estado = SELEC_MODO; // Pasamos a la siguiente interfaz
-                ETSIDI::play("bin/click.wav");
+        // Navegación basada en el estado actual y el ID del botón (ratontexto)
+        if (estado == MENU) {
+            if (ratontexto == 0) { // Botón JUGAR
+                estado = SELEC_MODO;
+            }
+            else if (ratontexto == 1) { // Botón INSTRUCCIONES
+                estado = INSTRUC;
             }
         }
-        else if (clickEnRectangulo(x, y, 300, 350, 200, 50)) {
-            this->estado = INSTRUC;
+        else if (estado == SELEC_MODO) {
+            if (ratontexto == 0) { // Primera opción (ej: JEDI)
+                modoJuego = 1;
+                estado = JUGANDO;
+            }
+            else if (ratontexto == 1) { // Segunda opción (ej: VS SITH)
+                modoJuego = 2;
+                estado = JUGANDO;
+            }
         }
-    }
-    //seleccion de modo
-    else if(this->estado==SELEC_MODO){
-        if (clickEnRectangulo(x, y, 100, 300, 250, 100)) {
-            this->modoJuego = 1; // 1 jugador
-            this->estado = JUGANDO;
+        else if (estado == INSTRUC) {
+            if (ratontexto == 2) { // Botón ATRÁS
+                estado = MENU;
+            }
         }
-        else if (clickEnRectangulo(x, y, 450, 300, 250, 100)) {
-            this->modoJuego = 2; // 2 jugadores
-            this->estado = JUGANDO;
-        }
-    }
-    //si estamos en instrucciones
-    else if (this->estado == INSTRUC) {
-        // Un botón de "VOLVER" en la esquina
-        if (clickEnRectangulo(x, y, 10, 10, 100, 50)) {
-            this->estado = MENU;
-        }
+
+        // Importante para que el cambio de pantalla sea instantáneo
+        glutPostRedisplay();
     }
 }
+void Interfaz::movimientoRaton(int x, int y)
+{
+    float anchoReal = glutGet(GLUT_WINDOW_WIDTH);
+    float altoReal = glutGet(GLUT_WINDOW_HEIGHT);
 
+    // Coordenadas virtuales 1000x800
+    float mvX = (x / anchoReal) * 1000.0f;
+    float mvY = 800.0f - ((y / altoReal) * 800.0f);
+
+    if (estado == MENU) {
+        if (mvX >= 400 && mvX <= 600 && mvY >= 370 && mvY <= 440) ratontexto = 0;      // JUGAR
+        else if (mvX >= 270 && mvX <= 730 && mvY >= 210 && mvY <= 280) ratontexto = 1; // INSTRUCCIONES
+        else ratontexto = -1;
+    }
+    else if (estado == SELEC_MODO) {
+        if (mvX >= 450 && mvX <= 550 && mvY >= 370 && mvY <= 440) ratontexto = 0;      // JEDI
+        else if (mvX >= 310 && mvX <= 690 && mvY >= 210 && mvY <= 280) ratontexto = 1; // JEDI VS SITH
+        else ratontexto = -1;
+    }
+    else if (estado == INSTRUC) {
+        if (mvX >= 780 && mvX <= 950 && mvY >= 700 && mvY <= 770) ratontexto = 2;      // ATRAS
+        else ratontexto = -1;
+    }
+
+    glutPostRedisplay();
+}
 
 void Interfaz::dibujaMenu()
 {
     dibujaFondo();
-    dibujaTexto(300, 500, "ARCHON CONTRATACA");
-    ETSIDI::setFont("bin/starjedi.ttf", 40);
-    dibujaTexto(0, 0, "JUGAR");
-    dibujaTexto(0, -300, "INSTRUCCIONES");
+
+    dibujaTexto(180, 600, "ARCHON CONTRATACA", -1);
+    dibujaTexto(410, 380, "JUGAR", 0);
+    dibujaTexto(280, 220, "INSTRUCCIONES", 1);
 }
 void Interfaz::eligeModo()
 {
     dibujaFondo();
-    dibujaTexto(0, 5, "MODO DE JUEGO");
-    ETSIDI::setFont("bin/StarJedi.ttf", 18);
-    dibujaTexto(-4, 0, "JEDI");
-    dibujaTexto(4, -2, "JEDI vs SITH");
+    dibujaTexto(280, 600, "MODO DE JUEGO", -1);
+    dibujaTexto(465, 380, "JEDI", 0);
+    dibujaTexto(320, 220, "JEDI vs SITH", 1);
 
 }
 
@@ -93,6 +149,9 @@ void Interfaz::dibujaInstrucciones()
 {
     dibujaFondo();
     //Tengo que redactar mejorlas instrucciones
+    dibujaTexto(350, 700, "INSTRUCCIONES", -1);
+    dibujaTexto(100, 450, "USA LAS FLECHAS PARA MOVERTE", -1);
+    dibujaTexto(800, 720, "ATRAS", 2);
 }
 void Interfaz::dibujaHechizos(std::vector<Hechizo*>& lista, int turno) {
     glMatrixMode(GL_PROJECTION);
