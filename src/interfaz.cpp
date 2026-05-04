@@ -5,7 +5,6 @@
 
 void Interfaz::dibujaTexto(float x, float y, const char* texto, int idBoton)
 { 
-    // 1. Guardamos la configuración actual de la cámara
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -152,43 +151,4 @@ void Interfaz::dibujaInstrucciones()
     dibujaTexto(350, 700, "INSTRUCCIONES", -1);
     dibujaTexto(100, 450, "USA LAS FLECHAS PARA MOVERTE", -1);
     dibujaTexto(800, 720, "ATRAS", 2);
-}
-void Interfaz::dibujaHechizos(std::vector<Hechizo*>& lista, int turno) {
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0, 800, 0, 600);
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    int x = (turno == 1) ? 50 : 550;
-    int y = 550;
-
-    glColor3ub(255, 255, 0); // Amarillo
-    dibujaTexto(x, y, (turno == 1) ? "HECHIZOS JEDI:" : "HECHIZOS SITH:");
-
-    y -= 40;
-    for (int i = 0; i < (int)lista.size(); i++) {
-        if (lista[i]->estaUsado()) glColor3ub(150, 150, 150);
-        else glColor3ub(255, 255, 255);
-
-        std::string texto = std::to_string(i + 1) + ". " +
-            (lista[i]->estaUsado() ? "AGOTADO" : lista[i]->getNombre());
-        dibujaTexto(x, y, texto.c_str());
-        y -= 30;
-    }
-
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-}
-
-void Interfaz::dibujaTexto(float x, float y, const char* texto) {
-    glRasterPos2f(x, y);
-    for (const char* c = texto; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
-    }
 }

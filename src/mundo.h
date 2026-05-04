@@ -11,18 +11,15 @@ enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO };
 extern Estado estado;
 extern int modoJuego;
 
-extern Estado estado;
-extern int modoJuego;
-std::vector<Hechizo*> hechizosAzules;
-std::vector<Hechizo*> hechizosRojos;
-Interfaz interfaz;
-
-
-
 class Mundo
 {
     jugador* j1;
     jugador* j2;
+    std::vector<Pieza*>listaPiezas;
+    int scoreJEDI;
+    int scoreSITH;
+
+
 public:
     Mundo();
     virtual ~Mundo();
@@ -31,11 +28,12 @@ public:
     Interfaz interfaz;
     Tablero tablero;
     Arena arena;
-    
-
+    //
     void tecla(unsigned char key);
     void Timer(int value);
-    void cambiaCiclo();
-    void intentarLanzarHechizo(int indice);
+    //scores
+    void inicializarPartida();
+    void calcScore();
+
 };
 

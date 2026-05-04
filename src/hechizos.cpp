@@ -1,6 +1,6 @@
 #include "hechizos.h"
-#include "mundo.h" //Cuando este programada la estructuración de los menus
-#include "piezas.h"//Cuando esten las piezas
+#include "mundo.h"
+#include "piezas.h"
 
 bool HechizoTeleport::aplica(Mundo& m, Pieza* p) {
     if (_yaUsado || !p) return false;

@@ -3,9 +3,6 @@
 #include <cmath>
 #include <iostream>
 
-// ====================
-// CLASE BASE PIEZA
-// ====================
 
 Pieza::Pieza(int b, int v, int d)
 {
@@ -486,10 +483,6 @@ void Chewbacca::DibujarCombate(float x, float z, bool flash)
 {
     Dibujar(x, z);
 }
-
-
-
-
 
 bool EsAzul(Pieza* pieza)
 {

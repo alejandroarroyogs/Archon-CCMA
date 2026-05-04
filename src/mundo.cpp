@@ -7,11 +7,10 @@
 #include "arena.h"
 #include "jugador.h" // NUEVO
 
-Estado estado = JUGANDO;
+Estado estado = COMBATE;
 int modoJuego = 0;
 
 Mundo::Mundo(){
- 
  
     j1 = 0;
     j2 = 0;
@@ -23,11 +22,15 @@ Mundo::~Mundo() {
     // NUEVO - IMPORTANTE: Borrar jugadores para evitar fugas de memoria
     if (j1) delete j1;
     if (j2) delete j2;
+
+    for (Pieza* p : listaPiezas) {
+        delete p; // Borramos cada pieza creada con 'new'
+    }
+    listaPiezas.clear();
 }
 void Mundo::Inicializar() {
     tablero.inicializa();
-    hechizosAzules.push_back(new HechizoHeal());
-    hechizosRojos.push_back(new HechizoHeal());
+
 }
 
 void Mundo::Dibujar()
@@ -49,8 +52,6 @@ void Mundo::Dibujar()
         break;
     case JUGANDO:
         tablero.dibuja();
-        if (tablero.getTurno() == 1) interfaz.dibujaHechizos(hechizosAzules, 1);
-        else interfaz.dibujaHechizos(hechizosRojos, 2);
         break;
     case GAMEOVER:
         break;
@@ -71,10 +72,9 @@ void Mundo::tecla(unsigned char key)
       }
         break;
     }
-    if (key == '1') intentarLanzarHechizo(0);
+   
  
 }
-
 
 void Mundo::Timer(int value) // NUEVO
 {
@@ -88,12 +88,23 @@ void Mundo::Timer(int value) // NUEVO
     }
 }
 
-void Mundo::cambiaCiclo()
+void Mundo::inicializarPartida()
 {
+
 }
-void Mundo::intentarLanzarHechizo(int indice) {
-    std::vector<Hechizo*>& lista = (tablero.getTurno() == 1) ? hechizosAzules : hechizosRojos;
-    if (indice < (int)lista.size()) {
-        lista[indice]->aplica(*this, tablero.getPiezaEnCursor());
+
+void Mundo::calcScore()
+{
+    scoreJEDI = 0;
+    scoreSITH = 0;
+
+    for (Pieza* p : listaPiezas) {
+        if (p->EstaViva()) {
+            if (p->EsAzul()) scoreJEDI += p->GetVida();
+            else scoreSITH += p->GetVida();
+        }
     }
 }
+
+
+
