@@ -8,6 +8,7 @@
 
 Pieza::Pieza(int b, int v, int d)
 {
+
     bando = b;
     vida = v;
     danio = d;
@@ -107,12 +108,12 @@ void Jedi::DibujarCombate(float x, float z, bool flash)
 
     glTranslatef(x, 0.0f, z);
 
-    if (flash)
-        glColor3f(1.0f, 1.0f, 1.0f);
-    else if (EsAzul())
-        glColor3f(0.2f, 0.8f, 1.0f);
-    else
-        glColor3f(1.0f, 0.2f, 0.2f);
+     if (EsAzul())
+        glColor3f(0.2f, 0.8f, 1.0f); // Azul claro brillante
+    else {
+        glColor3f(1.0f, 0.2f, 0.2f); // Rojo brillante
+        glRotatef(180.0f, 0, 1, 0);
+    }
 
     modelo.dibuja();
 
@@ -215,7 +216,7 @@ void DarthVader::DibujarCombate(float x, float z, bool flash)
 
 //Caballero jedi/sith 
 
-CaballeroJedi::CaballeroJedi(int b) : Pieza(b, 10, 4)
+CaballeroJedi::CaballeroJedi(int b) : Pieza(b, 10, 4), modelo("recursos/caballerojedi.obj")
 {
 }
 //Se mueve recto en todas las direcciones de dos en dos
@@ -239,16 +240,25 @@ void CaballeroJedi::Dibujar(float x, float z)
 {
     glPushMatrix();
 
-    glTranslatef(x, 0.8f, z);
+    glTranslatef(x, 0.0f, z);
+
 
     if (EsAzul())
-        glColor3f(0.0f, 0.0f, 1.0f);
-    else
-        glColor3f(1.0f, 0.0f, 0.0f);
+        glColor3f(0.2f, 0.8f, 1.0f); // Azul claro brillante
+    else {
+        glColor3f(1.0f, 0.2f, 0.2f); // Rojo brillante
+        glRotatef(180.0f, 0, 1, 0);
+    }
 
+    glDisable(GL_LIGHTING);
 
-    glRotatef(90, 1, 0, 0);
-    glutSolidTorus(0.2, 0.5, 20, 20);
+   
+
+    glScalef(0.005f, 0.005f, 0.005f);
+
+    modelo.dibuja();
+
+    glEnable(GL_LIGHTING);
 
     glPopMatrix();
 }
@@ -307,7 +317,7 @@ void Tirador::DibujarCombate(float x, float z, bool flash)
 }
 
 //Skywalker/ kylo ren
-Skywalker::Skywalker(int b) : Pieza(b, 12, 5)
+Skywalker::Skywalker(int b) : Pieza(b, 12, 5), modelo("recursos/skywalker.obj")
 {
 }
 //se mueve 2 casillas en cualuiqe direccion
@@ -327,19 +337,24 @@ void Skywalker::Dibujar(float x, float z)
 {
     glPushMatrix();
 
-    glTranslatef(x, 0.8f, z);
+    glTranslatef(x, 0.0f, z);
+
+    
+
+    glDisable(GL_LIGHTING);
 
     if (EsAzul())
-        glColor3f(0.5f, 0.5f, 1.0f);
-    else
-        glColor3f(1.0f, 0.5f, 0.5f);
+        glColor3f(0.2f, 0.8f, 1.0f); // Azul claro brillante
+    else {
+        glColor3f(1.0f, 0.2f, 0.2f); // Rojo brillante
+        glRotatef(180.0f, 0, 1, 0);
+    }
 
+    glScalef(0.7f, 0.7f, 0.7f);
 
-    glutSolidCube(0.8);
+    modelo.dibuja();
 
-
-    glTranslatef(0, 0.6f, 0);
-    glutSolidSphere(0.3, 20, 20);
+    glEnable(GL_LIGHTING);
 
     glPopMatrix();
 }
@@ -412,7 +427,7 @@ void Drone::DibujarCombate(float x, float z, bool flash)
 }
 //Chewbacca/ Jabba the hut
 
-Chewbacca::Chewbacca(int b) : Pieza(b, 22, 4)
+Chewbacca::Chewbacca(int b) : Pieza(b, 22, 4), modelo("recursos/chewbacca.obj")
 {
 }
 
@@ -432,17 +447,26 @@ void Chewbacca::Dibujar(float x, float z)
 {
     glPushMatrix();
 
-    glTranslatef(x, 0.8f, z);
+    glTranslatef(x, 0.0f, z);
 
-
+    
     if (EsAzul())
-        glColor3f(0.6f, 0.4f, 0.2f);
-    else
-        glColor3f(0.4f, 0.2f, 0.1f);
+        glColor3f(0.2f, 0.8f, 1.0f); // Azul claro brillante
+    else {
+        glColor3f(1.0f, 0.2f, 0.2f); // Rojo brillante
+        glRotatef(180.0f, 0, 1, 0);
+    }
 
+    glDisable(GL_LIGHTING);
 
-    glScalef(1.2f, 1.4f, 1.2f);
-    glutSolidCube(1.0f);
+   
+
+    // Escala (ajusta según modelo)
+    glScalef(2.0f, 2.0f, 2.0f);
+
+    modelo.dibuja();
+
+    glEnable(GL_LIGHTING);
 
     glPopMatrix();
 }

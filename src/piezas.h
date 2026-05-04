@@ -70,6 +70,7 @@ public:
 //Caballero jedi/sith 2 por equipo
 class CaballeroJedi : public Pieza
 {
+    ModeloOBJ modelo;
 public:
     CaballeroJedi(int b);
 
@@ -95,6 +96,7 @@ public:
 //Skywalker/ kylo ren  2 por equipo
 class Skywalker : public Pieza
 {
+    ModeloOBJ modelo;
 public:
     Skywalker(int b);
 
@@ -119,6 +121,7 @@ public:
 
 class Chewbacca : public Pieza
 {
+    ModeloOBJ modelo;
 public:
     Chewbacca(int b);
 
