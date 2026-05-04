@@ -68,6 +68,7 @@ void Interfaz::gestionRaton(int boton, int estadoRaton, int x, int y)
     // Solo actuamos si es el botón izquierdo y se acaba de pulsar (DOWN)
     if (boton == GLUT_LEFT_BUTTON && estadoRaton == GLUT_DOWN)
     {
+        ETSIDI::play("sonidos/laser.wav");
         // Si ratontexto es -1, es que el clic ha sido fuera de cualquier botón
         if (ratontexto == -1) return;
 
@@ -75,7 +76,7 @@ void Interfaz::gestionRaton(int boton, int estadoRaton, int x, int y)
         if (estado == MENU) {
             if (ratontexto == 0) { // Botón JUGAR
                 estado = SELEC_MODO;
-                ETSIDI::play("bin/laser.wav");
+                ETSIDI::play("sonidos/laser.wav");
             }
             else if (ratontexto == 1) { // Botón INSTRUCCIONES
                 estado = INSTRUC;
@@ -85,12 +86,12 @@ void Interfaz::gestionRaton(int boton, int estadoRaton, int x, int y)
             if (ratontexto == 0) { // Primera opción (ej: JEDI)
                 modoJuego = 1;
                 estado = JUGANDO;
-                ETSIDI::play("bin/laser.wav");
+                ETSIDI::play("sonidos/laser.wav");
             }
             else if (ratontexto == 1) { // Segunda opción (ej: VS SITH)
                 modoJuego = 2;
                 estado = JUGANDO;
-                ETSIDI::play("bin/laser.wav");
+                ETSIDI::play("sonidos/laser.wav");
             }
         }
         else if (estado == INSTRUC) {
