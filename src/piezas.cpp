@@ -260,7 +260,7 @@ void CaballeroJedi::Dibujar(float x, float z)
 
    
 
-    glScalef(0.005f, 0.005f, 0.005f);
+    glScalef(0.008f, 0.008f, 0.008f);
 
     modelo.dibuja();
 
@@ -364,7 +364,7 @@ void Skywalker::Dibujar(float x, float z)
         glRotatef(180.0f, 0, 1, 0);
     }
 
-    glScalef(0.7f, 0.7f, 0.7f);
+    glScalef(0.9f, 0.9f, 0.9f);
 
     modelo.dibuja();
 
