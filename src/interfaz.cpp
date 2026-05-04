@@ -63,45 +63,69 @@ void Interfaz::dibujaFondo()
     glDisable(GL_TEXTURE_2D);
 }
 
-void Interfaz::gestionRaton(int boton, int estado, int x, int y)
+void Interfaz::gestionRaton(int boton, int estadoRaton, int x, int y)
 {
-    if (boton == GLUT_LEFT_BUTTON && estado == GLUT_DOWN) {
-        int mouseCorregidoY = 800 - y; // ¡Importante usar la Y corregida aquí también!
+    // Solo actuamos si es el botón izquierdo y se acaba de pulsar (DOWN)
+    if (boton == GLUT_LEFT_BUTTON && estadoRaton == GLUT_DOWN)
+    {
+        // Si ratontexto es -1, es que el clic ha sido fuera de cualquier botón
+        if (ratontexto == -1) return;
 
-        if (this->estado == MENU) {
-            // JUGAR: Mismas coordenadas que el hover
-            if (x >= 410 && x <= 590 && mouseCorregidoY >= 380 && mouseCorregidoY <= 440) {
-                this->estado = SELEC_MODO;
+        // Navegación basada en el estado actual y el ID del botón (ratontexto)
+        if (estado == MENU) {
+            if (ratontexto == 0) { // Botón JUGAR
+                estado = SELEC_MODO;
                 ETSIDI::play("bin/laser.wav");
             }
-            // INSTRUCCIONES
-            else if (x >= 280 && x <= 720 && mouseCorregidoY >= 220 && mouseCorregidoY <= 270) {
-                this->estado = INSTRUC;
+            else if (ratontexto == 1) { // Botón INSTRUCCIONES
+                estado = INSTRUC;
             }
         }
+        else if (estado == SELEC_MODO) {
+            if (ratontexto == 0) { // Primera opción (ej: JEDI)
+                modoJuego = 1;
+                estado = JUGANDO;
+                ETSIDI::play("bin/laser.wav");
+            }
+            else if (ratontexto == 1) { // Segunda opción (ej: VS SITH)
+                modoJuego = 2;
+                estado = JUGANDO;
+                ETSIDI::play("bin/laser.wav");
+            }
+        }
+        else if (estado == INSTRUC) {
+            if (ratontexto == 2) { // Botón ATRÁS
+                estado = MENU;
+            }
+        }
+
+        // Importante para que el cambio de pantalla sea instantáneo
+        glutPostRedisplay();
     }
 }
 void Interfaz::movimientoRaton(int x, int y)
 {
-    //Obtenemos el tamaño real de la ventana actual (sea cual sea)
     float anchoReal = glutGet(GLUT_WINDOW_WIDTH);
     float altoReal = glutGet(GLUT_WINDOW_HEIGHT);
 
-    //cambio de escala  en función del tamaño de ventana que usemos
-    float mouseVirtualX = (x / anchoReal) * 1000.0f;
-    float mouseVirtualY = 800.0f - ((y / altoReal) * 800.0f);
+    // Coordenadas virtuales 1000x800
+    float mvX = (x / anchoReal) * 1000.0f;
+    float mvY = 800.0f - ((y / altoReal) * 800.0f);
 
-
-    // primera linea
-    if (mouseVirtualX >= 400 && mouseVirtualX <= 600 && mouseVirtualY >= 370 && mouseVirtualY <= 440)
-        ratontexto = 0;
-
-    // segunda linea
-    else if (mouseVirtualX >= 270 && mouseVirtualX <= 730 && mouseVirtualY >= 210 && mouseVirtualY <= 280)
-        ratontexto = 1;
-
-    else
-        ratontexto = -1;
+    if (estado == MENU) {
+        if (mvX >= 400 && mvX <= 600 && mvY >= 370 && mvY <= 440) ratontexto = 0;      // JUGAR
+        else if (mvX >= 270 && mvX <= 730 && mvY >= 210 && mvY <= 280) ratontexto = 1; // INSTRUCCIONES
+        else ratontexto = -1;
+    }
+    else if (estado == SELEC_MODO) {
+        if (mvX >= 450 && mvX <= 550 && mvY >= 370 && mvY <= 440) ratontexto = 0;      // JEDI
+        else if (mvX >= 310 && mvX <= 690 && mvY >= 210 && mvY <= 280) ratontexto = 1; // JEDI VS SITH
+        else ratontexto = -1;
+    }
+    else if (estado == INSTRUC) {
+        if (mvX >= 780 && mvX <= 950 && mvY >= 700 && mvY <= 770) ratontexto = 2;      // ATRAS
+        else ratontexto = -1;
+    }
 
     glutPostRedisplay();
 }
@@ -117,10 +141,9 @@ void Interfaz::dibujaMenu()
 void Interfaz::eligeModo()
 {
     dibujaFondo();
-    dibujaTexto(180, 600, "MODO DE JUEGO", -1);
-    ETSIDI::setFont("bin/StarJedi.ttf", 40);
-    dibujaTexto(410, 380, "JEDI", 0);
-    dibujaTexto(280, 220, "JEDI vs SITH", 1);
+    dibujaTexto(280, 600, "MODO DE JUEGO", -1);
+    dibujaTexto(460, 380, "JEDI", 0);
+    dibujaTexto(320, 220, "JEDI vs SITH", 1);
 
 }
 
@@ -128,5 +151,8 @@ void Interfaz::dibujaInstrucciones()
 {
     dibujaFondo();
     //Tengo que redactar mejorlas instrucciones
+    dibujaTexto(350, 700, "INSTRUCCIONES", -1);
+    dibujaTexto(100, 450, "USA LAS FLECHAS PARA MOVERTE", -1);
+    dibujaTexto(800, 720, "ATRAS", 2);
 }
 

@@ -7,18 +7,19 @@
 #include "arena.h"
 #include "jugador.h" // NUEVO
 
-Mundo::Mundo() : interfaz()
-{
-    estado = MENU;
-    // NUEVO
-    modoJuego = 0; 
+Estado estado = MENU;
+int modoJuego = 0;
+
+Mundo::Mundo(){
+ 
+ 
     j1 = 0;
     j2 = 0;
-  // extern int modoJuego; 
-  // En lugar de tener la variable flotando globalmente, se convierte modoJuego en un atributo privado de la clase Mundo.
+    
 }
 
 Mundo::~Mundo() {
+
     // NUEVO - IMPORTANTE: Borrar jugadores para evitar fugas de memoria
     if (j1) delete j1;
     if (j2) delete j2;

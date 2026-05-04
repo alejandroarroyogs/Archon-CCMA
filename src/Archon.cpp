@@ -9,6 +9,7 @@ void OnDraw(void);
 void OnTimer(int value);
 
 void OnKeyboardDown(unsigned char key, int x, int y) {
+    if (key == 27) exit(0);
     mundo.tecla(key);
 }
 void OnMouseClick(int button, int state, int x, int y) {
@@ -25,6 +26,7 @@ int main(int argc, char* argv[])
     glutInitWindowSize(1000, 800);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutCreateWindow("ARCHON");
+    glutFullScreen();
 
     glEnable(GL_DEPTH_TEST);
 
