@@ -26,6 +26,8 @@ Mundo::~Mundo() {
 }
 void Mundo::Inicializar() {
     tablero.inicializa();
+    hechizosAzules.push_back(new HechizoHeal());
+    hechizosRojos.push_back(new HechizoHeal());
 }
 
 void Mundo::Dibujar()
@@ -47,6 +49,8 @@ void Mundo::Dibujar()
         break;
     case JUGANDO:
         tablero.dibuja();
+        if (tablero.getTurno() == 1) interfaz.dibujaHechizos(hechizosAzules, 1);
+        else interfaz.dibujaHechizos(hechizosRojos, 2);
         break;
     case GAMEOVER:
         break;
@@ -67,8 +71,7 @@ void Mundo::tecla(unsigned char key)
       }
         break;
     }
-
-    glutPostRedisplay();
+    if (key == '1') intentarLanzarHechizo(0);
  
 }
 
@@ -87,4 +90,10 @@ void Mundo::Timer(int value) // NUEVO
 
 void Mundo::cambiaCiclo()
 {
+}
+void Mundo::intentarLanzarHechizo(int indice) {
+    std::vector<Hechizo*>& lista = (tablero.getTurno() == 1) ? hechizosAzules : hechizosRojos;
+    if (indice < (int)lista.size()) {
+        lista[indice]->aplica(*this, tablero.getPiezaEnCursor());
+    }
 }
