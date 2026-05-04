@@ -271,20 +271,13 @@ void Tirador::Dibujar(float x, float z)
 {
     glPushMatrix();
 
-    // 1. Posición exacta de la baldosa (donde están los cubos)
     glTranslatef(x, 0.0f, z);
 
     if (EsAzul()) {
-        // AJUSTE AZUL:
-        // +0.5f para centrarlo lateralmente (eje X)
-        // 0.0f en Z. Que se quede donde nace la baldosa.
         glTranslatef(0.5f, 0.0f, 0.0f);
     }
     else {
-        // AJUSTE ROJO:
         glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-        // -0.5f para centrarlo lateralmente
-        // 0.0f en Z. 
         glTranslatef(-0.5f, 0.0f, 0.0f);
     }
 
@@ -292,7 +285,6 @@ void Tirador::Dibujar(float x, float z)
     if (EsAzul()) glColor3f(0.3f, 0.3f, 1.0f);
     else glColor3f(1.0f, 0.2f, 0.2f);
 
-    // ESCALA 3.5
     glScalef(3.5f, 3.5f, 3.5f);
 
     modelo.dibuja();
