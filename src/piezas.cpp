@@ -121,7 +121,7 @@ void Jedi::DibujarCombate(float x, float z, bool flash)
 
 
 //Baby yoda
-BabyYoda::BabyYoda(int b) : Pieza(b, 25, 6)
+BabyYoda::BabyYoda(int b) : Pieza(b, 25, 6), modelo("recursos/babyyoda.obj")
 {
 }
 
@@ -142,11 +142,21 @@ void BabyYoda::Dibujar(float x, float z)
 {
     glPushMatrix();
 
-    glTranslatef(x, 0.8f, z);
+    glTranslatef(x, 0.0f, z);
 
-    glColor3f(0.3f, 1.0f, 0.3f);
+    glDisable(GL_LIGHTING);
 
-    glutSolidSphere(0.6, 20, 20);
+   /* if (EsAzul())
+        glColor3f(0.2f, 0.8f, 1.0f);
+    else
+        glColor3f(0.2f, 1.0f, 0.2f); */
+
+    glColor3f(0.0f, 0.5f, 0.0f);
+    glScalef(1.0f, 1.0f, 1.0f);
+
+    modelo.dibuja();
+
+    glEnable(GL_LIGHTING);
 
     glPopMatrix();
 }

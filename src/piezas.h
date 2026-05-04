@@ -46,6 +46,7 @@ public:
 //Baby yoda  1 en los buenos
 class BabyYoda : public Pieza
 {
+    ModeloOBJ modelo;
 public:
     BabyYoda(int b);
 
