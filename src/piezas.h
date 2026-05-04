@@ -46,6 +46,7 @@ public:
 //Baby yoda  1 en los buenos
 class BabyYoda : public Pieza
 {
+    ModeloOBJ modelo;
 public:
     BabyYoda(int b);
 
@@ -57,6 +58,7 @@ public:
 //Darth vader  1 en los  malos
 class DarthVader : public Pieza
 {
+    ModeloOBJ modelo;
 public:
     DarthVader(int b);
 

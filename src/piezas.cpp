@@ -121,8 +121,9 @@ void Jedi::DibujarCombate(float x, float z, bool flash)
 
 
 //Baby yoda
-BabyYoda::BabyYoda(int b) : Pieza(b, 25, 6)
+BabyYoda::BabyYoda(int b) : Pieza(b, 25, 6), modelo("recursos/babyyoda.obj")
 {
+   
 }
 
 //2 casillas en cualquier direccion
@@ -142,11 +143,22 @@ void BabyYoda::Dibujar(float x, float z)
 {
     glPushMatrix();
 
-    glTranslatef(x, 0.8f, z);
+    glTranslatef(x, 0.0f, z);
 
-    glColor3f(0.3f, 1.0f, 0.3f);
+    glDisable(GL_LIGHTING);
 
-    glutSolidSphere(0.6, 20, 20);
+    /*if (EsAzul())
+        glColor3f(0.2f, 0.8f, 1.0f);
+    else
+        glColor3f(0.2f, 1.0f, 0.2f);*/
+    glColor3f(0.2f, 0.5f, 0.2f);
+
+    
+    glScalef(1.0f, 1.0f, 1.0f);
+
+    modelo.dibuja();
+
+    glEnable(GL_LIGHTING);
 
     glPopMatrix();
 }
@@ -157,7 +169,7 @@ void BabyYoda::DibujarCombate(float x, float z, bool flash)
 }
 
 //Darth vader
-DarthVader::DarthVader(int b) : Pieza(b, 30, 7)
+DarthVader::DarthVader(int b) : Pieza(b, 30, 7), modelo("recursos/darthvader.obj")
 {
 }
 //Movimiento estilo reina ajedrez
@@ -180,11 +192,19 @@ void DarthVader::Dibujar(float x, float z)
 {
     glPushMatrix();
 
-    glTranslatef(x, 0.8f, z);
+    glTranslatef(x, 0.0f, z);
 
-    glColor3f(0.1f, 0.1f, 0.1f);
+    
+    glDisable(GL_LIGHTING);
 
-    glutSolidCone(0.6, 1.2, 20, 20);
+    
+    glColor3f(0.05f, 0.05f, 0.05f);
+    glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+    
+    glScalef(0.15f, 0.15f, 0.15f);
+    modelo.dibuja();
+
+    glEnable(GL_LIGHTING);
 
     glPopMatrix();
 }
