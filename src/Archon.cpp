@@ -14,6 +14,10 @@ void OnKeyboardDown(unsigned char key, int x, int y) {
 void OnMouseClick(int button, int state, int x, int y) {
     mundo.interfaz.gestionRaton(button, state, x, y); 
 }
+void OnPassiveMotion(int x, int y)
+{
+    mundo.interfaz.movimientoRaton(x, y);
+}
 
 int main(int argc, char* argv[])
 {
@@ -41,6 +45,7 @@ int main(int argc, char* argv[])
     glutTimerFunc(25, OnTimer, 0);
     glutKeyboardFunc(OnKeyboardDown);
     glutMouseFunc(OnMouseClick);
+    glutPassiveMotionFunc(OnPassiveMotion);
 
     mundo.Inicializar();
 
