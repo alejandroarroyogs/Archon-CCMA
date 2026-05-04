@@ -9,6 +9,14 @@
 // Estado del juego
 enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO };
 
+extern Estado estado;
+extern int modoJuego;
+std::vector<Hechizo*> hechizosAzules;
+std::vector<Hechizo*> hechizosRojos;
+Interfaz interfaz;
+
+
+
 class Mundo
 {
     Estado estado;
@@ -33,6 +41,6 @@ public:
     void tecla(unsigned char key);
     void Timer(int value);
     void cambiaCiclo();
-
+    void intentarLanzarHechizo(int indice);
 };
 

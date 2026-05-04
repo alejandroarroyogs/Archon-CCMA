@@ -31,4 +31,6 @@ public:
 
     // NUEVO: Función para que la máquina haga su jugada
     void moverIA();
+    int getTurno() { return turnoActual; }
+    Pieza* getPiezaEnCursor();
 };

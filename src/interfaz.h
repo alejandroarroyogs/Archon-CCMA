@@ -1,5 +1,9 @@
 #pragma once
+#include <vector>
 #include "ETSIDI.h"
+#include "freeglut.h"
+#include "hechizos.h"
+
 
 class Interfaz
 {
@@ -8,11 +12,8 @@ class Interfaz
 public:
     void dibujaMenu();
     void dibujaInstrucciones();
+    void dibujaHechizos(std::vector<Hechizo*>& lista, int turno);
     void dibujaTexto(float x, float y, const char* texto);
-    void eligeModo();
-    void dibujaFondo();
-    void gestionRaton(int boton, int estado, int x, int y);
-    bool clickEnRectangulo(int mouseX, int mouseY, int x, int y, int ancho, int alto);
 };
 
 
