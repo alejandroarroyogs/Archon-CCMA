@@ -80,6 +80,8 @@ public:
 //Tirador 2 por equipo
 class Tirador : public Pieza
 {
+    ModeloOBJ modelo;
+
 public:
     Tirador(int b);
 

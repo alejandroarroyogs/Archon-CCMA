@@ -1,6 +1,7 @@
 #include "freeglut.h"
 #include "piezas.h"
 #include <cmath>
+#include <iostream>
 
 // ====================
 // CLASE BASE PIEZA
@@ -58,8 +59,9 @@ bool Pieza::EsRoja()
 {
     return bando == 2;
 }
-
-// JEDI 
+//////////
+// JEDI // 
+//////////
 
 Jedi::Jedi(int b) : Pieza(b, 5, 2), modelo("recursos/jedi.obj")
 {
@@ -84,6 +86,10 @@ void Jedi::Dibujar(float x, float z)
     glPushMatrix();
 
     glTranslatef(x, 0.0f, z);
+
+    if (EsRoja()) {
+        glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+    }
 
     glDisable(GL_LIGHTING);
 
@@ -192,7 +198,7 @@ void DarthVader::DibujarCombate(float x, float z, bool flash)
 {
     Dibujar(x, z);
 }
-
+    
 //Caballero jedi/sith 
 
 CaballeroJedi::CaballeroJedi(int b) : Pieza(b, 10, 4)
@@ -236,10 +242,13 @@ void CaballeroJedi::DibujarCombate(float x, float z, bool flash)
 {
     Dibujar(x, z);
 }
+/////////////
+// TIRADOR //
+/////////////
 
-//Tirador
-Tirador::Tirador(int b) : Pieza(b, 6, 5)
+Tirador::Tirador(int b) : Pieza(b, 6, 5), modelo("recursos/tirador.obj")
 {
+    std::cout << "Intentando cargar tirador.obj..." << std::endl;
 }
 //Se mueve  casilla en cualquier direccion o dos en linea recta
 bool Tirador::MovimientoValido(int filaO, int colO, int filaD, int colD)
@@ -258,25 +267,36 @@ bool Tirador::MovimientoValido(int filaO, int colO, int filaD, int colD)
     return false;
 }
 
-//Mezcla de cubo y cono
-
 void Tirador::Dibujar(float x, float z)
 {
     glPushMatrix();
 
-    glTranslatef(x, 0.8f, z);
+    // 1. Posición exacta de la baldosa (donde están los cubos)
+    glTranslatef(x, 0.0f, z);
 
-    if (EsAzul())
-        glColor3f(0.3f, 0.3f, 1.0f);
-    else
-        glColor3f(1.0f, 0.3f, 0.3f);
+    if (EsAzul()) {
+        // AJUSTE AZUL:
+        // +0.5f para centrarlo lateralmente (eje X)
+        // 0.0f en Z. Que se quede donde nace la baldosa.
+        glTranslatef(0.5f, 0.0f, 0.0f);
+    }
+    else {
+        // AJUSTE ROJO:
+        glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+        // -0.5f para centrarlo lateralmente
+        // 0.0f en Z. 
+        glTranslatef(-0.5f, 0.0f, 0.0f);
+    }
 
+    glDisable(GL_LIGHTING);
+    if (EsAzul()) glColor3f(0.3f, 0.3f, 1.0f);
+    else glColor3f(1.0f, 0.2f, 0.2f);
 
-    glutSolidCube(0.6);
+    // ESCALA 3.5
+    glScalef(3.5f, 3.5f, 3.5f);
 
-
-    glTranslatef(0, 0.5f, 0);
-    glutSolidCone(0.3, 0.8, 20, 20);
+    modelo.dibuja();
+    glEnable(GL_LIGHTING);
 
     glPopMatrix();
 }
