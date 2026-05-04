@@ -46,6 +46,7 @@ public:
 //Baby yoda  1 en los buenos
 class BabyYoda : public Pieza
 {
+    ModeloOBJ modelo;
 public:
     BabyYoda(int b);
 
@@ -57,6 +58,7 @@ public:
 //Darth vader  1 en los  malos
 class DarthVader : public Pieza
 {
+    ModeloOBJ modelo;
 public:
     DarthVader(int b);
 
@@ -68,6 +70,7 @@ public:
 //Caballero jedi/sith 2 por equipo
 class CaballeroJedi : public Pieza
 {
+    ModeloOBJ modelo;
 public:
     CaballeroJedi(int b);
 
@@ -95,6 +98,7 @@ public:
 //Skywalker/ kylo ren  2 por equipo
 class Skywalker : public Pieza
 {
+    ModeloOBJ modelo;
 public:
     Skywalker(int b);
 
@@ -121,6 +125,7 @@ public:
 
 class Chewbacca : public Pieza
 {
+    ModeloOBJ modelo;
 public:
     Chewbacca(int b);
 
