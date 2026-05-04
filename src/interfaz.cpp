@@ -76,7 +76,6 @@ void Interfaz::gestionRaton(int boton, int estadoRaton, int x, int y)
         if (estado == MENU) {
             if (ratontexto == 0) { // Botón JUGAR
                 estado = SELEC_MODO;
-                ETSIDI::play("sonidos/laser.wav");
             }
             else if (ratontexto == 1) { // Botón INSTRUCCIONES
                 estado = INSTRUC;
@@ -86,12 +85,10 @@ void Interfaz::gestionRaton(int boton, int estadoRaton, int x, int y)
             if (ratontexto == 0) { // Primera opción (ej: JEDI)
                 modoJuego = 1;
                 estado = JUGANDO;
-                ETSIDI::play("sonidos/laser.wav");
             }
             else if (ratontexto == 1) { // Segunda opción (ej: VS SITH)
                 modoJuego = 2;
                 estado = JUGANDO;
-                ETSIDI::play("sonidos/laser.wav");
             }
         }
         else if (estado == INSTRUC) {
@@ -143,7 +140,7 @@ void Interfaz::eligeModo()
 {
     dibujaFondo();
     dibujaTexto(280, 600, "MODO DE JUEGO", -1);
-    dibujaTexto(460, 380, "JEDI", 0);
+    dibujaTexto(465, 380, "JEDI", 0);
     dibujaTexto(320, 220, "JEDI vs SITH", 1);
 
 }
