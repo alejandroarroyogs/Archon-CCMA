@@ -9,17 +9,16 @@ class Mundo;
 class Hechizo {
 protected:
     std::string _nombre;
-    bool _yaUsado; // Cada hechizo se usa una sola vez
+    bool _yaUsado;
+
 public:
     Hechizo(std::string nombre) : _nombre(nombre), _yaUsado(false) {}
     virtual ~Hechizo() {}
 
-    //Polimorfismo
-    virtual bool aplica(Mundo& mundo, Pieza* objetivo = nullptr) = 0;
+    virtual bool aplica(Mundo& m, Pieza* p) = 0; // Método virtual puro
 
-
-    std::string getNombre() const { return _nombre; }
-    bool getUsado() const { return _yaUsado; }
+    std::string getNombre() { return _nombre; }
+    bool estaUsado() { return _yaUsado; }
 };
 
 class HechizoTeleport : public Hechizo { 
@@ -31,13 +30,7 @@ public:
 class HechizoHeal : public Hechizo {
 public:
     HechizoHeal() : Hechizo("Curacion de la Fuerza") {}
-    bool aplica(Mundo& m, Pieza* p) override;
-};
-
-class HechizoShiftTime : public Hechizo { // Alteración Cronológica [cite: 168]
-public:
-    HechizoShiftTime() : Hechizo("Alteracion Cronologica") {}
-    bool aplica(Mundo& m, Pieza* p) override;
+    virtual bool aplica(Mundo& m, Pieza* p) override;
 };
 
 class HechizoExchange : public Hechizo { // Confusión Mental [cite: 169]
