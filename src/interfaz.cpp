@@ -5,7 +5,6 @@
 
 void Interfaz::dibujaTexto(float x, float y, const char* texto, int idBoton)
 { 
-    // 1. Guardamos la configuración actual de la cámara
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -153,4 +152,3 @@ void Interfaz::dibujaInstrucciones()
     dibujaTexto(100, 450, "USA LAS FLECHAS PARA MOVERTE", -1);
     dibujaTexto(800, 720, "ATRAS", 2);
 }
-

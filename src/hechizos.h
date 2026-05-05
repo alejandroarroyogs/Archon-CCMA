@@ -19,7 +19,7 @@ public:
 
 
     std::string getNombre() const { return _nombre; }
-    bool getUsado() const { return _yaUsado; }
+    bool estaUsado() const { return _yaUsado; }
 };
 
 class HechizoTeleport : public Hechizo { 
