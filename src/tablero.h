@@ -1,28 +1,23 @@
 #pragma once
-#include "piezas.h" 
-
-// Para que el tablero sepa que existe el objeto global 'mundo'
-extern class Mundo mundo;
+#include "piezas.h" // Necesitamos conocer las piezas
 
 class Tablero {
+
+    // uso static para el tamaño del tablero
     static const int TAM_TABLERO = 9;
     Pieza* casillas[TAM_TABLERO][TAM_TABLERO];
 
-    bool teclasPulsadas[256];
-    int cooldownMovimiento;
-
 public:
-    Tablero();
-    virtual ~Tablero();
+    Tablero();          // Constructor
+    virtual ~Tablero(); // Destructor (vital para no dejar basura en memoria)
 
     void inicializa();
     void dibuja();
 
-    // Gestión de teclado y movimiento
+    // NUEVO: Función para manejar el teclado
     void tecla(unsigned char key);
-    void teclaLiberada(unsigned char key);
-    void actualizarMovimiento();
 
+    //acceso a la variable tam_tablero
     static int getTamTablero();
 
     int filaSeleccionada;
@@ -34,7 +29,6 @@ public:
 
     int turnoActual;
 
+    // NUEVO: Función para que la máquina haga su jugada
     void moverIA();
-    int getTurno() { return turnoActual; }
-    Pieza* getPiezaEnCursor();
 };
