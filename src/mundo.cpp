@@ -5,37 +5,32 @@
 #include "interfaz.h"
 #include "hechizos.h"
 #include "arena.h"
-#include "jugador.h" // NUEVO
+#include "jugador.h"
 
 Estado estado = MENU;
 int modoJuego = 0;
 
-Mundo::Mundo(){
- 
+Mundo::Mundo() {
     j1 = 0;
     j2 = 0;
-    
 }
 
 Mundo::~Mundo() {
-
-    // NUEVO - IMPORTANTE: Borrar jugadores para evitar fugas de memoria
     if (j1) delete j1;
     if (j2) delete j2;
 
     for (Pieza* p : listaPiezas) {
-        delete p; // Borramos cada pieza creada con 'new'
+        delete p;
     }
     listaPiezas.clear();
 }
+
 void Mundo::Inicializar() {
     inicializarPartida();
-
 }
 
 void Mundo::Dibujar()
 {
-   
     switch (estado) {
     case MENU:
         interfaz.dibujaMenu();
@@ -47,6 +42,8 @@ void Mundo::Dibujar()
         interfaz.eligeModo();
         break;
     case COMBATE:
+        // Dibujamos la arena que ya fue inicializada correctamente desde tablero.cpp
+        arena.setTurno(tablero.turnoActual);
         arena.ponMusica();
         arena.dibuja();
         break;
@@ -56,25 +53,27 @@ void Mundo::Dibujar()
     case GAMEOVER:
         break;
     }
-    
-};
+}
 
 void Mundo::tecla(unsigned char key)
 {
-    switch (estado){
-
-    case JUGANDO: // NUEVO
-        // Solo dejamos usar el teclado si el turno actual es de un jugador humano
-     if ((tablero.turnoActual == 1 && j1 != 0 && !j1->esIA()) ||
-        (tablero.turnoActual == 2 && j2 != 0 && !j2->esIA()))
-     {
+    switch (estado) {
+    case JUGANDO:
+        if ((tablero.turnoActual == 1 && j1 != 0 && !j1->esIA()) ||
+            (tablero.turnoActual == 2 && j2 != 0 && !j2->esIA()))
+        {
             tablero.tecla(key);
-      }
+        }
+        break;
+    case COMBATE:
+        if (key >= '1' && key <= '9') {
+            int indiceHechizo = key - '1';
+            arena.lanzarHechizo(indiceHechizo);
+        }
         break;
     }
-   
- 
 }
+
 void Mundo::teclaLiberada(unsigned char key)
 {
     if (estado == JUGANDO) {
@@ -85,32 +84,27 @@ void Mundo::teclaLiberada(unsigned char key)
 void Mundo::Timer(int value)
 {
     if (estado == JUGANDO) {
-        // 1. ACTUALIZACIÓN DEL CURSOR HUMANO (WASD):
-        // Esto lee las teclas pulsadas en cada frame para que el movimiento sea continuo y fluido
         tablero.actualizarMovimiento();
 
-        // 2. LÓGICA DE LA IA (Si corresponde):
         if (modoJuego == 2 && j2 != 0 && j2->esIA() && tablero.turnoActual == 2) {
             tablero.moverIA();
         }
 
-        // Forzamos a OpenGL a redibujar la pantalla para ver el movimiento del cursor
         glutPostRedisplay();
     }
 }
+
 void Mundo::inicializarPartida()
 {
-    // Borramos por si acaso ya existían de una partida anterior
     if (j1) delete j1;
     if (j2) delete j2;
 
-    // Creamos dos jugadores humanos (bando, es_IA)
     j1 = new jugador(1, false); // Humano (Jedi)
     j2 = new jugador(2, false); // Humano (Sith)
 
-    // Inicializamos el tablero
     tablero.inicializa();
 }
+
 void Mundo::calcScore()
 {
     scoreJEDI = 0;
@@ -123,11 +117,8 @@ void Mundo::calcScore()
         }
     }
 }
+
 void Mundo::cambiaCiclo()
 {
-    // Cambiamos el turno del tablero (si es 1 pasa a 2, si es 2 pasa a 1)
     tablero.turnoActual = (tablero.turnoActual == 1) ? 2 : 1;
 }
-
-
-

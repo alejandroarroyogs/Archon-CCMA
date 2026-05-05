@@ -20,6 +20,7 @@ public:
 
     std::string getNombre() const { return _nombre; }
     bool estaUsado() const { return _yaUsado; }
+    void setUsado(bool usado) { _yaUsado = usado; }
 };
 
 class HechizoTeleport : public Hechizo { 
