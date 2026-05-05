@@ -15,7 +15,7 @@ class Pieza
 public:
     Pieza(int b, int v, int d);
     virtual ~Pieza();
-    Pieza(int v) : vida(v), vidaMax(v) {}
+    Pieza(int v) : bando(1), vida(v), vidaMax(v), danio(0) {}
 
     int GetBando();
     int GetVida();

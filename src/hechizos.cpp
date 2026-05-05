@@ -10,7 +10,7 @@ bool HechizoTeleport::aplica(Mundo& m, Pieza* p) {
 
 bool HechizoHeal::aplica(Mundo& m, Pieza* p) {
     if (_yaUsado || !p) return false;
-    p->SetVida(100); 
+    p->SetVida(100);
     _yaUsado = true;
     return true;
 }
