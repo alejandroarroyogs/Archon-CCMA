@@ -1,5 +1,8 @@
 #pragma once
-#include "ETSIDI.h"
+#include <vector>
+#include "freeglut.h"
+#include "hechizos.h"
+
 
 class Interfaz
 {
