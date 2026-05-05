@@ -7,11 +7,10 @@
 #include "arena.h"
 #include "jugador.h" // NUEVO
 
-Estado estado = JUGANDO;
+Estado estado = MENU;
 int modoJuego = 0;
 
 Mundo::Mundo(){
- 
  
     j1 = 0;
     j2 = 0;
@@ -23,9 +22,15 @@ Mundo::~Mundo() {
     // NUEVO - IMPORTANTE: Borrar jugadores para evitar fugas de memoria
     if (j1) delete j1;
     if (j2) delete j2;
+
+    for (Pieza* p : listaPiezas) {
+        delete p; // Borramos cada pieza creada con 'new'
+    }
+    listaPiezas.clear();
 }
 void Mundo::Inicializar() {
-    tablero.inicializa();
+    inicializarPartida();
+
 }
 
 void Mundo::Dibujar()
@@ -67,24 +72,62 @@ void Mundo::tecla(unsigned char key)
       }
         break;
     }
-
-    glutPostRedisplay();
+   
  
 }
-
-
-void Mundo::Timer(int value) // NUEVO
+void Mundo::teclaLiberada(unsigned char key)
 {
-    // LÓGICA DE LA IA:
-    // Si estamos jugando, es modo IA, y es el turno del bando 2...
-    if (estado == JUGANDO && modoJuego == 2) {
-        if (j2 != 0 && j2->esIA() && tablero.turnoActual == 2) {
-            tablero.moverIA(); // La función que creamos antes
-            glutPostRedisplay();
-        }
+    if (estado == JUGANDO) {
+        tablero.teclaLiberada(key);
     }
 }
 
+void Mundo::Timer(int value)
+{
+    if (estado == JUGANDO) {
+        // 1. ACTUALIZACIÓN DEL CURSOR HUMANO (WASD):
+        // Esto lee las teclas pulsadas en cada frame para que el movimiento sea continuo y fluido
+        tablero.actualizarMovimiento();
+
+        // 2. LÓGICA DE LA IA (Si corresponde):
+        if (modoJuego == 2 && j2 != 0 && j2->esIA() && tablero.turnoActual == 2) {
+            tablero.moverIA();
+        }
+
+        // Forzamos a OpenGL a redibujar la pantalla para ver el movimiento del cursor
+        glutPostRedisplay();
+    }
+}
+void Mundo::inicializarPartida()
+{
+    // Borramos por si acaso ya existían de una partida anterior
+    if (j1) delete j1;
+    if (j2) delete j2;
+
+    // Creamos dos jugadores humanos (bando, es_IA)
+    j1 = new jugador(1, false); // Humano (Jedi)
+    j2 = new jugador(2, false); // Humano (Sith)
+
+    // Inicializamos el tablero
+    tablero.inicializa();
+}
+void Mundo::calcScore()
+{
+    scoreJEDI = 0;
+    scoreSITH = 0;
+
+    for (Pieza* p : listaPiezas) {
+        if (p->EstaViva()) {
+            if (p->EsAzul()) scoreJEDI += p->GetVida();
+            else scoreSITH += p->GetVida();
+        }
+    }
+}
 void Mundo::cambiaCiclo()
 {
+    // Cambiamos el turno del tablero (si es 1 pasa a 2, si es 2 pasa a 1)
+    tablero.turnoActual = (tablero.turnoActual == 1) ? 2 : 1;
 }
+
+
+

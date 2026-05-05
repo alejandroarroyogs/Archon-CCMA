@@ -3,15 +3,13 @@
 #include <cmath>
 #include <iostream>
 
-// ====================
-// CLASE BASE PIEZA
-// ====================
 
 Pieza::Pieza(int b, int v, int d)
 {
 
     bando = b;
-    vida = v;
+    vida = 100;
+    vidaMax = 100; // La vida máxima al empezar es la vida completa
     danio = d;
 }
 
@@ -44,6 +42,10 @@ void Pieza::RecibirDanio(int d)
     vida = vida - d;
     if (vida < 0)
         vida = 0;
+}
+void Pieza::recuperarVida(int cantidad) {
+    vida += cantidad;
+    if (vida > vidaMax) vida = vidaMax;
 }
 
 bool Pieza::EstaViva()
@@ -260,7 +262,7 @@ void CaballeroJedi::Dibujar(float x, float z)
 
    
 
-    glScalef(0.008f, 0.008f, 0.008f);
+    glScalef(0.005f, 0.005f, 0.005f);
 
     modelo.dibuja();
 
@@ -364,7 +366,7 @@ void Skywalker::Dibujar(float x, float z)
         glRotatef(180.0f, 0, 1, 0);
     }
 
-    glScalef(0.9f, 0.9f, 0.9f);
+    glScalef(0.7f, 0.7f, 0.7f);
 
     modelo.dibuja();
 
@@ -481,10 +483,6 @@ void Chewbacca::DibujarCombate(float x, float z, bool flash)
 {
     Dibujar(x, z);
 }
-
-
-
-
 
 bool EsAzul(Pieza* pieza)
 {
