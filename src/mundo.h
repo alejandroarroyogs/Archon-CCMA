@@ -15,6 +15,11 @@ class Mundo
 {
     jugador* j1;
     jugador* j2;
+    std::vector<Pieza*>listaPiezas;
+    int scoreJEDI;
+    int scoreSITH;
+
+
 public:
     Mundo();
     virtual ~Mundo();
@@ -23,10 +28,13 @@ public:
     Interfaz interfaz;
     Tablero tablero;
     Arena arena;
-    
-
+    //
     void tecla(unsigned char key);
+    void teclaLiberada(unsigned char key);
     void Timer(int value);
+    //scores
+    void inicializarPartida();
+    void calcScore();
     void cambiaCiclo();
 
 };
