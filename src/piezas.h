@@ -10,7 +10,7 @@ class Pieza
     int vidaMax;
     int danio;
     friend class Arena;
-    friend class Hechizos;
+    friend class Hechizo;
 
 public:
     Pieza(int b, int v, int d);

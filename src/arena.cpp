@@ -58,46 +58,60 @@ void Arena::dibuja()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-<<<<<<< HEAD
     // 1. DIBUJAR FONDO 2D (ESTRELLAS)
-=======
-    //2D PARA ESTRELLAS
->>>>>>> parent of c9923c3 (Merge branch 'master' into hechizos)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(-20, 20, -15, 15); // Lienzo plano para las estrellas
+    gluOrtho2D(-20, 20, -15, 15);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glDisable(GL_DEPTH_TEST); // Las estrellas no bloquean nada
-    dibujaFondo();            // Aquí tus estrellas azules
+    glDisable(GL_DEPTH_TEST);
+    dibujaFondo();
     glEnable(GL_DEPTH_TEST);
 
-<<<<<<< HEAD
     // 2. DIBUJAR ARENA Y COMBATE 3D
-=======
-    //3DPIEZAS Y PLATAFORMA
->>>>>>> parent of c9923c3 (Merge branch 'master' into hechizos)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    // Perspectiva: 60 grados, relación de aspecto 4:3, cerca 0.1, lejos 1000
-    gluPerspective(60.0, 4.0 / 3.0, 0.1, 1000.0);
+    gluPerspective(50.0, 1000.0 / 800.0, 1.0, 100.0);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // Posicionamos la cámara para ver la plataforma desde arriba
-    gluLookAt(0.0, 8.0, 25.0,  // Ojo (arriba y atrás)
-        0.0, -4.0, 0.0,  // Punto de mira (hacia el suelo)
-        0.0, 1.0, 0.0);  // Vector arriba
+    gluLookAt(0.0, 6.0, 18.0,
+        0.0, -1.5, 0.0,
+        0.0, 1.0, 0.0);
 
-    // Luz para que brille el metal
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
     dibujaPlataforma();
-    //DIBUJAR LO DEMÁS DE AQUÍ ABAJO
+
+    // --- RENDERIZADO DE LAS PIEZAS ENFRENTADAS Y MÁS GRANDES ---
+    if (atacante != nullptr && defensor != nullptr) {
+        // A) ATACANTE (Lado Izquierdo: x = -4.0f)
+        glPushMatrix();
+        glTranslatef(-4.0f, -3.7f, 0.0f);
+        glRotatef(270.0f, 0.0f, 1.0f, 0.0f);
+
+        // Aumentamos significativamente el tamaño en combate
+        glScalef(2.8f, 2.8f, 2.8f);
+        atacante->DibujarCombate(0.0f, 0.0f, false);
+        glPopMatrix();
+
+        // B) DEFENSOR (Lado Derecho: x = 4.0f)
+        glPushMatrix();
+        glTranslatef(4.0f, -3.7f, 0.0f);
+        glRotatef(270.0f, 0.0f, 1.0f, 0.0f); // ¡Girado 180º respecto al atacante para mirarse!
+
+        glScalef(2.8f, 2.8f, 2.8f);
+        defensor->DibujarCombate(0.0f, 0.0f, false);
+        glPopMatrix();
+    }
+
+    // Dibujamos las barras de vida y hechizos sobre la pantalla
+    BarraVida();
+    dibujoHechizos();
 
 }
 
@@ -132,12 +146,10 @@ void Arena::dibujaPlataforma()
     glEnable(GL_LIGHTING);
     
 }
-//Falta que la barra de vida se dibuje bbien
 void Arena::BarraVida()
 {
     if (!atacante || !defensor) return;
 
-<<<<<<< HEAD
     // 1. OBTENER VIDAS (Forzamos un mínimo de 0 y máximo de 100 por seguridad)
     int vidaAtacante = atacante->GetVida();
     int vidaDefensor = defensor->GetVida();
@@ -151,18 +163,10 @@ void Arena::BarraVida()
     float vidaD = (float)vidaDefensor / 100.0f;
 
     // 2. CONFIGURACIÓN DE VISTA 2D (ORTO)
-=======
-    // Calculamos porcentajes
-    float vidaA = (float)atacante->GetVida() / 100.0f;
-    float vidaD = (float)defensor->GetVida() / 100.0f;
-
-    // Dibujamos en coordenadas de pantalla (2D)
->>>>>>> parent of c9923c3 (Merge branch 'master' into hechizos)
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
     gluOrtho2D(0, 1000, 0, 800);
-<<<<<<< HEAD
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
@@ -232,26 +236,6 @@ void Arena::BarraVida()
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
 }
-=======
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glDisable(GL_LIGHTING);
-
-    // Barra Atacante (Izquierda)
-    glColor3f(0.2f, 0.2f, 0.2f); glRectf(50, 720, 350, 740); // Fondo
-    glColor3f(0.0f, 1.0f, 0.0f); glRectf(50, 720, 50 + (300 * vidaA), 740); // Vida
-
-    // Barra Defensor (Derecha)
-    glColor3f(0.2f, 0.2f, 0.2f); glRectf(650, 720, 950, 740); // Fondo
-    glColor3f(0.0f, 1.0f, 0.0f); glRectf(650, 720, 650 + (300 * vidaD), 740); // Vida
-
-    glEnable(GL_LIGHTING);
-    glMatrixMode(GL_PROJECTION); glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-}
-//falta dibujar bien los hechizos
->>>>>>> parent of c9923c3 (Merge branch 'master' into hechizos)
 void Arena::dibujoHechizos()
 {
     glMatrixMode(GL_PROJECTION);
@@ -305,16 +289,11 @@ void Arena::dibujaTexto(float x, float y, const char* texto)
     glBindTexture(GL_TEXTURE_2D, 0);
     glEnable(GL_TEXTURE_2D);
 
-<<<<<<< HEAD
-=======
-    // Modo de mezcla para evitar bordes raros
->>>>>>> parent of c9923c3 (Merge branch 'master' into hechizos)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glColor3f(1.0f, 1.0f, 0.0f); // Amarillo
     ETSIDI::setTextColor(1.0f, 1.0f, 0.0f);
-<<<<<<< HEAD
 
     // ¡REDUCIDO EL TAMAÑO DE LA FUENTE AQUÍ! (De 55 a 24 para que quepa perfectamente)
     ETSIDI::setFont("fuentes/jedisf.ttf", 24);
@@ -323,12 +302,6 @@ void Arena::dibujaTexto(float x, float y, const char* texto)
 
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
-=======
-    ETSIDI::setFont("fuentes/jedisf.ttf", 55);
-    ETSIDI::printxy(texto, x, y);
-    // Mejor desactivarlo al salir
-    glEnable(GL_TEXTURE_2D);
->>>>>>> parent of c9923c3 (Merge branch 'master' into hechizos)
     glEnable(GL_LIGHTING);
 
     glMatrixMode(GL_PROJECTION);
@@ -336,7 +309,6 @@ void Arena::dibujaTexto(float x, float y, const char* texto)
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 }
-
 void Arena::lanzarHechizo(int indice)
 {
     // CORRECCIÓN C2065: Usamos 'turno' de Arena, no 'tablero'
