@@ -30,7 +30,6 @@ Mundo::~Mundo() {
 }
 void Mundo::Inicializar() {
     inicializarPartida();
-
 }
 
 void Mundo::Dibujar()
@@ -82,7 +81,7 @@ void Mundo::teclaLiberada(unsigned char key)
     }
 }
 
-void Mundo::Timer(int value)
+void Mundo::Timer(int value) // NUEVO
 {
     if (estado == JUGANDO) {
         // 1. ACTUALIZACIÓN DEL CURSOR HUMANO (WASD):
@@ -98,19 +97,12 @@ void Mundo::Timer(int value)
         glutPostRedisplay();
     }
 }
+
 void Mundo::inicializarPartida()
 {
-    // Borramos por si acaso ya existían de una partida anterior
-    if (j1) delete j1;
-    if (j2) delete j2;
 
-    // Creamos dos jugadores humanos (bando, es_IA)
-    j1 = new jugador(1, false); // Humano (Jedi)
-    j2 = new jugador(2, false); // Humano (Sith)
-
-    // Inicializamos el tablero
-    tablero.inicializa();
 }
+
 void Mundo::calcScore()
 {
     scoreJEDI = 0;
@@ -122,11 +114,6 @@ void Mundo::calcScore()
             else scoreSITH += p->GetVida();
         }
     }
-}
-void Mundo::cambiaCiclo()
-{
-    // Cambiamos el turno del tablero (si es 1 pasa a 2, si es 2 pasa a 1)
-    tablero.turnoActual = (tablero.turnoActual == 1) ? 2 : 1;
 }
 
 
