@@ -58,8 +58,7 @@ void Arena::dibuja()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-    // 2d
+    // 1. DIBUJAR FONDO 2D (ESTRELLAS)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(-20, 20, -15, 15);
@@ -71,7 +70,7 @@ void Arena::dibuja()
     dibujaFondo();
     glEnable(GL_DEPTH_TEST);
 
-    // 3d
+    // 2. DIBUJAR ARENA Y COMBATE 3D
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(50.0, 1000.0 / 800.0, 1.0, 100.0);
@@ -151,101 +150,6 @@ void Arena::BarraVida()
 {
     if (!atacante || !defensor) return;
 
-    // Calculamos porcentajes
-    float vidaA = (float)atacante->GetVida() / 100.0f;
-    float vidaD = (float)defensor->GetVida() / 100.0f;
-
-    // Dibujamos en coordenadas de pantalla (2D)
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0, 1000, 0, 800);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glDisable(GL_LIGHTING);
-
-    // Barra Atacante (Izquierda)
-    glColor3f(0.2f, 0.2f, 0.2f); glRectf(50, 720, 350, 740); // Fondo
-    glColor3f(0.0f, 1.0f, 0.0f); glRectf(50, 720, 50 + (300 * vidaA), 740); // Vida
-
-    // Barra Defensor (Derecha)
-    glColor3f(0.2f, 0.2f, 0.2f); glRectf(650, 720, 950, 740); // Fondo
-    glColor3f(0.0f, 1.0f, 0.0f); glRectf(650, 720, 650 + (300 * vidaD), 740); // Vida
-
-    glEnable(GL_LIGHTING);
-    glMatrixMode(GL_PROJECTION); glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-}
-//falta dibujar bien los hechizos
-void Arena::dibujoHechizos()
-{
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0, 800, 0, 600);
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    std::vector<Hechizo*>& lista = (turno == 1) ? hechizosAzules : hechizosRojos;
-
-    int x = (turno == 1) ? 50 : 550;
-    int y = 550;
-
-    glColor3ub(255, 255, 0);
-    dibujaTexto(x, y, (turno == 1) ? "HECHIZOS JEDI:" : "HECHIZOS SITH:");
-
-    y -= 40;
-    for (int i = 0; i < (int)lista.size(); i++) {
-        // Ahora 'lista' ya existe porque la definimos arriba
-        if (lista[i]->estaUsado()) glColor3ub(150, 150, 150);
-        else glColor3ub(255, 255, 255);
-
-        std::string texto = std::to_string(i + 1) + ". " +
-            (lista[i]->estaUsado() ? "AGOTADO" : lista[i]->getNombre());
-        dibujaTexto(x, y, texto.c_str());
-        y -= 30;
-    }
-
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-
-}
-
-void Arena::dibujaTexto(float x, float y, const char* texto)
-{
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0, 1000, 0, 800);
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glDisable(GL_LIGHTING);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glEnable(GL_TEXTURE_2D);
-
-    // Modo de mezcla para evitar bordes raros
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glColor3f(1.0f, 1.0f, 0.0f); // Amarillo
-    ETSIDI::setTextColor(1.0f, 1.0f, 0.0f);
-    ETSIDI::setFont("fuentes/jedisf.ttf", 55);
-    ETSIDI::printxy(texto, x, y);
-    // Mejor desactivarlo al salir
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_LIGHTING);
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
     // 1. OBTENER VIDAS (Forzamos un mínimo de 0 y máximo de 100 por seguridad)
     int vidaAtacante = atacante->GetVida();
     int vidaDefensor = defensor->GetVida();
@@ -368,14 +272,7 @@ void Arena::dibujoHechizos()
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
 
- 
 }
-//NO TOCAR
-void Arena::inicializaEstrellas(int cantidad)
-{
-    // Limpiamos si ya había algo
-    for (auto e : estrellas) delete e;
-    estrellas.clear();
 
 void Arena::dibujaTexto(float x, float y, const char* texto)
 {
