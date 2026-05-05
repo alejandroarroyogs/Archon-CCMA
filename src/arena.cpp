@@ -1,6 +1,7 @@
 #include "arena.h"
 #include "piezas.h"
 #include "tablero.h"
+#include "ETSIDI.h"
 
 //Constructor arena
 Arena::Arena()

@@ -2,7 +2,6 @@
 #include "freeglut.h"
 #include "hechizos.h"
 #include "piezas.h"
-#include <ETSIDI.h>
 #include <vector>
 #include <string>
 

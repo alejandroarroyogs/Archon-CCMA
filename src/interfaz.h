@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include "ETSIDI.h"
 #include "freeglut.h"
 #include "hechizos.h"
 
