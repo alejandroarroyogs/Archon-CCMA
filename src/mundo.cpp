@@ -7,7 +7,7 @@
 #include "arena.h"
 #include "jugador.h" // NUEVO
 
-Estado estado = MENU;
+Estado estado = COMBATE;
 int modoJuego = 0;
 
 Mundo::Mundo(){
@@ -29,7 +29,11 @@ Mundo::~Mundo() {
     listaPiezas.clear();
 }
 void Mundo::Inicializar() {
+<<<<<<< HEAD
     inicializarPartida();
+=======
+    tablero.inicializa();
+>>>>>>> parent of c9923c3 (Merge branch 'master' into hechizos)
 
 }
 
@@ -75,27 +79,16 @@ void Mundo::tecla(unsigned char key)
    
  
 }
-void Mundo::teclaLiberada(unsigned char key)
-{
-    if (estado == JUGANDO) {
-        tablero.teclaLiberada(key);
-    }
-}
 
 void Mundo::Timer(int value)
 {
-    if (estado == JUGANDO) {
-        // 1. ACTUALIZACIÓN DEL CURSOR HUMANO (WASD):
-        // Esto lee las teclas pulsadas en cada frame para que el movimiento sea continuo y fluido
-        tablero.actualizarMovimiento();
-
-        // 2. LÓGICA DE LA IA (Si corresponde):
-        if (modoJuego == 2 && j2 != 0 && j2->esIA() && tablero.turnoActual == 2) {
-            tablero.moverIA();
+    // LÓGICA DE LA IA:
+    // Si estamos jugando, es modo IA, y es el turno del bando 2...
+    if (estado == JUGANDO && modoJuego == 2) {
+        if (j2 != 0 && j2->esIA() && tablero.turnoActual == 2) {
+            tablero.moverIA(); // La función que creamos antes
+            glutPostRedisplay();
         }
-
-        // Forzamos a OpenGL a redibujar la pantalla para ver el movimiento del cursor
-        glutPostRedisplay();
     }
 }
 void Mundo::inicializarPartida()

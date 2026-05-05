@@ -30,12 +30,10 @@ public:
     Arena arena;
     //
     void tecla(unsigned char key);
-    void teclaLiberada(unsigned char key);
     void Timer(int value);
     //scores
     void inicializarPartida();
     void calcScore();
-    void cambiaCiclo();
 
 };
 
