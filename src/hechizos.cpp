@@ -1,6 +1,6 @@
 #include "hechizos.h"
-#include "mundo.h"
-#include "piezas.h"
+#include "mundo.h" //Cuando este programada la estructuración de los menus
+//Cuando esten las piezas
 
 bool HechizoTeleport::aplica(Mundo& m, Pieza* p) {
     if (_yaUsado || !p) return false;
@@ -9,18 +9,18 @@ bool HechizoTeleport::aplica(Mundo& m, Pieza* p) {
 }
 
 bool HechizoHeal::aplica(Mundo& m, Pieza* p) {
-    if (p == nullptr || _yaUsado) return false;
-
-    p->recuperarVida(50); // El método que creamos en Pieza
+    if (_yaUsado || !p) return false;
+    p->SetVida(100); 
     _yaUsado = true;
     return true;
 }
-/*bool HechizoShiftTime::aplica(Mundo& m, Pieza* p) {
+
+bool HechizoShiftTime::aplica(Mundo& m, Pieza* p) {
     if (_yaUsado) return false;
     m.cambiaCiclo(); 
     _yaUsado = true;
     return true;
-}*/
+}
 
 bool HechizoExchange::aplica(Mundo& m, Pieza* p) {
     if (_yaUsado) return false;

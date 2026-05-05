@@ -46,9 +46,9 @@ int main(int argc, char* argv[])
     glutDisplayFunc(OnDraw);
     glutTimerFunc(25, OnTimer, 0);
     glutKeyboardFunc(OnKeyboardDown);
+    glutKeyboardUpFunc([](unsigned char key, int x, int y) { mundo.teclaLiberada(key); });
     glutMouseFunc(OnMouseClick);
     glutPassiveMotionFunc(OnPassiveMotion);
-
     mundo.Inicializar();
 
     glutMainLoop();
