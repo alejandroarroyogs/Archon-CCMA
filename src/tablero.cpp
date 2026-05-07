@@ -1,8 +1,10 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "tablero.h"
 #include "freeglut.h"
 #include "piezas.h"
 #include "mundo.h"      
 #include <cmath>
+#include "ETSIDI.h"
 
 Tablero::Tablero() {
     for (int i = 0; i < TAM_TABLERO; i++) {
@@ -21,6 +23,8 @@ Tablero::Tablero() {
         teclasPulsadas[i] = false;
     }
     cooldownMovimiento = 0;
+    hechizosAzules.push_back(new HechizoHeal());
+    hechizosRojos.push_back(new HechizoHeal());
 }
 
 Tablero::~Tablero() {
@@ -32,6 +36,8 @@ Tablero::~Tablero() {
             }
         }
     }
+    for (auto h : hechizosAzules) delete h;
+    for (auto h : hechizosRojos) delete h;
 }
 
 void Tablero::inicializa() {
@@ -151,7 +157,9 @@ void Tablero::dibuja() {
                 glTranslatef(x, 0.1f, z);
                 casillas[i][j]->Dibujar(0.0f, 0.0f);
                 glPopMatrix();
+                dibujaBarraVida(x, z, casillas[i][j]->GetVida(), 100);
                 glDisable(GL_LIGHTING);
+               
             }
         }
     }
@@ -161,12 +169,19 @@ void Tablero::dibuja() {
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_LIGHTING);
+    dibujaInterfazHechizos();
 }
 
 void Tablero::tecla(unsigned char key) {
     teclasPulsadas[key] = true;
     actualizarMovimiento();
 
+    if (key >= '1' && key <= '9') {
+        lanzarHechizo(key - '1'); // Esta es la nueva función que creamos en Tablero
+    }
+    else {
+        teclasPulsadas[key] = true;
+    }
     if (key == ' ') {
         if (!piezaSeleccionada) {
             Pieza* p = casillas[filaSeleccionada][colSeleccionada];
@@ -253,3 +268,150 @@ int Tablero::getTamTablero() { return TAM_TABLERO; }
 Pieza* Tablero::getPiezaEnCursor() { return casillas[filaSeleccionada][colSeleccionada]; }
 
 void Tablero::moverIA() {}
+void Tablero::lanzarHechizo(int indice) {
+    std::vector<Hechizo*>& lista = (turnoActual == 1) ? hechizosAzules : hechizosRojos;
+    if (indice < 0 || indice >= (int)lista.size()) return;
+
+    Hechizo* h = lista[indice];
+    if (h->estaUsado()) return;
+
+    Pieza* objetivo = getPiezaEnCursor();
+    if (objetivo != nullptr && objetivo->GetBando() == turnoActual) {
+        // Solo el líder debería poder lanzarlo (puedes añadir esa condición aquí)
+        if (h->aplica(mundo, objetivo)) {
+            h->setUsado(true);
+            ETSIDI::play("sonidos/curar.wav");
+        }
+    }
+}
+
+
+void Tablero::dibujaInterfazHechizos() {
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, 1000, 0, 800);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    float panelAncho = 230.0f; // Un poco más ancho para albergar letras grandes
+    float xInicio = (turnoActual == 1) ? 0 : 1000 - panelAncho;
+    float xTexto = xInicio + 15;
+    float xBorde = (turnoActual == 1) ? panelAncho : xInicio;
+
+    // Fondo Panel (Más opaco para mejorar contraste)
+    glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
+    glBegin(GL_QUADS);
+    glVertex2f(xInicio, 800); glVertex2f(xInicio + panelAncho, 800);
+    glVertex2f(xInicio + panelAncho, 0); glVertex2f(xInicio, 0);
+    glEnd();
+
+    // Borde Neón
+    if (turnoActual == 1) glColor3f(0.0f, 0.8f, 1.0f);
+    else glColor3f(1.0f, 0.2f, 0.2f);
+    glLineWidth(4.0f);
+    glBegin(GL_LINES);
+    glVertex2f(xBorde, 800); glVertex2f(xBorde, 0);
+    glEnd();
+
+    // INFO OBJETIVO (Texto Blanco)
+    Pieza* pBajoCursor = getPiezaEnCursor();
+    if (pBajoCursor != nullptr) {
+        ETSIDI::setTextColor(1, 1, 1);
+        ETSIDI::setFont("fuentes/jedisf.ttf", 20); // Tamaño aumentado
+        char info[64];
+        sprintf(info, "OBJ: %s", (pBajoCursor->GetBando() == turnoActual) ? "ALIADO" : "ENEMIGO");
+        ETSIDI::printxy(info, xTexto, 750);
+
+        sprintf(info, "VIDA: %d%%", pBajoCursor->GetVida());
+        ETSIDI::printxy(info, xTexto, 720);
+    }
+
+    // TÍTULO PODERES
+    ETSIDI::setTextColor(1, 1, 0);
+    ETSIDI::setFont("fuentes/jedisf.ttf", 26); // Título grande
+    ETSIDI::printxy("PODERES", xTexto, 650);
+
+    // LISTADO DE HECHIZOS
+    std::vector<Hechizo*>& lista = (turnoActual == 1) ? hechizosAzules : hechizosRojos;
+    for (int i = 0; i < (int)lista.size(); i++) {
+        float yPos = 580 - (i * 60); // Más separación para evitar solape de letras grandes
+
+        if (lista[i]->estaUsado()) ETSIDI::setTextColor(0.5, 0.5, 0.5);
+        else (turnoActual == 1) ? ETSIDI::setTextColor(0.4, 1, 1) : ETSIDI::setTextColor(1, 0.4, 0.4);
+
+        ETSIDI::setFont("fuentes/jedisf.ttf", 18); // Letra de hechizo legible
+        char buffer[64];
+        sprintf(buffer, "[%d] %s", i + 1, lista[i]->getNombre().c_str());
+        ETSIDI::printxy(buffer, xTexto, yPos);
+
+        if (lista[i]->estaUsado()) {
+            ETSIDI::setFont("fuentes/jedisf.ttf", 14);
+            ETSIDI::printxy("   AGOTADO", xTexto, yPos - 20);
+        }
+    }
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+}
+
+
+void Tablero::dibujaBarraVida(float x, float z, int vidaActual, int vidaMax) {
+    float porcentaje = (float)vidaActual / (float)vidaMax;
+    float ancho = 1.6f;
+    float alto = 0.4f;
+    float yBase = 3.5f;
+
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // 1. Fondo negro (Este sí respeta la profundidad del mundo)
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_QUADS);
+    glVertex3f(x - ancho / 2, yBase, z);
+    glVertex3f(x + ancho / 2, yBase, z);
+    glVertex3f(x + ancho / 2, yBase + alto, z);
+    glVertex3f(x - ancho / 2, yBase + alto, z);
+    glEnd();
+
+    // 2. Relleno de color (Desactivamos profundidad para que se pegue al fondo negro)
+    glDisable(GL_DEPTH_TEST);
+    if (porcentaje > 0) {
+        if (porcentaje > 0.6)      glColor3f(0.0f, 1.0f, 0.0f); // Verde
+        else if (porcentaje > 0.3) glColor3f(1.0f, 1.0f, 0.0f); // Amarillo
+        else                       glColor3f(1.0f, 0.0f, 0.0f); // Rojo
+
+        glBegin(GL_QUADS);
+        glVertex3f(x - ancho / 2, yBase, z);
+        glVertex3f(x - ancho / 2 + (ancho * porcentaje), yBase, z);
+        glVertex3f(x - ancho / 2 + (ancho * porcentaje), yBase + alto, z);
+        glVertex3f(x - ancho / 2, yBase + alto, z);
+        glEnd();
+    }
+
+    // 3. Borde blanco
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glLineWidth(1.5f);
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(x - ancho / 2, yBase, z);
+    glVertex3f(x + ancho / 2, yBase, z);
+    glVertex3f(x + ancho / 2, yBase + alto, z);
+    glVertex3f(x - ancho / 2, yBase + alto, z);
+    glEnd();
+
+    glEnable(GL_DEPTH_TEST); // Reactivamos profundidad para el resto del juego
+    glEnable(GL_LIGHTING);
+}
