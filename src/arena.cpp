@@ -2,6 +2,7 @@
 #include "piezas.h"
 #include "tablero.h"
 #include "ETSIDI.h"
+#include <cmath>
 
 Arena::Arena()
 {
@@ -10,10 +11,7 @@ Arena::Arena()
 
     flashAtacante = 0;
     flashDefensor = 0;
-
-    hechizosAzules.push_back(new HechizoHeal());
-    hechizosRojos.push_back(new HechizoHeal());
-
+   
     if (estrellas.empty()) {
         for (int i = 0; i < 200; i++) {
             Estrella* e = new Estrella;
@@ -27,10 +25,6 @@ Arena::Arena()
 }
 
 Arena::~Arena() {
-    for (auto h : hechizosAzules) delete h;
-    for (auto h : hechizosRojos) delete h;
-    hechizosAzules.clear();
-    hechizosRojos.clear();
     for (auto e : estrellas) {
         delete e;
     }
@@ -43,9 +37,7 @@ void Arena::inicializa(Pieza* a, Pieza* b, int turnoInicial)
     defensor = b;
     turno = turnoInicial;
 
-    // Reseteamos el uso de los hechizos para la nueva batalla
-    for (auto h : hechizosAzules) h->setUsado(false);
-    for (auto h : hechizosRojos) h->setUsado(false);
+ 
 
     // --- DAÑO DE PRUEBA: Empiezan dañados al 50% ---
     if (atacante != nullptr) {
@@ -65,74 +57,72 @@ void Arena::dibuja()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // --- ¡MECANISMO DE SEGURIDAD PARA PRUEBAS! ---
-    // Si entramos a la arena y no hay piezas reales asignadas (nullptr),
-    // creamos dos drones de prueba temporales dañados para poder testear el hechizo.
+    // Seguridad para pruebas
     if (atacante == nullptr || defensor == nullptr) {
         static Drone dronePruebaJedi(1);
         static Drone dronePruebaSith(2);
-
         atacante = &dronePruebaJedi;
         defensor = &dronePruebaSith;
-
-        // Les forzamos la vida al 50% para ver cómo se curan
-        atacante->SetVida(50);
-        defensor->SetVida(50);
     }
 
-    // 1. ESTRELLAS 2D
+    // 1. FONDO (Estrellas)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(-20, 20, -15, 15);
-
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
     glDisable(GL_DEPTH_TEST);
     dibujaFondo();
     glEnable(GL_DEPTH_TEST);
 
-    // 2. ESCENA DE COMBATE 3D
+    // 2. ESCENA 3D
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(50.0, 1000.0 / 800.0, 1.0, 100.0);
-
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    gluLookAt(0.0, 6.0, 18.0,
-        0.0, -1.5, 0.0,
-        0.0, 1.0, 0.0);
+    gluLookAt(0.0, 6.0, 18.0, 0.0, -1.5, 0.0, 0.0, 1.0, 0.0);
 
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
     dibujaPlataforma();
 
-    // --- ENFRENTAMIENTO CARA A CARA ---
+    // --- ENFRENTAMIENTO CON OFFSETS INDIVIDUALES ---
     if (atacante != nullptr && defensor != nullptr) {
-        // A) ATACANTE (Izquierda: Rota a 270º para mirar al centro)
+        float xA = -4.0f; // Posicion Atacante
+        float xD = 4.0f;  // Posicion Defensor
+
+        // -----------------------------------------------------------
+        // AJUSTA ESTOS VALORES SI NO SE MIRAN DE FRENTE:
+        // Si el Atacante mira a la cámara, prueba 90 o -90.
+        // Si el Atacante mira atrás, prueba 180.
+        float offsetAtacante = 180.0f;
+        float offsetDefensor = 0.0f;
+        // -----------------------------------------------------------
+
+        // A) ATACANTE (Lado izquierdo)
         glPushMatrix();
-        glTranslatef(-4.0f, -3.7f, 0.0f);
-        glRotatef(270.0f, 0.0f, 1.0f, 0.0f);
-        glScalef(2.8f, 2.8f, 2.8f);
+        glTranslatef(xA, -3.7f, 0.0f);
+        // Calculamos ángulo hacia el defensor
+        float angA = atan2(xD - xA, 0.0f) * 180.0f / 3.14159f;
+        glRotatef(angA + offsetAtacante, 0.0f, 1.0f, 0.0f);
+        glScalef(2.0f, 2.0f, 2.0f);
         atacante->DibujarCombate(0.0f, 0.0f, false);
         glPopMatrix();
 
-        // B) DEFENSOR (Derecha: Rota a 90º para mirar al centro)
+        // B) DEFENSOR (Lado derecho)
         glPushMatrix();
-        glTranslatef(4.0f, -3.7f, 0.0f);
-        glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-        glScalef(2.8f, 2.8f, 2.8f);
+        glTranslatef(xD, -3.7f, 0.0f);
+        // Calculamos ángulo hacia el atacante
+        float angD = atan2(xA - xD, 0.0f) * 180.0f / 3.14159f;
+        glRotatef(angD + offsetDefensor, 0.0f, 1.0f, 0.0f);
+        glScalef(2.0f, 2.0f, 2.0f);
         defensor->DibujarCombate(0.0f, 0.0f, false);
         glPopMatrix();
     }
-
-    BarraVida();
-    dibujoHechizos();
-}
-
-void Arena::dibujaPlataforma()
+}void Arena::dibujaPlataforma()
 {
     GLfloat mat_ambient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
     GLfloat mat_diffuse[] = { 0.3f, 0.3f, 0.3f, 1.0f };
@@ -239,48 +229,6 @@ void Arena::BarraVida()
     glMatrixMode(GL_MODELVIEW);
 }
 
-void Arena::dibujoHechizos()
-{
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0, 1000, 0, 800);
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    std::vector<Hechizo*>& lista = (turno == 1) ? hechizosAzules : hechizosRojos;
-
-    int x = (turno == 1) ? 50 : 550;
-    int y = 550;
-
-    // Título de la sección
-    glColor3f(1.0f, 1.0f, 0.0f);
-    dibujaTexto(x, y, (turno == 1) ? "HECHIZOS JEDI:" : "HECHIZOS SITH:");
-
-    y -= 40;
-    for (int i = 0; i < (int)lista.size(); i++) {
-        std::string texto = std::to_string(i + 1) + ". ";
-
-        if (lista[i]->estaUsado()) {
-            glColor3f(0.5f, 0.5f, 0.5f); // Gris si está agotado
-            texto += "AGOTADO";
-        }
-        else {
-            glColor3f(1.0f, 1.0f, 0.0f); // Amarillo si está disponible
-            texto += lista[i]->getNombre();
-        }
-
-        dibujaTexto(x, y, texto.c_str());
-        y -= 30;
-    }
-
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-}
 
 void Arena::dibujaTexto(float x, float y, const char* texto)
 {
@@ -314,32 +262,6 @@ void Arena::dibujaTexto(float x, float y, const char* texto)
     glPopMatrix();
 }
 
-void Arena::lanzarHechizo(int indice)
-{
-    std::vector<Hechizo*>& lista = (turno == 1) ? hechizosAzules : hechizosRojos;
-
-    if (indice < 0 || indice >= (int)lista.size()) return;
-
-    Hechizo* hechizoSeleccionado = lista[indice];
-
-    if (hechizoSeleccionado->estaUsado()) {
-        return;
-    }
-
-    Pieza* piezaAliada = (turno == 1) ? atacante : defensor;
-
-    if (piezaAliada != nullptr) {
-        piezaAliada->SetVida(100); // Curamos la salud de la pieza
-        hechizoSeleccionado->setUsado(true); // Marcamos el hechizo como AGOTADO
-
-        extern Mundo mundo;
-        hechizoSeleccionado->aplica(mundo, piezaAliada);
-
-        ETSIDI::play("sonidos/laser.wav");
-    }
-
-    glutPostRedisplay();
-}
 
 void Arena::inicializaEstrellas(int cantidad)
 {

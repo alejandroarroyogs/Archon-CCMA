@@ -7,7 +7,7 @@
 #include "arena.h"
 #include "jugador.h"
 
-Estado estado = MENU;
+Estado estado = JUGANDO;
 int modoJuego = 0;
 
 Mundo::Mundo() {
@@ -59,21 +59,20 @@ void Mundo::tecla(unsigned char key)
 {
     switch (estado) {
     case JUGANDO:
+        // Verificamos si el jugador actual es humano antes de pasar la tecla
         if ((tablero.turnoActual == 1 && j1 != 0 && !j1->esIA()) ||
             (tablero.turnoActual == 2 && j2 != 0 && !j2->esIA()))
         {
+            // Ahora tablero.tecla ya gestiona internamente los hechizos (1-9)
             tablero.tecla(key);
         }
         break;
+
     case COMBATE:
-        if (key >= '1' && key <= '9') {
-            int indiceHechizo = key - '1';
-            arena.lanzarHechizo(indiceHechizo);
-        }
+        
         break;
     }
 }
-
 void Mundo::teclaLiberada(unsigned char key)
 {
     if (estado == JUGANDO) {

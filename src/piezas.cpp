@@ -8,7 +8,7 @@ Pieza::Pieza(int b, int v, int d)
 {
 
     bando = b;
-    vida = 100;
+    vida = 50;
     vidaMax = 100; // La vida máxima al empezar es la vida completa
     danio = d;
 }
