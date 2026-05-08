@@ -5,6 +5,14 @@
 #include "mundo.h"      
 #include <cmath>
 #include "ETSIDI.h"
+#include "jedi.h"
+#include "tirador.h"
+#include "babyyoda.h"
+#include "darthvader.h"
+#include "caballerojedi.h"
+#include "skywalker.h"
+#include "drone.h"
+#include "chewbacca.h"
 
 Tablero::Tablero() {
     for (int i = 0; i < TAM_TABLERO; i++) {

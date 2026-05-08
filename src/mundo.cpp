@@ -7,7 +7,7 @@
 #include "arena.h"
 #include "jugador.h"
 
-Estado estado = JUGANDO;
+Estado estado = MENU;
 int modoJuego = 0;
 
 Mundo::Mundo() {

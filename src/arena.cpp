@@ -57,6 +57,7 @@ void Arena::dibuja()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    /*
     // Seguridad para pruebas
     if (atacante == nullptr || defensor == nullptr) {
         static Drone dronePruebaJedi(1);
@@ -64,6 +65,7 @@ void Arena::dibuja()
         atacante = &dronePruebaJedi;
         defensor = &dronePruebaSith;
     }
+    */
 
     // 1. FONDO (Estrellas)
     glMatrixMode(GL_PROJECTION);
