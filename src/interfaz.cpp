@@ -117,12 +117,12 @@ void Interfaz::movimientoRaton(int x, int y)
         else ratontexto = -1;
     }
     else if (estado == SELEC_MODO) {
-        if (mvX >= 450 && mvX <= 550 && mvY >= 370 && mvY <= 440) ratontexto = 0;      // JEDI
-        else if (mvX >= 310 && mvX <= 690 && mvY >= 210 && mvY <= 280) ratontexto = 1; // JEDI VS SITH
+        if (mvX >= 420 && mvX <= 580 && mvY >= 370 && mvY <= 440) ratontexto = 0;      // JEDI
+        else if (mvX >= 280 && mvX <= 720 && mvY >= 210 && mvY <= 280) ratontexto = 1; // JEDI VS SITH
         else ratontexto = -1;
     }
     else if (estado == INSTRUC) {
-        if (mvX >= 780 && mvX <= 950 && mvY >= 700 && mvY <= 770) ratontexto = 2;      // ATRAS
+        if (mvX >= 740 && mvX <= 950 && mvY >= 80 && mvY <= 170) ratontexto = 2;      // ATRAS
         else ratontexto = -1;
     }
 
@@ -140,17 +140,73 @@ void Interfaz::dibujaMenu()
 void Interfaz::eligeModo()
 {
     dibujaFondo();
-    dibujaTexto(280, 600, "MODO DE JUEGO", -1);
-    dibujaTexto(465, 380, "JEDI", 0);
-    dibujaTexto(320, 220, "JEDI vs SITH", 1);
+    dibujaTexto(265, 600, "MODO DE JUEGO", -1);
+    dibujaTexto(430, 380, "JEDI", 0);
+    dibujaTexto(285, 220, "JEDI vs SITH", 1);
 
 }
 
 void Interfaz::dibujaInstrucciones()
 {
-    dibujaFondo();
+   /* dibujaFondo();
+
     //Tengo que redactar mejorlas instrucciones
-    dibujaTexto(350, 700, "INSTRUCCIONES", -1);
-    dibujaTexto(100, 450, "USA LAS FLECHAS PARA MOVERTE", -1);
-    dibujaTexto(800, 720, "ATRAS", 2);
+    dibujaTexto(350, 650, "INSTRUCCIONES", -1);
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, 1000, 0, 800);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glDisable(GL_LIGHTING);
+    glColor3f(1, 1, 1); // Blanco
+    ETSIDI::setTextColor(1, 1, 1);
+
+    ETSIDI::setFont("fuentes/jedisf.ttf", 25);
+
+    // Instrucciones breves
+    dibujaTexto(100, 450, "- OBJETIVO: Domina los 5 Puntos de Poder.", -1);
+    dibujaTexto(100, 400, "- MOVIMIENTO: Clic para elegir, FLECHAS para mover.", -1);
+    dibujaTexto(100, 350, "- COMBATE: FLECHAS para mover, ESPACIO para atacar.", -1);
+    dibujaTexto(100, 300, "- HECHIZOS: Usa teclas 1-7 para poderes unicos.", -1);
+    
+    dibujaTexto(800, 720, "ATRAS", 2);*/
+    dibujaFondo();
+
+    // Título (Usamos dibujaTexto porque es un título)
+    dibujaTexto(260, 650, "INSTRUCCIONES", -1);
+
+    // Configuramos la vista para el texto plano
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, 1000, 0, 800);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glDisable(GL_LIGHTING);
+    glColor3f(1, 1, 1); // Blanco
+    ETSIDI::setTextColor(1, 1, 1);
+
+    // Fuente más pequeña para que quepa la frase entera
+    ETSIDI::setFont("fuentes/jedisf.ttf", 25);
+
+    // Dibujamos con printxy directamente para evitar el conflicto de matrices
+    ETSIDI::printxy("- OBJETIVO: Domina los 5 Puntos de Poder.", 100, 450);
+    ETSIDI::printxy("- MOVIMIENTO: Clic para elegir, FLECHAS para mover.", 100, 400);
+    ETSIDI::printxy("- COMBATE: FLECHAS para mover, ESPACIO para atacar.", 100, 350);
+    ETSIDI::printxy("- HECHIZOS: Usa teclas 1-7 para poderes unicos.", 100, 300);
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+
+    // El botón ATRÁS (Abajo a la derecha para que no estorbe)
+    dibujaTexto(750, 100, "ATRAS", 2);
+
 }

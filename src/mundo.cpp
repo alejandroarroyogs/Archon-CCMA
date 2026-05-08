@@ -8,7 +8,7 @@
 #include "jugador.h"
 #include "controlIA.h"
 
-Estado estado = COMBATE;
+Estado estado = MENU;
 int modoJuego = 0;
 
 Mundo::Mundo() {
