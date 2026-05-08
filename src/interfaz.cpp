@@ -81,12 +81,14 @@ void Interfaz::gestionRaton(int boton, int estadoRaton, int x, int y)
             }
         }
         else if (estado == SELEC_MODO) {
-            if (ratontexto == 0) { // Primera opción (ej: JEDI)
-                modoJuego = 1;
+            if (ratontexto == 0) { 
+                modoJuego = 1; //un jugador
+                mundo.inicializarPartida();
                 estado = JUGANDO;
             }
-            else if (ratontexto == 1) { // Segunda opción (ej: VS SITH)
-                modoJuego = 2;
+            else if (ratontexto == 1) {
+                modoJuego = 2;  //dos jugadores
+                mundo.inicializarPartida();
                 estado = JUGANDO;
             }
         }

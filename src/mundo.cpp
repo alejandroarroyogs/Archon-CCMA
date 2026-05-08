@@ -6,16 +6,19 @@
 #include "hechizos.h"
 #include "arena.h"
 #include "jugador.h"
+#include "controlIA.h"
 
-Estado estado = JUGANDO;
+Estado estado = MENU;
 int modoJuego = 0;
 
 Mundo::Mundo() {
     j1 = 0;
     j2 = 0;
+  
 }
 
 Mundo::~Mundo() {
+
     if (j1) delete j1;
     if (j2) delete j2;
 
@@ -27,6 +30,7 @@ Mundo::~Mundo() {
 
 void Mundo::Inicializar() {
     inicializarPartida();
+    
 }
 
 void Mundo::Dibujar()
@@ -85,21 +89,39 @@ void Mundo::Timer(int value)
     if (estado == JUGANDO) {
         tablero.actualizarMovimiento();
 
-        if (modoJuego == 2 && j2 != 0 && j2->esIA() && tablero.turnoActual == 2) {
-            tablero.moverIA();
-        }
+        // Si es Modo 1 Jugador Y es el turno del bando 2 Y ese jugador es IA
+        if (modoJuego == 1 && tablero.turnoActual == 2 && j2->esIA()) {
+            static int contadorEspera = 0;
+            contadorEspera++;
 
-        glutPostRedisplay();
+            if (contadorEspera > 30) { // Espera medio segundo aprox
+                turnoIA();
+                contadorEspera = 0;
+                tablero.turnoActual = 1; // Devolvemos el turno al humano
+            }
+        }
     }
+    glutPostRedisplay();
+
+
 }
 
 void Mundo::inicializarPartida()
 {
-    if (j1) delete j1;
-    if (j2) delete j2;
 
-    j1 = new jugador(1, false); // Humano (Jedi)
-    j2 = new jugador(2, false); // Humano (Sith)
+    if (j1) { delete j1; j1 = nullptr; }
+    if (j2) { delete j2; j2 = nullptr; }
+    //después del menú, se crea la partida
+    //crear los jugadoressss
+    //el primero siempre persona
+    j1 = new jugador(1, false);
+    //segundo ia o persona según modo juego
+    if (modoJuego == 1) {
+        j2 = new jugador(2, true);
+    }
+    else {
+        j2 = new jugador(2, false);
+    }
 
     tablero.inicializa();
 }
@@ -120,4 +142,9 @@ void Mundo::calcScore()
 void Mundo::cambiaCiclo()
 {
     tablero.turnoActual = (tablero.turnoActual == 1) ? 2 : 1;
+}
+
+void Mundo::turnoIA()
+{
+    ControlIA::ejecutarturno(tablero);
 }

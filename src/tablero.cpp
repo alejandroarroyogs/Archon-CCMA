@@ -267,7 +267,7 @@ void Tablero::actualizarMovimiento() {
 int Tablero::getTamTablero() { return TAM_TABLERO; }
 Pieza* Tablero::getPiezaEnCursor() { return casillas[filaSeleccionada][colSeleccionada]; }
 
-void Tablero::moverIA() {}
+
 void Tablero::lanzarHechizo(int indice) {
     std::vector<Hechizo*>& lista = (turnoActual == 1) ? hechizosAzules : hechizosRojos;
     if (indice < 0 || indice >= (int)lista.size()) return;
