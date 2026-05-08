@@ -14,6 +14,9 @@ class Tablero {
     // --- NUEVO: Gestión de Hechizos ---
     std::vector<Hechizo*> hechizosAzules;
     std::vector<Hechizo*> hechizosRojos;
+   
+    friend class ControlIA;
+
 
 public:
     Tablero();
@@ -36,8 +39,9 @@ public:
     bool piezaSeleccionada;
     int filaOrigen, colOrigen;
     int turnoActual;
-
-    void moverIA();
+//mov general
     int getTurno() { return turnoActual; }
     Pieza* getPiezaEnCursor();
+
+
 };

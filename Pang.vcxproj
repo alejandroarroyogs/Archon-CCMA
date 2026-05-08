@@ -164,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\arena.cpp" />
+    <ClCompile Include="src\controlIA.cpp" />
     <ClCompile Include="src\hechizos.cpp" />
     <ClCompile Include="src\interfaz.cpp" />
     <ClCompile Include="src\jugador.cpp" />
@@ -175,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\arena.h" />
+    <ClInclude Include="src\controlIA.h" />
     <ClInclude Include="src\hechizos.h" />
     <ClInclude Include="src\interfaz.h" />
     <ClInclude Include="src\jugador.h" />

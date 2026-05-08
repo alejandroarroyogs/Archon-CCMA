@@ -4,7 +4,7 @@
 #include "tablero.h"
 #include "piezas.h"
 #include "interfaz.h"
-#include "jugador.h" // AÑADIDO
+#include "jugador.h" 
 
 // Estado del juego
 enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO };
@@ -32,10 +32,12 @@ public:
     void tecla(unsigned char key);
     void teclaLiberada(unsigned char key);
     void Timer(int value);
-    //scores
+    //scores generales->TODAVíA TENGO QUE MEJORARLO
     void inicializarPartida();
     void calcScore();
     void cambiaCiclo();
+    //MOVIMIENTO IAA
+    void turnoIA();
 
 };
 
