@@ -315,7 +315,7 @@ void Tablero::dibujaInterfazHechizos() {
     glEnd();
 
     // Borde Neón
-    if (turnoActual == 1) glColor3f(0.0f, 0.8f, 1.0f);
+    if (turnoActual == 1) glColor3f(0.4f, 1.0f, 1.0f);
     else glColor3f(1.0f, 0.2f, 0.2f);
     glLineWidth(4.0f);
     glBegin(GL_LINES);
@@ -345,8 +345,8 @@ void Tablero::dibujaInterfazHechizos() {
     for (int i = 0; i < (int)lista.size(); i++) {
         float yPos = 580 - (i * 60); // Más separación para evitar solape de letras grandes
 
-        if (lista[i]->estaUsado()) ETSIDI::setTextColor(0.5, 0.5, 0.5);
-        else (turnoActual == 1) ? ETSIDI::setTextColor(0.4, 1, 1) : ETSIDI::setTextColor(1, 0.4, 0.4);
+        if (lista[i]->estaUsado()) ETSIDI::setTextColor(0.5, 0.5, 0.5);//amarillo título
+        else (turnoActual == 1) ? ETSIDI::setTextColor(0.4, 1.0, 0.0) : ETSIDI::setTextColor(1, 0.4, 0.4); //he cambiado a verde por jedi
 
         ETSIDI::setFont("fuentes/jedisf.ttf", 18); // Letra de hechizo legible
         char buffer[64];

@@ -8,7 +8,7 @@
 #include "jugador.h"
 #include "controlIA.h"
 
-Estado estado = MENU;
+Estado estado = COMBATE;
 int modoJuego = 0;
 
 Mundo::Mundo() {
@@ -46,12 +46,15 @@ void Mundo::Dibujar()
         interfaz.eligeModo();
         break;
     case COMBATE:
-        // Dibujamos la arena que ya fue inicializada correctamente desde tablero.cpp
-        arena.setTurno(tablero.turnoActual);
-        arena.ponMusica();
+        // Si entramos en combate y la música no está sonando, la encendemos
+        if (!musicaCombateLanzada) {
+            arena.ponMusica();
+            musicaCombateLanzada = true;
+        }
         arena.dibuja();
         break;
     case JUGANDO:
+        musicaCombateLanzada = false;
         tablero.dibuja();
         break;
     case GAMEOVER:
@@ -73,7 +76,7 @@ void Mundo::tecla(unsigned char key)
         break;
 
     case COMBATE:
-        
+        arena.setTurno(tablero.turnoActual);
         break;
     }
 }

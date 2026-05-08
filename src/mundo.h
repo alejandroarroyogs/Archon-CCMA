@@ -18,7 +18,7 @@ class Mundo
     std::vector<Pieza*>listaPiezas;
     int scoreJEDI;
     int scoreSITH;
-
+    bool musicaCombateLanzada = false;
 
 public:
     Mundo();
