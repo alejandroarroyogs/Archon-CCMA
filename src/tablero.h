@@ -1,15 +1,19 @@
 #pragma once
 #include "piezas.h" 
+#include "hechizos.h"
+#include <vector>
 
-// Para que el tablero sepa que existe el objeto global 'mundo'
 extern class Mundo mundo;
 
 class Tablero {
     static const int TAM_TABLERO = 9;
     Pieza* casillas[TAM_TABLERO][TAM_TABLERO];
-
     bool teclasPulsadas[256];
     int cooldownMovimiento;
+
+    // --- NUEVO: Gestión de Hechizos ---
+    std::vector<Hechizo*> hechizosAzules;
+    std::vector<Hechizo*> hechizosRojos;
 
 public:
     Tablero();
@@ -17,21 +21,20 @@ public:
 
     void inicializa();
     void dibuja();
+    void dibujaInterfazHechizos(); // Para ver la lista en el tablero
 
-    // Gestión de teclado y movimiento
     void tecla(unsigned char key);
     void teclaLiberada(unsigned char key);
     void actualizarMovimiento();
+    void dibujaBarraVida(float x, float z, int vidaActual, int vidaMax);
+
+    // Lógica de lanzamiento
+    void lanzarHechizo(int indice);
 
     static int getTamTablero();
-
-    int filaSeleccionada;
-    int colSeleccionada;
-
+    int filaSeleccionada, colSeleccionada;
     bool piezaSeleccionada;
-    int filaOrigen;
-    int colOrigen;
-
+    int filaOrigen, colOrigen;
     int turnoActual;
 
     void moverIA();

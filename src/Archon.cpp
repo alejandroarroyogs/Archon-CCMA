@@ -17,7 +17,7 @@ void OnKeyboardDown(unsigned char key, int x, int y) {
         if (key >= '1' && key <= '9') {
             int indiceHechizo = key - '1';
             std::cout << "[TECLADO COMBATE] Lanzando hechizo numero: " << key << " (indice " << indiceHechizo << ")" << std::endl;
-            mundo.arena.lanzarHechizo(indiceHechizo);
+           
         }
     }
     else {

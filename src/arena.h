@@ -18,8 +18,6 @@ class Arena
 	int flashDefensor;
 	int turno;
 
-	std::vector<Hechizo*> hechizosAzules;
-	std::vector<Hechizo*> hechizosRojos;
 	std::vector<Estrella*> estrellas; //mem dinam
 
 public:
