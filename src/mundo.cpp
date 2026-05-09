@@ -7,8 +7,9 @@
 #include "arena.h"
 #include "jugador.h"
 #include "controlIA.h"
+#include "fin.h"
 
-Estado estado = MENU;
+Estado estado = GAMEOVER;
 int modoJuego = 0;
 
 Mundo::Mundo() {
@@ -58,6 +59,11 @@ void Mundo::Dibujar()
         tablero.dibuja();
         break;
     case GAMEOVER:
+        if (!musicaCombateLanzada) {
+            fin.ponMusica();
+            musicaCombateLanzada = true;
+        }
+        fin.dibuja();
         break;
     }
 }
@@ -129,18 +135,6 @@ void Mundo::inicializarPartida()
     tablero.inicializa();
 }
 
-void Mundo::calcScore()
-{
-    scoreJEDI = 0;
-    scoreSITH = 0;
-
-    for (Pieza* p : listaPiezas) {
-        if (p->EstaViva()) {
-            if (p->EsAzul()) scoreJEDI += p->GetVida();
-            else scoreSITH += p->GetVida();
-        }
-    }
-}
 
 void Mundo::cambiaCiclo()
 {

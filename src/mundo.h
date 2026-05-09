@@ -5,6 +5,7 @@
 #include "piezas.h"
 #include "interfaz.h"
 #include "jugador.h" 
+#include "fin.h"
 
 // Estado del juego
 enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO };
@@ -16,8 +17,6 @@ class Mundo
     jugador* j1;
     jugador* j2;
     std::vector<Pieza*>listaPiezas;
-    int scoreJEDI;
-    int scoreSITH;
     bool musicaCombateLanzada = false;
 
 public:
@@ -28,13 +27,12 @@ public:
     Interfaz interfaz;
     Tablero tablero;
     Arena arena;
-    //
+    Fin fin;
+    
     void tecla(unsigned char key);
     void teclaLiberada(unsigned char key);
     void Timer(int value);
-    //scores generales->TODAVíA TENGO QUE MEJORARLO
     void inicializarPartida();
-    void calcScore();
     void cambiaCiclo();
     //MOVIMIENTO IAA
     void turnoIA();

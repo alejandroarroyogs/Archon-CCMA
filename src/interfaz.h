@@ -3,7 +3,6 @@
 #include "freeglut.h"
 #include "hechizos.h"
 
-
 class Interfaz
 {
     int ratontexto = -1; //-1 ninguno, 0 jugar, 1 instrucc
