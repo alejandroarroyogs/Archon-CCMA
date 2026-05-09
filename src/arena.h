@@ -26,12 +26,11 @@ public:
 	
 	void inicializa(Pieza* a, Pieza* b, int turnoInicial);
 	void ponMusica();
+	void stopMusica();
 	void dibuja();
 	void dibujaPlataforma();
 	void BarraVida();
-	void dibujoHechizos();
 	void dibujaTexto(float x, float y, const char* texto);
-	void lanzarHechizo(int indice);
 	void setTurno(int t) { turno = t; }
 	void inicializaEstrellas(int cantidad);
 	void dibujaFondo();

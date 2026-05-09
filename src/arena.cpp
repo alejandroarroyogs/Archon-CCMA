@@ -37,7 +37,6 @@ void Arena::inicializa(Pieza* a, Pieza* b, int turnoInicial)
     defensor = b;
     turno = turnoInicial;
 
- 
 
     // --- DAÑO DE PRUEBA: Empiezan dañados al 50% ---
     if (atacante != nullptr) {
@@ -46,17 +45,24 @@ void Arena::inicializa(Pieza* a, Pieza* b, int turnoInicial)
     if (defensor != nullptr) {
         defensor->SetVida(50);
     }
+    
 }
 
 void Arena::ponMusica()
+{
+    ETSIDI::playMusica("sonidos/marcha.mp3", true);
+}
+
+void Arena::stopMusica()
 {
     ETSIDI::playMusica("sonidos/marcha.mp3", false);
 }
 
 void Arena::dibuja()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   
     // Seguridad para pruebas
     if (atacante == nullptr || defensor == nullptr) {
         static Drone dronePruebaJedi(1);
@@ -140,7 +146,7 @@ void Arena::dibuja()
     glDisable(GL_LIGHTING);
 
     // --- RESTAURAMOS EL COLOR DEL TURNO ---
-    if (turno == 1) glColor3f(0.0f, 0.6f, 1.0f); // Azul Jedi
+    if (turno == 1) glColor3f(0.4f, 1.0f, 0.0f); // Verde Jedi
     else glColor3f(1.0f, 0.0f, 0.0f);            // Rojo Sith
 
     glLineWidth(5.0f);
