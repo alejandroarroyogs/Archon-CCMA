@@ -11,6 +11,10 @@ Pieza::Pieza(int b, int v, int d)
     vida = 50;
     vidaMax = 100; // La vida máxima al empezar es la vida completa
     danio = d;
+
+    // Inicialización del bloqueo
+    estaEncarcelada = false;
+    turnosPrision = 0;
 }
 
 Pieza::~Pieza()

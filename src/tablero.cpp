@@ -5,6 +5,7 @@
 #include "mundo.h"      
 #include <cmath>
 #include "ETSIDI.h"
+#include <iostream>
 
 Tablero::Tablero() {
     for (int i = 0; i < TAM_TABLERO; i++) {
@@ -19,12 +20,40 @@ Tablero::Tablero() {
     colOrigen = 0;
     turnoActual = 1;
 
+    // Inicialización del estado de selección de hechizos
+    seleccionandoHechizo = false;
+    indiceHechizoSeleccionado = -1;
+
+    // Mensajes de error
+    mensajeErrorHechizo = "";
+    timerMensajeError = 0;
+
+    // Estado del teleport
+    faseTeleportDestino = false;
+    filaTeleportOrigen = -1;
+    colTeleportOrigen = -1;
+
     for (int i = 0; i < 256; i++) {
         teclasPulsadas[i] = false;
     }
     cooldownMovimiento = 0;
+
+    // Cargar los 7 hechizos en orden
     hechizosAzules.push_back(new HechizoHeal());
+    hechizosAzules.push_back(new HechizoTeleport());
+    hechizosAzules.push_back(new HechizoShiftTime());
+    hechizosAzules.push_back(new HechizoExchange());
+    hechizosAzules.push_back(new HechizoSummon());
+    hechizosAzules.push_back(new HechizoRevive());
+    hechizosAzules.push_back(new HechizoImprison());
+
     hechizosRojos.push_back(new HechizoHeal());
+    hechizosRojos.push_back(new HechizoTeleport());
+    hechizosRojos.push_back(new HechizoShiftTime());
+    hechizosRojos.push_back(new HechizoExchange());
+    hechizosRojos.push_back(new HechizoSummon());
+    hechizosRojos.push_back(new HechizoRevive());
+    hechizosRojos.push_back(new HechizoImprison());
 }
 
 Tablero::~Tablero() {
@@ -119,8 +148,8 @@ void Tablero::dibuja() {
                 else glColor3ub(180, 180, 180);
             }
 
-            float x = (j - 4) * 2.0f;
-            float z = (i - 4) * 2.0f;
+            float x = (float)(j - 4) * 2.0f;
+            float z = (float)(i - 4) * 2.0f;
 
             glBegin(GL_QUADS);
             glVertex3f(x - 1.0f, 0.0f, z - 1.0f);
@@ -128,47 +157,140 @@ void Tablero::dibuja() {
             glVertex3f(x + 1.0f, 0.0f, z + 1.0f);
             glVertex3f(x - 1.0f, 0.0f, z + 1.0f);
             glEnd();
-
-            if (i == filaSeleccionada && j == colSeleccionada) {
-                glColor3ub(255, 0, 0);
-                glLineWidth(4.0f);
-                glBegin(GL_LINE_LOOP);
-                glVertex3f(x - 1.0f, 0.15f, z - 1.0f);
-                glVertex3f(x + 1.0f, 0.15f, z - 1.0f);
-                glVertex3f(x + 1.0f, 0.15f, z + 1.0f);
-                glVertex3f(x - 1.0f, 0.15f, z + 1.0f);
-                glEnd();
-            }
-
-            if (piezaSeleccionada && i == filaOrigen && j == colOrigen) {
-                glColor3ub(0, 255, 0);
-                glLineWidth(4.0f);
-                glBegin(GL_LINE_LOOP);
-                glVertex3f(x - 1.0f, 0.15f, z - 1.0f);
-                glVertex3f(x + 1.0f, 0.15f, z - 1.0f);
-                glVertex3f(x + 1.0f, 0.15f, z + 1.0f);
-                glVertex3f(x - 1.0f, 0.15f, z + 1.0f);
-                glEnd();
-            }
-
             if (casillas[i][j] != nullptr) {
                 glEnable(GL_LIGHTING);
                 glPushMatrix();
                 glTranslatef(x, 0.1f, z);
                 casillas[i][j]->Dibujar(0.0f, 0.0f);
                 glPopMatrix();
+
+                // === DIBUJO DE LA CAJA DE CARBONITA SEMITRANSPARENTE ===
+                if (casillas[i][j]->estaEncarcelada) {
+                    glPushMatrix();
+                    glTranslatef(x, 1.2f, z); // La elevamos un poco para que cubra el cuerpo de la pieza
+
+                    glDisable(GL_LIGHTING);
+                    glEnable(GL_BLEND);
+                    glDepthMask(GL_FALSE); // Evita errores de oclusión con transparencias
+
+                    // 1. CARAS TRANSLÚCIDAS (Azul holograma suave)
+                    glColor4f(0.0f, 0.5f, 1.0f, 0.35f); // RGB + 35% de opacidad (Alpha)
+                    glPushMatrix();
+                    glScalef(1.8f, 2.4f, 1.8f); // Escalamos el cubo para envolver la pieza
+                    glutSolidCube(1.0);
+                    glPopMatrix();
+
+                    // 2. BORDES SÓLIDOS (Efecto neón brillante)
+                    glColor4f(0.0f, 0.8f, 1.0f, 0.9f); // Azul celeste casi opaco
+                    glLineWidth(2.0f);
+                    glPushMatrix();
+                    glScalef(1.8f, 2.4f, 1.8f);
+                    glutWireCube(1.0);
+                    glPopMatrix();
+                    glLineWidth(1.0f);
+
+                    glDepthMask(GL_TRUE); // Restauramos la escritura en el buffer de profundidad
+                    glDisable(GL_BLEND);
+                    glEnable(GL_LIGHTING);
+                    glPopMatrix();
+                }
+
                 dibujaBarraVida(x, z, casillas[i][j]->GetVida(), 100);
                 glDisable(GL_LIGHTING);
-               
             }
         }
     }
 
+    // === DIBUJO DEL CURSOR DE SELECCIÓN ===
+    glPushMatrix();
+
+    float posX = (float)(colSeleccionada - 4) * 2.0f;
+    float posZ = (float)(filaSeleccionada - 4) * 2.0f;
+    glTranslatef(posX, 0.16f, posZ);
+
+    glDisable(GL_LIGHTING);
+
+    if (seleccionandoHechizo) {
+        float t = (float)glutGet(GLUT_ELAPSED_TIME) / 150.0f;
+        float intensidad = 0.5f + 0.5f * sinf(t);
+
+        if (faseTeleportDestino) {
+            // FASE 2: Azul Celeste parpadeante
+            glColor3f(0.0f * intensidad, 0.8f * intensidad, 1.0f);
+            glLineWidth(4.0f);
+        }
+        else {
+            // FASE 1: Amarillo/Dorado parpadeante
+            glColor3f(1.0f * intensidad, 0.85f * intensidad, 0.0f);
+            glLineWidth(4.0f);
+        }
+    }
+    else if (piezaSeleccionada) {
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glLineWidth(3.0f);
+    }
+    else {
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glLineWidth(3.0f);
+    }
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(-1.0f, 0.0f, -1.0f);
+    glVertex3f(1.0f, 0.0f, -1.0f);
+    glVertex3f(1.0f, 0.0f, 1.0f);
+    glVertex3f(-1.0f, 0.0f, 1.0f);
+    glEnd();
+
+    glLineWidth(1.0f);
+    glEnable(GL_LIGHTING);
     glPopMatrix();
+
+    // Dibujo del origen de movimiento estándar
+    if (piezaSeleccionada) {
+        glPushMatrix();
+        float origX = (float)(colOrigen - 4) * 2.0f;
+        float origZ = (float)(filaOrigen - 4) * 2.0f;
+        glTranslatef(origX, 0.16f, origZ);
+        glDisable(GL_LIGHTING);
+        glColor3ub(0, 255, 0);
+        glLineWidth(3.0f);
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(-1.0f, 0.0f, -1.0f);
+        glVertex3f(1.0f, 0.0f, -1.0f);
+        glVertex3f(1.0f, 0.0f, 1.0f);
+        glVertex3f(-1.0f, 0.0f, 1.0f);
+        glEnd();
+        glLineWidth(1.0f);
+        glEnable(GL_LIGHTING);
+        glPopMatrix();
+    }
+
+    // Dibujo de la marca de la pieza que va a saltar por el Salto Hiperespacial
+    if (seleccionandoHechizo && faseTeleportDestino) {
+        glPushMatrix();
+        float origX = (float)(colTeleportOrigen - 4) * 2.0f;
+        float origZ = (float)(filaTeleportOrigen - 4) * 2.0f;
+        glTranslatef(origX, 0.16f, origZ);
+        glDisable(GL_LIGHTING);
+        glColor3ub(255, 215, 0); // Amarillo estático
+        glLineWidth(2.0f);
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(-1.0f, 0.0f, -1.0f);
+        glVertex3f(1.0f, 0.0f, -1.0f);
+        glVertex3f(1.0f, 0.0f, 1.0f);
+        glVertex3f(-1.0f, 0.0f, 1.0f);
+        glEnd();
+        glLineWidth(1.0f);
+        glEnable(GL_LIGHTING);
+        glPopMatrix();
+    }
+
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
     glEnable(GL_LIGHTING);
+
     dibujaInterfazHechizos();
 }
 
@@ -176,45 +298,68 @@ void Tablero::tecla(unsigned char key) {
     teclasPulsadas[key] = true;
     actualizarMovimiento();
 
-    if (key >= '1' && key <= '9') {
-        lanzarHechizo(key - '1'); // Esta es la nueva función que creamos en Tablero
-    }
-    else {
-        teclasPulsadas[key] = true;
-    }
-    if (key == ' ') {
-        if (!piezaSeleccionada) {
-            Pieza* p = casillas[filaSeleccionada][colSeleccionada];
-            if (p != nullptr && p->GetBando() == turnoActual) {
-                piezaSeleccionada = true;
-                filaOrigen = filaSeleccionada;
-                colOrigen = colSeleccionada;
-            }
+    // --- CASO 1: Estamos apuntando un hechizo ---
+    if (seleccionandoHechizo) {
+        if (key == 13 || key == ' ') {
+            teclasPulsadas[key] = false; // Evitamos repeticiones
+            confirmarObjetivoHechizo();
+            return;
         }
-        else {
-            Pieza* piezaOrigen = casillas[filaOrigen][colOrigen];
-            Pieza* piezaDestino = casillas[filaSeleccionada][colSeleccionada];
+        if (key == 8 || key == 'q' || key == 'Q') {
+            teclasPulsadas[key] = false;
+            cancelarSeleccionHechizo();
+            return;
+        }
+    }
 
-            if (piezaDestino == nullptr) {
-                if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
-                    casillas[filaSeleccionada][colSeleccionada] = piezaOrigen;
-                    casillas[filaOrigen][colOrigen] = nullptr;
-                    piezaSeleccionada = false;
-                    turnoActual = (turnoActual == 1) ? 2 : 1;
+    // --- CASO 2: Modo normal de juego ---
+    if (!seleccionandoHechizo) {
+        if (key >= '1' && key <= '7') {
+            int indiceHechizo = key - '1';
+            lanzarHechizo(indiceHechizo);
+            return;
+        }
+
+        if (key == ' ') {
+            if (!piezaSeleccionada) {
+                Pieza* p = casillas[filaSeleccionada][colSeleccionada];
+                if (p != nullptr && p->GetBando() == turnoActual) {
+                    // --- NUEVA VALIDACIÓN: ¿Está en carbonita? ---
+                    if (p->estaEncarcelada) {
+                        mensajeErrorHechizo = "UNIDAD CONGELADA EN CARBONITA";
+                        timerMensajeError = 120;
+                        std::cout << "[TABLERO] No puedes mover esta pieza. Esta congelada por "
+                            << p->turnosPrision << " turnos." << std::endl;
+                        return;
+                    }
+                    piezaSeleccionada = true;
+                    filaOrigen = filaSeleccionada;
+                    colOrigen = colSeleccionada;
                 }
             }
-            // --- ¡AQUÍ ESTÁ LA TRANSFERENCIA DE COMBATE INTEGRADA! ---
-            else if (piezaDestino->GetBando() != turnoActual) {
-                if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
-                    // Sincronizamos la arena pasándole los combatientes reales
-                    mundo.arena.inicializa(piezaOrigen, piezaDestino, turnoActual);
-                    // Cambiamos el estado a COMBATE
-                    estado = COMBATE;
+            else {
+                Pieza* piezaOrigen = casillas[filaOrigen][colOrigen];
+                Pieza* piezaDestino = casillas[filaSeleccionada][colSeleccionada];
+
+                if (piezaDestino == nullptr) {
+                    if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
+                        casillas[filaSeleccionada][colSeleccionada] = piezaOrigen;
+                        casillas[filaOrigen][colOrigen] = nullptr;
+                        piezaSeleccionada = false;
+                        actualizarTurnosPrision();
+                        turnoActual = (turnoActual == 1) ? 2 : 1;
+                    }
+                }
+                else if (piezaDestino->GetBando() != turnoActual) {
+                    if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
+                        mundo.arena.inicializa(piezaOrigen, piezaDestino, turnoActual);
+                        estado = COMBATE;
+                        piezaSeleccionada = false;
+                    }
+                }
+                else if (filaSeleccionada == filaOrigen && colSeleccionada == colOrigen) {
                     piezaSeleccionada = false;
                 }
-            }
-            else if (filaSeleccionada == filaOrigen && colSeleccionada == colOrigen) {
-                piezaSeleccionada = false;
             }
         }
     }
@@ -264,27 +409,135 @@ void Tablero::actualizarMovimiento() {
     }
 }
 
-int Tablero::getTamTablero() { return TAM_TABLERO; }
-Pieza* Tablero::getPiezaEnCursor() { return casillas[filaSeleccionada][colSeleccionada]; }
+Pieza* Tablero::getPiezaEnCursor() {
+    return casillas[filaSeleccionada][colSeleccionada];
+}
 
+bool Tablero::liderEstaVivo(int bando) {
+    for (int i = 0; i < TAM_TABLERO; i++) {
+        for (int j = 0; j < TAM_TABLERO; j++) {
+            Pieza* p = casillas[i][j];
+            if (p != nullptr && p->GetBando() == bando) {
+                if (bando == 1 && dynamic_cast<BabyYoda*>(p) != nullptr) return true;
+                if (bando == 2 && dynamic_cast<DarthVader*>(p) != nullptr) return true;
+            }
+        }
+    }
+    return false;
+}
 
 void Tablero::lanzarHechizo(int indice) {
-    std::vector<Hechizo*>& lista = (turnoActual == 1) ? hechizosAzules : hechizosRojos;
-    if (indice < 0 || indice >= (int)lista.size()) return;
+    Pieza* p = casillas[filaSeleccionada][colSeleccionada];
 
-    Hechizo* h = lista[indice];
-    if (h->estaUsado()) return;
+    bool esLanzadorValido = false;
+    if (p != nullptr && p->GetBando() == turnoActual) {
+        if (turnoActual == 1 && dynamic_cast<BabyYoda*>(p) != nullptr) esLanzadorValido = true;
+        else if (turnoActual == 2 && dynamic_cast<DarthVader*>(p) != nullptr) esLanzadorValido = true;
+    }
 
-    Pieza* objetivo = getPiezaEnCursor();
-    if (objetivo != nullptr && objetivo->GetBando() == turnoActual) {
-        // Solo el líder debería poder lanzarlo (puedes añadir esa condición aquí)
-        if (h->aplica(mundo, objetivo)) {
-            h->setUsado(true);
-            ETSIDI::play("sonidos/curar.wav");
+    if (!esLanzadorValido) {
+        mensajeErrorHechizo = "SOLO EL HECHICERO PUEDE LANZAR HECHIZOS";
+        timerMensajeError = 120;
+        return;
+    }
+
+    std::vector<Hechizo*>& mazo = (turnoActual == 1) ? hechizosAzules : hechizosRojos;
+
+    if (indice < 0 || indice >= (int)mazo.size()) return;
+
+    Hechizo* hechizo = mazo[indice];
+
+    if (hechizo->estaUsado()) {
+        mensajeErrorHechizo = "ESTE PODER YA FUE AGOTADO";
+        timerMensajeError = 100;
+        return;
+    }
+
+    seleccionandoHechizo = true;
+    indiceHechizoSeleccionado = indice;
+    faseTeleportDestino = false;
+
+    std::cout << "[HECHIZO] Selector activado para: " << hechizo->getNombre() << std::endl;
+}
+
+void Tablero::confirmarObjetivoHechizo() {
+    if (!seleccionandoHechizo || indiceHechizoSeleccionado == -1) return;
+
+    std::vector<Hechizo*>& mazo = (turnoActual == 1) ? hechizosAzules : hechizosRojos;
+    Hechizo* hechizo = mazo[indiceHechizoSeleccionado];
+
+    // === LOGICA DEL SALTO HIPERESPACIAL (Indice 1) ===
+    if (indiceHechizoSeleccionado == 1) {
+        Pieza* objetivo = casillas[filaSeleccionada][colSeleccionada];
+
+        // Fase 1: Seleccionar aliado
+        if (!faseTeleportDestino) {
+            if (objetivo == nullptr) {
+                mensajeErrorHechizo = "SELECCIONA UNA PIEZA ALIADA";
+                timerMensajeError = 100;
+                return;
+            }
+            if (objetivo->GetBando() != turnoActual) {
+                mensajeErrorHechizo = "NO PUEDES MOVER ENEMIGOS";
+                timerMensajeError = 100;
+                return;
+            }
+
+            filaTeleportOrigen = filaSeleccionada;
+            colTeleportOrigen = colSeleccionada;
+            faseTeleportDestino = true;
+            return;
+        }
+        // Fase 2: Mover a destino vacío
+        else {
+            if (objetivo != nullptr) {
+                mensajeErrorHechizo = "LA CASILLA DEBE ESTAR VACIA";
+                timerMensajeError = 100;
+                return;
+            }
+
+            if (hechizo->aplica(mundo, nullptr)) {
+                casillas[filaSeleccionada][colSeleccionada] = casillas[filaTeleportOrigen][colTeleportOrigen];
+                casillas[filaTeleportOrigen][colTeleportOrigen] = nullptr;
+
+                hechizo->setUsado(true);
+                seleccionandoHechizo = false;
+                indiceHechizoSeleccionado = -1;
+                faseTeleportDestino = false;
+                filaTeleportOrigen = -1;
+                colTeleportOrigen = -1;
+
+                actualizarTurnosPrision();
+                turnoActual = (turnoActual == 1) ? 2 : 1;
+            }
+        }
+    }
+    // === LÓGICA ESTÁNDAR PARA EL RESTO DE HECHIZOS (Curación, etc.) ===
+    else {
+        Pieza* objetivo = casillas[filaSeleccionada][colSeleccionada];
+
+        if (hechizo->aplica(mundo, objetivo)) {
+            hechizo->setUsado(true);
+            seleccionandoHechizo = false;
+            indiceHechizoSeleccionado = -1;
+            turnoActual = (turnoActual == 1) ? 2 : 1;
+        }
+        else {
+            std::cout << "[HECHIZO] Objetivo invalido." << std::endl;
         }
     }
 }
 
+void Tablero::cancelarSeleccionHechizo() {
+    if (seleccionandoHechizo) {
+        seleccionandoHechizo = false;
+        indiceHechizoSeleccionado = -1;
+        faseTeleportDestino = false;
+        filaTeleportOrigen = -1;
+        colTeleportOrigen = -1;
+        std::cout << "[HECHIZO] Lanzamiento cancelado." << std::endl;
+    }
+}
 
 void Tablero::dibujaInterfazHechizos() {
     glDisable(GL_LIGHTING);
@@ -302,61 +555,95 @@ void Tablero::dibujaInterfazHechizos() {
     glPushMatrix();
     glLoadIdentity();
 
-    float panelAncho = 230.0f; // Un poco más ancho para albergar letras grandes
-    float xInicio = (turnoActual == 1) ? 0 : 1000 - panelAncho;
-    float xTexto = xInicio + 15;
+    float panelAncho = 230.0f;
+    float xInicio = (turnoActual == 1) ? 0.0f : 1000.0f - panelAncho;
+    float xTexto = xInicio + 15.0f;
     float xBorde = (turnoActual == 1) ? panelAncho : xInicio;
 
-    // Fondo Panel (Más opaco para mejorar contraste)
     glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
     glBegin(GL_QUADS);
-    glVertex2f(xInicio, 800); glVertex2f(xInicio + panelAncho, 800);
-    glVertex2f(xInicio + panelAncho, 0); glVertex2f(xInicio, 0);
+    glVertex2f(xInicio, 800.0f); glVertex2f(xInicio + panelAncho, 800.0f);
+    glVertex2f(xInicio + panelAncho, 0.0f); glVertex2f(xInicio, 0.0f);
     glEnd();
 
-    // Borde Neón
     if (turnoActual == 1) glColor3f(0.4f, 1.0f, 1.0f);
     else glColor3f(1.0f, 0.2f, 0.2f);
     glLineWidth(4.0f);
     glBegin(GL_LINES);
-    glVertex2f(xBorde, 800); glVertex2f(xBorde, 0);
+    glVertex2f(xBorde, 800.0f); glVertex2f(xBorde, 0.0f);
     glEnd();
 
-    // INFO OBJETIVO (Texto Blanco)
+    // Dibujo del HUD de información del objetivo
     Pieza* pBajoCursor = getPiezaEnCursor();
-    if (pBajoCursor != nullptr) {
-        ETSIDI::setTextColor(1, 1, 1);
-        ETSIDI::setFont("fuentes/jedisf.ttf", 20); // Tamaño aumentado
+    if (seleccionandoHechizo && faseTeleportDestino) {
+        ETSIDI::setTextColor(0.0f, 0.8f, 1.0f);
+        ETSIDI::setFont("fuentes/jedisf.ttf", 20);
+        ETSIDI::printxy("DESTINO", (int)xTexto, 750);
+
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f);
+        ETSIDI::setFont("fuentes/jedisf.ttf", 16);
+        ETSIDI::printxy("ELIGE CASILLA VACIA", (int)xTexto, 720);
+    }
+    else if (pBajoCursor != nullptr) {
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f);
+        ETSIDI::setFont("fuentes/jedisf.ttf", 20);
         char info[64];
         sprintf(info, "OBJ: %s", (pBajoCursor->GetBando() == turnoActual) ? "ALIADO" : "ENEMIGO");
-        ETSIDI::printxy(info, xTexto, 750);
+        ETSIDI::printxy(info, (int)xTexto, 750);
 
         sprintf(info, "VIDA: %d%%", pBajoCursor->GetVida());
-        ETSIDI::printxy(info, xTexto, 720);
+        ETSIDI::printxy(info, (int)xTexto, 720);
     }
 
-    // TÍTULO PODERES
-    ETSIDI::setTextColor(1, 1, 0);
-    ETSIDI::setFont("fuentes/jedisf.ttf", 26); // Título grande
-    ETSIDI::printxy("PODERES", xTexto, 650);
+    ETSIDI::setTextColor(1.0f, 1.0f, 0.0f);
+    ETSIDI::setFont("fuentes/jedisf.ttf", 26);
+    ETSIDI::printxy("PODERES", (int)xTexto, 650);
 
-    // LISTADO DE HECHIZOS
     std::vector<Hechizo*>& lista = (turnoActual == 1) ? hechizosAzules : hechizosRojos;
     for (int i = 0; i < (int)lista.size(); i++) {
-        float yPos = 580 - (i * 60); // Más separación para evitar solape de letras grandes
+        float yPos = 580.0f - ((float)i * 60.0f);
 
-        if (lista[i]->estaUsado()) ETSIDI::setTextColor(0.5, 0.5, 0.5);//amarillo título
-        else (turnoActual == 1) ? ETSIDI::setTextColor(0.4, 1.0, 0.0) : ETSIDI::setTextColor(1, 0.4, 0.4); //he cambiado a verde por jedi
+        if (lista[i]->estaUsado()) ETSIDI::setTextColor(0.5f, 0.5f, 0.5f);
+        else (turnoActual == 1) ? ETSIDI::setTextColor(0.4f, 1.0f, 0.0f) : ETSIDI::setTextColor(1.0f, 0.4f, 0.4f);
 
-        ETSIDI::setFont("fuentes/jedisf.ttf", 18); // Letra de hechizo legible
+        ETSIDI::setFont("fuentes/jedisf.ttf", 18);
         char buffer[64];
         sprintf(buffer, "[%d] %s", i + 1, lista[i]->getNombre().c_str());
-        ETSIDI::printxy(buffer, xTexto, yPos);
+        ETSIDI::printxy(buffer, (int)xTexto, (int)yPos);
 
         if (lista[i]->estaUsado()) {
             ETSIDI::setFont("fuentes/jedisf.ttf", 14);
-            ETSIDI::printxy("   AGOTADO", xTexto, yPos - 20);
+            ETSIDI::printxy("   AGOTADO", (int)xTexto, (int)(yPos - 20.0f));
         }
+    }
+
+    // Dibujo del Mensaje de Advertencia Temporal
+    if (timerMensajeError > 0 && !mensajeErrorHechizo.empty()) {
+        timerMensajeError--;
+
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        gluOrtho2D(0, 1000, 0, 800);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+
+        glDisable(GL_LIGHTING);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        float factorColor = 0.6f + 0.4f * sinf((float)timerMensajeError * 0.2f);
+        ETSIDI::setTextColor(1.0f * factorColor, 0.1f, 0.1f);
+        ETSIDI::setFont("fuentes/jedisf.ttf", 30);
+
+        ETSIDI::printxy(mensajeErrorHechizo.c_str(), 180, 730);
+
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+        glMatrixMode(GL_MODELVIEW);
     }
 
     glPopMatrix();
@@ -366,7 +653,6 @@ void Tablero::dibujaInterfazHechizos() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
 }
-
 
 void Tablero::dibujaBarraVida(float x, float z, int vidaActual, int vidaMax) {
     float porcentaje = (float)vidaActual / (float)vidaMax;
@@ -378,40 +664,46 @@ void Tablero::dibujaBarraVida(float x, float z, int vidaActual, int vidaMax) {
     glDisable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    // 1. Fondo negro (Este sí respeta la profundidad del mundo)
     glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_QUADS);
-    glVertex3f(x - ancho / 2, yBase, z);
-    glVertex3f(x + ancho / 2, yBase, z);
-    glVertex3f(x + ancho / 2, yBase + alto, z);
-    glVertex3f(x - ancho / 2, yBase + alto, z);
+    glVertex3f(x - ancho / 2.0f, yBase, z);
+    glVertex3f(x + ancho / 2.0f, yBase, z);
+    glVertex3f(x + ancho / 2.0f, yBase + alto, z);
+    glVertex3f(x - ancho / 2.0f, yBase + alto, z);
     glEnd();
 
-    // 2. Relleno de color (Desactivamos profundidad para que se pegue al fondo negro)
     glDisable(GL_DEPTH_TEST);
-    if (porcentaje > 0) {
-        if (porcentaje > 0.6)      glColor3f(0.0f, 1.0f, 0.0f); // Verde
-        else if (porcentaje > 0.3) glColor3f(1.0f, 1.0f, 0.0f); // Amarillo
-        else                       glColor3f(1.0f, 0.0f, 0.0f); // Rojo
+    if (porcentaje > 0.0f) {
+        if (porcentaje > 0.6f)      glColor3f(0.0f, 1.0f, 0.0f);
+        else if (porcentaje > 0.3f) glColor3f(1.0f, 1.0f, 0.0f);
+        else                       glColor3f(1.0f, 0.0f, 0.0f);
 
         glBegin(GL_QUADS);
-        glVertex3f(x - ancho / 2, yBase, z);
-        glVertex3f(x - ancho / 2 + (ancho * porcentaje), yBase, z);
-        glVertex3f(x - ancho / 2 + (ancho * porcentaje), yBase + alto, z);
-        glVertex3f(x - ancho / 2, yBase + alto, z);
+        glVertex3f(x - ancho / 2.0f, yBase, z);
+        glVertex3f(x - ancho / 2.0f + (ancho * porcentaje), yBase, z);
+        glVertex3f(x - ancho / 2.0f + (ancho * porcentaje), yBase + alto, z);
+        glVertex3f(x - ancho / 2.0f, yBase + alto, z);
         glEnd();
     }
 
-    // 3. Borde blanco
     glColor3f(1.0f, 1.0f, 1.0f);
     glLineWidth(1.5f);
     glBegin(GL_LINE_LOOP);
-    glVertex3f(x - ancho / 2, yBase, z);
-    glVertex3f(x + ancho / 2, yBase, z);
-    glVertex3f(x + ancho / 2, yBase + alto, z);
-    glVertex3f(x - ancho / 2, yBase + alto, z);
+    glVertex3f(x - ancho / 2.0f, yBase, z);
+    glVertex3f(x + ancho / 2.0f, yBase, z);
+    glVertex3f(x + ancho / 2.0f, yBase + alto, z);
+    glVertex3f(x - ancho / 2.0f, yBase + alto, z);
     glEnd();
 
-    glEnable(GL_DEPTH_TEST); // Reactivamos profundidad para el resto del juego
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
+}
+void Tablero::actualizarTurnosPrision() {
+    for (int i = 0; i < TAM_TABLERO; i++) {
+        for (int j = 0; j < TAM_TABLERO; j++) {
+            if (casillas[i][j] != nullptr) {
+                casillas[i][j]->reducirCondena();
+            }
+        }
+    }
 }

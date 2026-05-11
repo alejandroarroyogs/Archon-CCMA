@@ -33,6 +33,19 @@ public:
     virtual void DibujarCombate(float x, float z, bool flash) = 0;
 
     void recuperarVida(int cantidad);
+
+    // --- Estado de Bloqueo Carbonita ---
+    bool estaEncarcelada;
+    int turnosPrision;     // Contador de turnos restantes en carbonita
+
+    // Funciones auxiliares
+    void encarcelar(int turnos) { estaEncarcelada = true; turnosPrision = turnos; }
+    void reducirCondena() {
+        if (turnosPrision > 0) {
+            turnosPrision--;
+            if (turnosPrision == 0) estaEncarcelada = false;
+        }
+    }
 };
 
 //Jedi/sith  7 por equipo
