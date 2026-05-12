@@ -3,19 +3,19 @@
 #include "hechizos.h"
 #include <vector>
 #include <string>
+#include "logica.h"
 
 extern class Mundo mundo;
 
 class Tablero {
     static const int TAM_TABLERO = 9;
-    bool teclasPulsadas[256];
-    int cooldownMovimiento;
 
     // --- Gestión de Hechizos ---
     std::vector<Hechizo*> hechizosAzules;
     std::vector<Hechizo*> hechizosRojos;
 
     friend class ControlIA;
+    friend class Logica;
 
     // Métodos auxiliares privados para la lógica interna de los hechizos
     bool liderEstaVivo(int bando);
@@ -28,6 +28,10 @@ class Tablero {
     int timerMensajeError;
 
 public:
+    
+    bool teclasPulsadas[256];
+    int cooldownMovimiento;
+    Logica logica;
     Pieza* casillas[TAM_TABLERO][TAM_TABLERO];
     Tablero();
     virtual ~Tablero();
@@ -38,7 +42,6 @@ public:
 
     void tecla(unsigned char key);
     void teclaLiberada(unsigned char key);
-    void actualizarMovimiento();
     void dibujaBarraVida(float x, float z, int vidaActual, int vidaMax);
 
     // Lógica de lanzamiento y selección

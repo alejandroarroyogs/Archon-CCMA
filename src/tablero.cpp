@@ -7,7 +7,8 @@
 #include "ETSIDI.h"
 #include <iostream>
 
-Tablero::Tablero() {
+
+Tablero::Tablero() : logica(this) {
     for (int i = 0; i < TAM_TABLERO; i++) {
         for (int j = 0; j < TAM_TABLERO; j++) {
             casillas[i][j] = nullptr;
@@ -232,84 +233,17 @@ void Tablero::dibuja() {
 }
 
 void Tablero::tecla(unsigned char key) {
-    teclasPulsadas[key] = true;
-    actualizarMovimiento();
-
-    if (seleccionandoHechizo) {
-        if (key == 13 || key == ' ') {
-            teclasPulsadas[key] = false;
-            confirmarObjetivoHechizo();
-            return;
-        }
-        if (key == 8 || key == 'q' || key == 'Q') {
-            teclasPulsadas[key] = false;
-            cancelarSeleccionHechizo();
-            return;
-        }
-    }
-
-    if (!seleccionandoHechizo) {
-        if (key >= '1' && key <= '6') {
-            int indiceHechizo = key - '1';
-            lanzarHechizo(indiceHechizo);
-            return;
-        }
-
-        if (key == ' ') {
-            if (!piezaSeleccionada) {
-                Pieza* p = casillas[filaSeleccionada][colSeleccionada];
-                if (p != nullptr && p->GetBando() == turnoActual) {
-                    if (p->estaEncarcelada) {
-                        mensajeErrorHechizo = "UNIDAD CONGELADA EN CARBONITA";
-                        timerMensajeError = 120;
-                        return;
-                    }
-                    piezaSeleccionada = true;
-                    filaOrigen = filaSeleccionada; colOrigen = colSeleccionada;
-                }
-            }
-            else {
-                Pieza* piezaOrigen = casillas[filaOrigen][colOrigen];
-                Pieza* piezaDestino = casillas[filaSeleccionada][colSeleccionada];
-
-                if (piezaDestino == nullptr) {
-                    if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
-                        casillas[filaSeleccionada][colSeleccionada] = piezaOrigen;
-                        casillas[filaOrigen][colOrigen] = nullptr;
-                        piezaSeleccionada = false;
-                        actualizarTurnosPrision();
-                        turnoActual = (turnoActual == 1) ? 2 : 1;
-                    }
-                }
-                else if (piezaDestino->GetBando() != turnoActual) {
-                    if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
-                        mundo.arena.inicializa(piezaOrigen, piezaDestino, turnoActual);
-                        estado = COMBATE;
-                        piezaSeleccionada = false;
-                    }
-                }
-                else if (filaSeleccionada == filaOrigen && colSeleccionada == colOrigen) {
-                    piezaSeleccionada = false;
-                }
-            }
-        }
-    }
-    glutPostRedisplay();
+    
+    logica.tecla(key);
+    
+    
 }
 
 void Tablero::teclaLiberada(unsigned char key) {
     teclasPulsadas[key] = false;
 }
 
-void Tablero::actualizarMovimiento() {
-    if (cooldownMovimiento > 0) { cooldownMovimiento--; return; }
-    bool seHaMovido = false;
-    if (teclasPulsadas['w'] || teclasPulsadas['W']) { if (filaSeleccionada < TAM_TABLERO - 1) { filaSeleccionada++; seHaMovido = true; } }
-    if (teclasPulsadas['s'] || teclasPulsadas['S']) { if (filaSeleccionada > 0) { filaSeleccionada--; seHaMovido = true; } }
-    if (teclasPulsadas['a'] || teclasPulsadas['A']) { if (colSeleccionada < TAM_TABLERO - 1) { colSeleccionada++; seHaMovido = true; } }
-    if (teclasPulsadas['d'] || teclasPulsadas['D']) { if (colSeleccionada > 0) { colSeleccionada--; seHaMovido = true; } }
-    if (seHaMovido) cooldownMovimiento = 2;
-}
+
 
 Pieza* Tablero::getPiezaEnCursor() { return casillas[filaSeleccionada][colSeleccionada]; }
 

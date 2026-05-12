@@ -96,7 +96,7 @@ void Mundo::teclaLiberada(unsigned char key)
 void Mundo::Timer(int value)
 {
     if (estado == JUGANDO) {
-        tablero.actualizarMovimiento();
+        tablero.logica.actualizarMovimiento();
 
         // Si es Modo 1 Jugador Y es el turno del bando 2 Y ese jugador es IA
         if (modoJuego == 1 && tablero.turnoActual == 2 && j2->esIA()) {
