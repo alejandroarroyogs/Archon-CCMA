@@ -16,7 +16,6 @@ class Mundo
 {
     jugador* j1;
     jugador* j2;
-    std::vector<Pieza*>listaPiezas;
     bool musicaCombateLanzada = false;
 
 public:
@@ -28,6 +27,7 @@ public:
     Tablero tablero;
     Arena arena;
     Fin fin;
+    std::vector<Pieza*>listaPiezas;
     
     void tecla(unsigned char key);
     void teclaLiberada(unsigned char key);

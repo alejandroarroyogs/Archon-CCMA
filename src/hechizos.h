@@ -3,7 +3,6 @@
 #include <vector>
 #include "piezas.h"
 
-
 class Mundo;
 
 class Hechizo {
@@ -14,16 +13,15 @@ public:
     Hechizo(std::string nombre) : _nombre(nombre), _yaUsado(false) {}
     virtual ~Hechizo() {}
 
-    //Polimorfismo
+    // Polimorfismo puro
     virtual bool aplica(Mundo& mundo, Pieza* objetivo = nullptr) = 0;
-
 
     std::string getNombre() const { return _nombre; }
     bool estaUsado() const { return _yaUsado; }
     void setUsado(bool usado) { _yaUsado = usado; }
 };
 
-class HechizoTeleport : public Hechizo { 
+class HechizoTeleport : public Hechizo {
 public:
     HechizoTeleport() : Hechizo("Salto Hiperespacial") {}
     bool aplica(Mundo& m, Pieza* p) override;
@@ -35,33 +33,29 @@ public:
     bool aplica(Mundo& m, Pieza* p) override;
 };
 
-class HechizoShiftTime : public Hechizo { // Alteración Cronológica [cite: 168]
+class HechizoShiftTime : public Hechizo {
 public:
     HechizoShiftTime() : Hechizo("Alteracion Cronologica") {}
-    bool aplica(Mundo& m, Pieza* p) override;
+    bool aplica(Mundo& m, Pieza* p = nullptr) override;
 };
 
-class HechizoExchange : public Hechizo { // Confusión Mental [cite: 169]
+class HechizoExchange : public Hechizo {
+private:
+    Pieza* _primeraPieza;
 public:
-    HechizoExchange() : Hechizo("Confusion Mental") {}
+    HechizoExchange() : Hechizo("Confusion Mental"), _primeraPieza(nullptr) {}
     bool aplica(Mundo& m, Pieza* p) override;
+    void reset() { _primeraPieza = nullptr; }
 };
 
-class HechizoSummon : public Hechizo { // Llamada a la Flota [cite: 170]
-public:
-    HechizoSummon() : Hechizo("Llamada a la Flota") {}
-    bool aplica(Mundo& m, Pieza* p) override;
-};
-
-class HechizoRevive : public Hechizo { // Espíritu de la Fuerza [cite: 171]
+class HechizoRevive : public Hechizo {
 public:
     HechizoRevive() : Hechizo("Espiritu de la Fuerza") {}
-    bool aplica(Mundo& m, Pieza* p) override;
+    bool aplica(Mundo& m, Pieza* p = nullptr) override;
 };
 
-class HechizoImprison : public Hechizo { // Bloqueo Carbonita [cite: 172]
+class HechizoImprison : public Hechizo {
 public:
     HechizoImprison() : Hechizo("Bloqueo Carbonita") {}
     bool aplica(Mundo& m, Pieza* p) override;
 };
-
