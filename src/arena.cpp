@@ -4,6 +4,15 @@
 #include "ETSIDI.h"
 #include <cmath>
 
+#include "jedi.h"
+#include "tirador.h"
+#include "babyyoda.h"
+#include "darthvader.h"
+#include "caballerojedi.h"
+#include "skywalker.h"
+#include "drone.h"
+#include "chewbacca.h"
+
 Arena::Arena()
 {
     atacante = nullptr;

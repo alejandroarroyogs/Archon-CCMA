@@ -7,6 +7,15 @@
 #include "ETSIDI.h"
 #include <iostream>
 
+#include "jedi.h"
+#include "tirador.h"
+#include "babyyoda.h"
+#include "darthvader.h"
+#include "caballerojedi.h"
+#include "skywalker.h"
+#include "drone.h"
+#include "chewbacca.h"
+
 Tablero::Tablero() {
     for (int i = 0; i < TAM_TABLERO; i++) {
         for (int j = 0; j < TAM_TABLERO; j++) {
@@ -322,7 +331,7 @@ bool Tablero::liderEstaVivo(int bando) {
                 if (bando == 2 && dynamic_cast<DarthVader*>(p) != nullptr) return true;
             }
         }
-    }
+    }       
     return false;
 }
 
