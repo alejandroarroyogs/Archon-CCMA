@@ -30,6 +30,7 @@ public:
     std::vector<Pieza*>listaPiezas;
     
     void tecla(unsigned char key);
+    void teclaEspecial(int key);
     void teclaLiberada(unsigned char key);
     void Timer(int value);
     void inicializarPartida();

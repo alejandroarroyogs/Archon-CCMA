@@ -43,7 +43,7 @@ public:
     void tecla(unsigned char key);
     void teclaLiberada(unsigned char key);
     void dibujaBarraVida(float x, float z, int vidaActual, int vidaMax);
-
+    bool esMovimientoValidoVisual(int fila, int col);
     // Lógica de lanzamiento y selección
     void lanzarHechizo(int indice);
 

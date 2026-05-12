@@ -131,10 +131,17 @@ void Tablero::dibuja() {
             bool esEsquina5x5 = (i == 2 || i == 6) && (j == 2 || j == 6);
             bool esCentroAbsoluto = (i == 4 && j == 4);
 
-            if (esEsquina5x5 || esCentroAbsoluto) glColor3ub(255, 215, 0);
+            if (esMovimientoValidoVisual(i, j)) {
+                glColor3ub(0, 180, 0);
+            }
+            else if (esEsquina5x5 || esCentroAbsoluto) {
+                glColor3ub(255, 215, 0);
+            }
             else {
-                if ((i + j) % 2 == 0) glColor3ub(60, 60, 60);
-                else glColor3ub(180, 180, 180);
+                if ((i + j) % 2 == 0)
+                    glColor3ub(60, 60, 60);
+                else
+                    glColor3ub(180, 180, 180);
             }
 
             float x = (float)(j - 4) * 2.0f;
@@ -258,6 +265,25 @@ bool Tablero::liderEstaVivo(int bando) {
         }
     }
     return false;
+}
+bool Tablero::esMovimientoValidoVisual(int fila, int col) {
+
+    if (!piezaSeleccionada)
+        return false;
+
+    Pieza* pieza = casillas[filaOrigen][colOrigen];
+
+    if (pieza == nullptr)
+        return false;
+
+    if (!pieza->MovimientoValido(filaOrigen, colOrigen, fila, col))
+        return false;
+
+    if (casillas[fila][col] != nullptr &&
+        casillas[fila][col]->GetBando() == pieza->GetBando())
+        return false;
+
+    return true;
 }
 
 void Tablero::lanzarHechizo(int indice) {

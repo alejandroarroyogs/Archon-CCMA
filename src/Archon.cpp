@@ -24,6 +24,11 @@ void OnKeyboardDown(unsigned char key, int x, int y) {
         mundo.tecla(key);
     }
 }
+void OnSpecialKey(int key, int x, int y)
+{
+    mundo.teclaEspecial(key);
+    glutPostRedisplay();
+}
 
 void OnMouseClick(int button, int state, int x, int y) {
     mundo.interfaz.gestionRaton(button, state, x, y);
@@ -58,6 +63,7 @@ int main(int argc, char* argv[])
     glutDisplayFunc(OnDraw);
     glutTimerFunc(25, OnTimer, 0);
     glutKeyboardFunc(OnKeyboardDown);
+    glutSpecialFunc(OnSpecialKey);
     glutKeyboardUpFunc([](unsigned char key, int x, int y) { mundo.teclaLiberada(key); });
     glutMouseFunc(OnMouseClick);
     glutPassiveMotionFunc(OnPassiveMotion);

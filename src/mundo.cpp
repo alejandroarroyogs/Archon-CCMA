@@ -86,6 +86,10 @@ void Mundo::tecla(unsigned char key)
         break;
     }
 }
+void Mundo::teclaEspecial(int key)
+{
+    tablero.logica.teclaEspecial(key);
+}
 void Mundo::teclaLiberada(unsigned char key)
 {
     if (estado == JUGANDO) {

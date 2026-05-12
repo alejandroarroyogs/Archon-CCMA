@@ -1,6 +1,7 @@
 #include "logica.h"
 #include "tablero.h"
 #include "mundo.h"
+#include "freeglut.h"
 
 Logica::Logica(Tablero* t)
 {
@@ -9,10 +10,10 @@ Logica::Logica(Tablero* t)
 void Logica::actualizarMovimiento() {
     if (tablero->cooldownMovimiento > 0) { tablero->cooldownMovimiento--; return; }
     bool seHaMovido = false;
-    if (tablero->teclasPulsadas['w'] || tablero->teclasPulsadas['W']) { if (tablero->filaSeleccionada < Tablero::getTamTablero() - 1) { tablero->filaSeleccionada++; seHaMovido = true; } }
-    if (tablero->teclasPulsadas['s'] || tablero->teclasPulsadas['S']) { if (tablero->filaSeleccionada > 0) { tablero->filaSeleccionada--; seHaMovido = true; } }
-    if (tablero->teclasPulsadas['a'] || tablero->teclasPulsadas['A']) { if (tablero->colSeleccionada < Tablero::getTamTablero() - 1) { tablero->colSeleccionada++; seHaMovido = true; } }
-    if (tablero->teclasPulsadas['d'] || tablero->teclasPulsadas['D']) { if (tablero->colSeleccionada > 0) { tablero->colSeleccionada--; seHaMovido = true; } }
+    if (tablero->turnoActual == 1 && (tablero->teclasPulsadas['w'] || tablero->teclasPulsadas['W'])) { if (tablero->filaSeleccionada < Tablero::getTamTablero() - 1) { tablero->filaSeleccionada++; seHaMovido = true; } }
+    if (tablero->turnoActual == 1 &&(tablero->teclasPulsadas['s'] || tablero->teclasPulsadas['S'])) { if (tablero->filaSeleccionada > 0) { tablero->filaSeleccionada--; seHaMovido = true; } }
+    if (tablero->turnoActual == 1 &&(tablero->teclasPulsadas['a'] || tablero->teclasPulsadas['A'])) { if (tablero->colSeleccionada < Tablero::getTamTablero() - 1) { tablero->colSeleccionada++; seHaMovido = true; } }
+    if (tablero->turnoActual == 1 && (tablero->teclasPulsadas['d'] || tablero->teclasPulsadas['D'])) { if (tablero->colSeleccionada > 0) { tablero->colSeleccionada--; seHaMovido = true; } }
     if (seHaMovido) tablero->cooldownMovimiento = 2;
 }
 void Logica::tecla(unsigned char key)
@@ -85,4 +86,30 @@ void Logica::tecla(unsigned char key)
 void Logica::teclaLiberada(unsigned char key)
 {
     tablero->teclasPulsadas[key] = false;
+}
+
+void Logica::teclaEspecial(int key)
+{
+    if (tablero->turnoActual != 2)
+        return;
+
+    if (key == GLUT_KEY_UP) {
+        if (tablero->filaSeleccionada < Tablero::getTamTablero() - 1)
+            tablero->filaSeleccionada++;
+    }
+
+    if (key == GLUT_KEY_DOWN) {
+        if (tablero->filaSeleccionada > 0)
+            tablero->filaSeleccionada--;
+    }
+
+    if (key == GLUT_KEY_LEFT) {
+        if (tablero->colSeleccionada < Tablero::getTamTablero() - 1)
+            tablero->colSeleccionada++;
+    }
+
+    if (key == GLUT_KEY_RIGHT) {
+        if (tablero->colSeleccionada > 0)
+            tablero->colSeleccionada--;
+    }
 }
