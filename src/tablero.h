@@ -8,7 +8,6 @@ extern class Mundo mundo;
 
 class Tablero {
     static const int TAM_TABLERO = 9;
-    Pieza* casillas[TAM_TABLERO][TAM_TABLERO];
     bool teclasPulsadas[256];
     int cooldownMovimiento;
 
@@ -29,6 +28,7 @@ class Tablero {
     int timerMensajeError;
 
 public:
+    Pieza* casillas[TAM_TABLERO][TAM_TABLERO];
     Tablero();
     virtual ~Tablero();
 
@@ -52,6 +52,11 @@ public:
     bool faseTeleportDestino;          // False = Seleccionando pieza aliada, True = Seleccionando destino vacío
     int filaTeleportOrigen;            // Guarda la fila de la pieza aliada seleccionada
     int colTeleportOrigen;             // Guarda la columna de la pieza aliada seleccionada
+
+    // --- Estado para el Hechizo de Intercambio  ---
+    bool faseExchangeSegunda;          // False = Seleccionando primera pieza, True = Seleccionando segunda pieza
+    int filaExchangeOrigen;            // Guarda la fila de la primera pieza seleccionada
+    int colExchangeOrigen;             // Guarda la columna de la primera pieza seleccionada
 
     static int getTamTablero() { return TAM_TABLERO; }
     int filaSeleccionada, colSeleccionada;
