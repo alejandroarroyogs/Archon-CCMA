@@ -26,12 +26,17 @@ public:
         else {
             glTranslatef(0.6f, 0.0f, 0.2f);
         }
-        glDisable(GL_LIGHTING);
-        if (EsAzul()) glColor3f(0.3f, 0.3f, 1.0f);
-        else glColor3f(1.0f, 0.2f, 0.2f);
+
+        glDisable(GL_LIGHTING);      
+        glEnable(GL_TEXTURE_2D);    
+        glColor3f(1.0f, 1.0f, 1.0f);  
+
         glScalef(3.5f, 3.5f, 3.5f);
         modelo.dibuja();
+
+        glDisable(GL_TEXTURE_2D);    
         glEnable(GL_LIGHTING);
+
         glPopMatrix();
     }
 

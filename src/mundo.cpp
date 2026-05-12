@@ -9,7 +9,7 @@
 #include "controlIA.h"
 #include "fin.h"
 
-Estado estado = MENU;
+Estado estado = JUGANDO;
 int modoJuego = 0;
 
 Mundo::Mundo() {

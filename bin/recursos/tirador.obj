@@ -1,6 +1,7 @@
 # Blender v2.83.7 OBJ File: 'StarWarsDiorama.blend'
 # www.blender.org
-mtllib StarWarsDiorama.mtl
+mtllib tirador.mtl
+usemtl Material
 o Circle
 v -0.037704 0.625957 0.157561
 v -0.023294 0.629550 0.165120
