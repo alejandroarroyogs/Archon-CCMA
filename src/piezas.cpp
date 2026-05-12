@@ -3,10 +3,32 @@
 #include <cmath>
 #include <iostream>
 
+Pieza::Pieza(int b, int v, int d) : bando(b), vida(v), vidaMax(v), danio(d) {}
+Pieza::~Pieza() {}
+
+int Pieza::GetBando() { return bando; }
+int Pieza::GetVida() { return vida; }
+int Pieza::GetDanio() { return danio; }
+void Pieza::SetVida(int v) { vida = v; }
+void Pieza::RecibirDanio(int d) {
+    vida -= d;
+    if (vida < 0) vida = 0;
+}
+void Pieza::recuperarVida(int cantidad) {
+    vida += cantidad;
+    if (vida > vidaMax) vida = vidaMax;
+}
+bool Pieza::EstaViva() { return vida > 0; }
+bool Pieza::EsAzul() { return bando == 1; }
+bool Pieza::EsRoja() { return bando == 2; }
+
+bool EsAzul(Pieza* pieza) { return (pieza != nullptr) && pieza->EsAzul(); }
+bool EsRoja(Pieza* pieza) { return (pieza != nullptr) && pieza->EsRoja(); }
+
+/*
 
 Pieza::Pieza(int b, int v, int d)
 {
-
     bando = b;
     vida = 50;
     vidaMax = 100; // La vida máxima al empezar es la vida completa
@@ -66,6 +88,8 @@ bool Pieza::EsRoja()
 {
     return bando == 2;
 }
+
+
 //////////
 // JEDI // 
 //////////
@@ -164,6 +188,8 @@ void BabyYoda::Dibujar(float x, float z)
         glColor3f(0.2f, 0.8f, 1.0f);
     else
         glColor3f(0.2f, 1.0f, 0.2f);*/
+/*
+
     glColor3f(0.2f, 0.5f, 0.2f);
 
     
@@ -503,4 +529,4 @@ bool EsRoja(Pieza* pieza)
 
     return pieza->EsRoja();
 }
-   
+*/

@@ -1,9 +1,7 @@
 #pragma once
 #include "modeloobj.h"
 
-
-class Pieza
-{
+class Pieza {
 
     int bando; // 1 = azul, 2 = rojo
     int vida;
@@ -15,7 +13,8 @@ class Pieza
 public:
     Pieza(int b, int v, int d);
     virtual ~Pieza();
-    Pieza(int v) : bando(1), vida(v), vidaMax(v), danio(0) {}
+
+   // Pieza(int v) : bando(1), vida(v), vidaMax(v), danio(0) {}
 
     int GetBando();
     int GetVida();
@@ -23,8 +22,8 @@ public:
 
     void SetVida(int v);
     void RecibirDanio(int d);
-    bool EstaViva();
 
+    bool EstaViva();
     bool EsAzul();
     bool EsRoja();
 
@@ -48,6 +47,10 @@ public:
     }
 };
 
+bool EsAzul(Pieza* pieza);
+bool EsRoja(Pieza* pieza);
+
+/*
 //Jedi/sith  7 por equipo
 class Jedi : public Pieza
 {
@@ -155,3 +158,4 @@ public:
 // Funciones auxiliares 
 bool EsAzul(Pieza* pieza);
 bool EsRoja(Pieza* pieza);
+*/

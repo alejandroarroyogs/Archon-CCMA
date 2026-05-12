@@ -164,8 +164,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\arena.cpp" />
-    <ClCompile Include="src\controlIA.cpp" />
-    <ClCompile Include="src\fin.cpp" />
     <ClCompile Include="src\hechizos.cpp" />
     <ClCompile Include="src\interfaz.cpp" />
     <ClCompile Include="src\jugador.cpp" />
@@ -177,15 +175,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\arena.h" />
-    <ClInclude Include="src\controlIA.h" />
-    <ClInclude Include="src\fin.h" />
+    <ClInclude Include="src\babyyoda.h" />
+    <ClInclude Include="src\caballerojedi.h" />
+    <ClInclude Include="src\chewbacca.h" />
+    <ClInclude Include="src\darthvader.h" />
+    <ClInclude Include="src\drone.h" />
     <ClInclude Include="src\hechizos.h" />
     <ClInclude Include="src\interfaz.h" />
+    <ClInclude Include="src\jedi.h" />
     <ClInclude Include="src\jugador.h" />
     <ClInclude Include="src\modeloobj.h" />
     <ClInclude Include="src\mundo.h" />
     <ClInclude Include="src\piezas.h" />
+    <ClInclude Include="src\skywalker.h" />
     <ClInclude Include="src\tablero.h" />
+    <ClInclude Include="src\tirador.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
