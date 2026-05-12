@@ -3,6 +3,12 @@
 #include "tablero.h"
 #include "ETSIDI.h"
 #include <cmath>
+#include"drone.h"
+#include "babyyoda.h"
+#include "caballerojedi.h"
+#include "chewbacca.h"
+#include "darthvader.h"
+#include "skywalker.h"
 
 Arena::Arena()
 {
