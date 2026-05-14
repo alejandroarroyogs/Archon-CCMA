@@ -16,6 +16,7 @@ class Tablero {
     std::vector<Hechizo*> hechizosRojos;
 
     friend class ControlIA;
+    friend class Logica;
 
     // Métodos auxiliares privados para la lógica interna de los hechizos
     bool liderEstaVivo(int bando);
