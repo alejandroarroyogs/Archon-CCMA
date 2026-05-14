@@ -10,6 +10,7 @@ class Pieza {
     friend class Arena;
     friend class Hechizo;
 
+
 public:
     Pieza(int b, int v, int d);
     virtual ~Pieza();

@@ -376,5 +376,6 @@ Release/
 *.obj
 *.log
 *.tlog
+*.vcxproj
+*.filters
 *.exe
-*.dll
