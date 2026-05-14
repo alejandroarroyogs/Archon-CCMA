@@ -169,7 +169,6 @@
     <ClCompile Include="src\hechizos.cpp" />
     <ClCompile Include="src\interfaz.cpp" />
     <ClCompile Include="src\jugador.cpp" />
-    <ClCompile Include="src\logica.cpp" />
     <ClCompile Include="src\modeloobj.cpp" />
     <ClCompile Include="src\mundo.cpp" />
     <ClCompile Include="src\Archon.cpp" />
@@ -189,7 +188,6 @@
     <ClInclude Include="src\interfaz.h" />
     <ClInclude Include="src\jedi.h" />
     <ClInclude Include="src\jugador.h" />
-    <ClInclude Include="src\logica.h" />
     <ClInclude Include="src\modeloobj.h" />
     <ClInclude Include="src\mundo.h" />
     <ClInclude Include="src\piezas.h" />
