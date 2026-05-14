@@ -376,3 +376,5 @@ Release/
 *.obj
 *.log
 *.tlog
+*.exe
+*.dll
