@@ -23,34 +23,42 @@ ModeloOBJ::ModeloOBJ(const std::string& ruta_archivo) {
             iss >> v.x >> v.y >> v.z;
             vertices.push_back(v);
         }
+        else if (tipo == "vn") { // --- NUEVO: Normal ---
+            Vertice3D n;
+            iss >> n.x >> n.y >> n.z;
+            normales.push_back(n);
+        }
         else if (tipo == "f") {
             // Es una cara
             Cara c;
-            std::string dato_vertice;
-            while (iss >> dato_vertice) {
-                std::istringstream viss(dato_vertice);
-                std::string indice_str;
-                std::getline(viss, indice_str, '/'); // Cortamos por la barra '/' si la hay
-                if (!indice_str.empty()) {
-                    // En .obj los índices empiezan en 1, en C++ en 0. Restamos 1.
-                    c.indices_vertices.push_back(std::stoi(indice_str) - 1);
-                }
+            std::string bloque;
+            while (iss >> bloque) {
+                std::stringstream ss(bloque);
+                std::string v_idx, t_idx, n_idx;
+                std::getline(ss, v_idx, '/');
+                std::getline(ss, t_idx, '/');
+                std::getline(ss, n_idx, '/');
+
+                if (!v_idx.empty()) c.indices_vertices.push_back(std::stoi(v_idx) - 1);
+                if (!n_idx.empty()) c.indices_normales.push_back(std::stoi(n_idx) - 1);
+               
             }
             caras.push_back(c);
         }
     }
-    archivo.close();
 }
 
 void ModeloOBJ::dibuja() const {
-    // Dibujamos todas las caras leídas
     for (const auto& cara : caras) {
         glBegin(GL_POLYGON);
-        for (int indice : cara.indices_vertices) {
-            if (indice >= 0 && indice < vertices.size()) {
-                const Vertice3D& v = vertices[indice];
-                glVertex3d(v.x, v.y, v.z);
+        for (size_t i = 0; i < cara.indices_vertices.size(); ++i) {
+            // Enviamos la normal para que la luz funcione
+            if (i < cara.indices_normales.size()) {
+                int nIdx = cara.indices_normales[i];
+                glNormal3d(normales[nIdx].x, normales[nIdx].y, normales[nIdx].z);
             }
+            int vIdx = cara.indices_vertices[i];
+            glVertex3d(vertices[vIdx].x, vertices[vIdx].y, vertices[vIdx].z);
         }
         glEnd();
     }
