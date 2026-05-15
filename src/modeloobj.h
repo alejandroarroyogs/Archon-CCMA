@@ -10,11 +10,13 @@ struct Vertice3D {
 // Estructura auxiliar para guardar las caras 
 struct Cara {
     std::vector<int> indices_vertices;
+    std::vector<int> indices_normales;
 };
 
 class ModeloOBJ {
 private:
     std::vector<Vertice3D> vertices;
+    std::vector<Vertice3D> normales;
     std::vector<Cara> caras;
 
 public:
