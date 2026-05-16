@@ -379,3 +379,4 @@ Release/
 *.vcxproj
 *.filters
 *.exe
+bin/Archon.exe
