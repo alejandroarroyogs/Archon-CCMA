@@ -4,38 +4,44 @@
 #include "mundo.h"
 
 void Interfaz::dibujaTexto(float x, float y, const char* texto, int idBoton)
-{ 
+{
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(0, 1000, 0, 800); // Forzamos 1000x800 píxeles
+    gluOrtho2D(0, 1000, 0, 800);
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
 
     glDisable(GL_LIGHTING);
-    // Forzamos a OpenGL a olvidar la textura del fondo antes de que ETSIDI intente usar la de la fuente.
     glBindTexture(GL_TEXTURE_2D, 0);
-    glEnable(GL_TEXTURE_2D); // ETSIDI la necesita activa para la fuente
+    glEnable(GL_TEXTURE_2D);
 
-    // Modo de mezcla para evitar bordes raros
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // color si pulsado o no:
     if (ratontexto == idBoton && idBoton != -1) {
-        glColor3f(1.0f, 0.4f, 0.0f); // Naranja
+        glColor3f(1.0f, 0.4f, 0.0f); // Naranja al pasar el ratón por encima
         ETSIDI::setTextColor(1.0f, 0.4f, 0.0f);
     }
     else {
-        glColor3f(1.0f, 1.0f, 0.0f); // Amarillo
+        glColor3f(1.0f, 1.0f, 0.0f); // Amarillo por defecto
         ETSIDI::setTextColor(1.0f, 1.0f, 0.0f);
     }
 
-    ETSIDI::setFont("fuentes/jedisf.ttf", 55);
+    if (idBoton >= 10 && idBoton <= 14) {
+        ETSIDI::setFont("fuentes/jedisf.ttf", 36); // Tamaño simétrico para los 5 submenús
+    }
+    else if (idBoton == 2) {
+        ETSIDI::setFont("fuentes/jedisf.ttf", 32); // Tamaño para el botón ATRÁS
+    }
+    else {
+        ETSIDI::setFont("fuentes/jedisf.ttf", 55); // Títulos principales
+    }
+
     ETSIDI::printxy(texto, x, y, 0);
- // Mejor desactivarlo al salir
+
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
 
@@ -43,9 +49,8 @@ void Interfaz::dibujaTexto(float x, float y, const char* texto, int idBoton)
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
-
-
 }
+
 void Interfaz::dibujaFondo()
 {
     glEnable(GL_TEXTURE_2D);
@@ -62,68 +67,93 @@ void Interfaz::dibujaFondo()
     glDisable(GL_TEXTURE_2D);
 }
 
-void Interfaz::gestionRaton(int boton, int estadoRaton, int x, int y)
+void Interfaz::gestionRaton(int boton, int estdo, int x, int y)
 {
-    // Solo actuamos si es el botón izquierdo y se acaba de pulsar (DOWN)
-    if (boton == GLUT_LEFT_BUTTON && estadoRaton == GLUT_DOWN)
+    if (boton == GLUT_LEFT_BUTTON && estdo == GLUT_DOWN)
     {
         ETSIDI::play("sonidos/laser.wav");
-        // Si ratontexto es -1, es que el clic ha sido fuera de cualquier botón
         if (ratontexto == -1) return;
 
-        // Navegación basada en el estado actual y el ID del botón (ratontexto)
         if (estado == MENU) {
-            if (ratontexto == 0) { // Botón JUGAR
-                estado = SELEC_MODO;
-            }
-            else if (ratontexto == 1) { // Botón INSTRUCCIONES
+            if (ratontexto == 0)      estado = SELEC_MODO;
+            else if (ratontexto == 1) {
                 estado = INSTRUC;
+                subMenuActual = INICIO_INSTRUC; // Siempre empezamos en la pantalla de la imagen
             }
         }
         else if (estado == SELEC_MODO) {
-            if (ratontexto == 0) { 
-                modoJuego = 1; //un jugador
+            if (ratontexto == 0) {
+                modoJuego = 1;
                 mundo.inicializarPartida();
                 estado = JUGANDO;
             }
             else if (ratontexto == 1) {
-                modoJuego = 2;  //dos jugadores
+                modoJuego = 2;
                 mundo.inicializarPartida();
                 estado = JUGANDO;
             }
         }
         else if (estado == INSTRUC) {
-            if (ratontexto == 2) { // Botón ATRÁS
-                estado = MENU;
+            if (ratontexto == 2) {
+                // Si estamos en un submenú de texto, volvemos a la pantalla de tu imagen
+                if (subMenuActual != INICIO_INSTRUC) {
+                    subMenuActual = INICIO_INSTRUC;
+                }
+                // Si ya estamos en la pantalla de los 5 botones de tu imagen, volvemos al menú de inicio del juego
+                else {
+                    estado = MENU;
+                }
             }
+            else if (ratontexto == 10) subMenuActual = OBJETIVO;
+            else if (ratontexto == 11) subMenuActual = MOVIMIENTO;
+            else if (ratontexto == 12) subMenuActual = COMBATE;
+            else if (ratontexto == 13) subMenuActual = PODERES;
+            else if (ratontexto == 14) subMenuActual = PUNTUACION;
         }
 
-        // Importante para que el cambio de pantalla sea instantáneo
         glutPostRedisplay();
     }
 }
+
 void Interfaz::movimientoRaton(int x, int y)
 {
-    float anchoReal = glutGet(GLUT_WINDOW_WIDTH);
-    float altoReal = glutGet(GLUT_WINDOW_HEIGHT);
+    float anchoReal = (float)glutGet(GLUT_WINDOW_WIDTH);
+    float altoReal = (float)glutGet(GLUT_WINDOW_HEIGHT);
 
-    // Coordenadas virtuales 1000x800
     float mvX = (x / anchoReal) * 1000.0f;
     float mvY = 800.0f - ((y / altoReal) * 800.0f);
 
     if (estado == MENU) {
-        if (mvX >= 400 && mvX <= 600 && mvY >= 370 && mvY <= 440) ratontexto = 0;      // JUGAR
-        else if (mvX >= 270 && mvX <= 730 && mvY >= 210 && mvY <= 280) ratontexto = 1; // INSTRUCCIONES
+        if (mvX >= 400 && mvX <= 600 && mvY >= 370 && mvY <= 440) ratontexto = 0;
+        else if (mvX >= 270 && mvX <= 730 && mvY >= 210 && mvY <= 280) ratontexto = 1;
         else ratontexto = -1;
     }
     else if (estado == SELEC_MODO) {
-        if (mvX >= 420 && mvX <= 580 && mvY >= 370 && mvY <= 440) ratontexto = 0;      // JEDI
-        else if (mvX >= 280 && mvX <= 720 && mvY >= 210 && mvY <= 280) ratontexto = 1; // JEDI VS SITH
+        if (mvX >= 420 && mvX <= 580 && mvY >= 370 && mvY <= 440) ratontexto = 0;
+        else if (mvX >= 280 && mvX <= 720 && mvY >= 210 && mvY <= 280) ratontexto = 1;
         else ratontexto = -1;
     }
     else if (estado == INSTRUC) {
-        if (mvX >= 740 && mvX <= 950 && mvY >= 80 && mvY <= 170) ratontexto = 2;      // ATRAS
-        else ratontexto = -1;
+        if (mvX >= 400 && mvX <= 600 && mvY >= 90 && mvY <= 160) {
+            ratontexto = 2;
+        }
+        // Si no se está tocando el botón ATRÁS, comprobamos los 5 submenús (solo si estamos en la pantalla índice)
+        else if (subMenuActual == INICIO_INSTRUC) {
+            if (mvX >= 340 && mvX <= 660) {
+                if (mvY >= 510 && mvY <= 555)      ratontexto = 10; // OBJETIVO
+                else if (mvY >= 430 && mvY <= 475) ratontexto = 11; // MOVIMIENTO
+                else if (mvY >= 350 && mvY <= 395) ratontexto = 12; // COMBATE
+                else if (mvY >= 270 && mvY <= 315) ratontexto = 13; // PODERES
+                else if (mvY >= 190 && mvY <= 235) ratontexto = 14; // PUNTUACION
+                else ratontexto = -1;
+            }
+            else {
+                ratontexto = -1;
+            }
+        }
+        else {
+            ratontexto = -1;
+        }
     }
 
     glutPostRedisplay();
@@ -132,81 +162,120 @@ void Interfaz::movimientoRaton(int x, int y)
 void Interfaz::dibujaMenu()
 {
     dibujaFondo();
-
     dibujaTexto(180, 600, "ARCHON CONTRATACA", -1);
     dibujaTexto(410, 380, "JUGAR", 0);
     dibujaTexto(280, 220, "INSTRUCCIONES", 1);
 }
+
 void Interfaz::eligeModo()
 {
     dibujaFondo();
     dibujaTexto(265, 600, "MODO DE JUEGO", -1);
     dibujaTexto(430, 380, "JEDI", 0);
     dibujaTexto(285, 220, "JEDI vs SITH", 1);
-
 }
 
 void Interfaz::dibujaInstrucciones()
 {
-   /* dibujaFondo();
-
-    //Tengo que redactar mejorlas instrucciones
-    dibujaTexto(350, 650, "INSTRUCCIONES", -1);
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0, 1000, 0, 800);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glDisable(GL_LIGHTING);
-    glColor3f(1, 1, 1); // Blanco
-    ETSIDI::setTextColor(1, 1, 1);
-
-    ETSIDI::setFont("fuentes/jedisf.ttf", 25);
-
-    // Instrucciones breves
-    dibujaTexto(100, 450, "- OBJETIVO: Domina los 5 Puntos de Poder.", -1);
-    dibujaTexto(100, 400, "- MOVIMIENTO: Clic para elegir, FLECHAS para mover.", -1);
-    dibujaTexto(100, 350, "- COMBATE: FLECHAS para mover, ESPACIO para atacar.", -1);
-    dibujaTexto(100, 300, "- HECHIZOS: Usa teclas 1-7 para poderes unicos.", -1);
-    
-    dibujaTexto(800, 720, "ATRAS", 2);*/
     dibujaFondo();
 
-    // Título (Usamos dibujaTexto porque es un título)
-    dibujaTexto(260, 650, "INSTRUCCIONES", -1);
+    // === PANTALLA ÍNDICE: TU IMAGEN CON LOS 5 BOTONES ===
+    if (subMenuActual == INICIO_INSTRUC) {
+        dibujaTexto(260, 650, "INSTRUCCIONES", -1);
 
-    // Configuramos la vista para el texto plano
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0, 1000, 0, 800);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
+        dibujaTexto(390, 520, "OBJETIVO", 10);
+        dibujaTexto(360, 440, "MOVIMIENTO", 11);
+        dibujaTexto(385, 360, "COMBATE", 12);
+        dibujaTexto(390, 280, "PODERES", 13);
+        dibujaTexto(365, 200, "PUNTUACION", 14);
 
-    glDisable(GL_LIGHTING);
-    glColor3f(1, 1, 1); // Blanco
-    ETSIDI::setTextColor(1, 1, 1);
+        dibujaTexto(440, 110, "ATRAS", 2);
+    }
+    // === PANTALLAS DE CONTENIDO: CUADRO EXPLICATIVO CON MARCO AZUL ===
+    else {
+        glMatrixMode(GL_PROJECTION); glPushMatrix(); glLoadIdentity(); gluOrtho2D(0, 1000, 0, 800);
+        glMatrixMode(GL_MODELVIEW); glPushMatrix(); glLoadIdentity();
+        glDisable(GL_LIGHTING); glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Fuente más pequeña para que quepa la frase entera
-    ETSIDI::setFont("fuentes/jedisf.ttf", 25);
+        // 1º TÍTULO DINÁMICO CENTRADO
+        ETSIDI::setTextColor(1.0f, 1.0f, 0.0f);
+        ETSIDI::setFont("fuentes/jedisf.ttf", 45);
 
-    // Dibujamos con printxy directamente para evitar el conflicto de matrices
-    ETSIDI::printxy("- OBJETIVO: Domina los 5 Puntos de Poder.", 100, 450);
-    ETSIDI::printxy("- MOVIMIENTO: Clic para elegir, FLECHAS para mover.", 100, 400);
-    ETSIDI::printxy("- COMBATE: FLECHAS para mover, ESPACIO para atacar.", 100, 350);
-    ETSIDI::printxy("- HECHIZOS: Usa teclas 1-7 para poderes unicos.", 100, 300);
+        if (subMenuActual == OBJETIVO)        ETSIDI::printxy("OBJETIVO", 390, 650);
+        else if (subMenuActual == MOVIMIENTO)  ETSIDI::printxy("MOVIMIENTO", 350, 650);
+        else if (subMenuActual == COMBATE)    ETSIDI::printxy("COMBATE", 390, 650);
+        else if (subMenuActual == PODERES)    ETSIDI::printxy("PODERES", 390, 650);
+        else if (subMenuActual == PUNTUACION) ETSIDI::printxy("PUNTUACION", 350, 650);
 
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
+        // Caja contenedora translúcida oscura
+        glColor4f(0.05f, 0.05f, 0.1f, 0.85f);
+        glBegin(GL_QUADS);
+        glVertex2f(150, 570); glVertex2f(850, 570);
+        glVertex2f(850, 220); glVertex2f(150, 220);
+        glEnd();
 
-    // El botón ATRÁS (Abajo a la derecha para que no estorbe)
-    dibujaTexto(750, 100, "ATRAS", 2);
+        // Marco de fuerza azul brillante
+        glColor3f(0.0f, 0.8f, 1.0f); glLineWidth(2.0f);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(150, 570); glVertex2f(850, 570);
+        glVertex2f(850, 220); glVertex2f(150, 220);
+        glEnd();
+        glLineWidth(1.0f);
 
+        // 2º TEXTOS DESCRIPTIVOS INTERNOS
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f);
+        ETSIDI::setFont("fuentes/jedisf.ttf", 20);
+        int xTexto = 180;
+
+        switch (subMenuActual) {
+        case OBJETIVO: 
+            ETSIDI::printxy("- MISION PRINCIPAL: Lidera tus fuerzas hacia la victoria total.", xTexto, 510);
+            ETSIDI::printxy("- CONDICION DE VICTORIA 1: Elimina por completo todas las piezas ", xTexto, 450);
+            ETSIDI::printxy("  de la faccion enemiga en intensos duelos dentro de la arena.", xTexto, 415);
+            ETSIDI::printxy("- CONDICION DE VICTORIA 2: Conquista y asegura de forma simultanea ", xTexto, 345);
+            ETSIDI::printxy("  los 5 Puntos de Poder luminosos distribuidos por el mapa.", xTexto, 310);
+            break;
+
+        case MOVIMIENTO:
+            ETSIDI::printxy("- Usa las teclas W, A, S, D para desplazar el cursor de seleccion.", xTexto, 510);
+            ETSIDI::printxy("- Pulsa la tecla ESPACIO sobre una pieza propia para seleccionarla.", xTexto, 460);
+            ETSIDI::printxy("- Mueve la unidad a una casilla valida y confirma pulsando ESPACIO.", xTexto, 410);
+            ETSIDI::printxy("- Cada unidad (Jedi, Droide, Clon, Vader) posee un rango de", xTexto, 340);
+            ETSIDI::printxy("  desplazamiento y restricciones de terreno unicos.", xTexto, 300);
+            break;
+
+        case COMBATE: 
+            ETSIDI::printxy("- Al moverte a una casilla ocupada por un rival, iniciara el duelo.", xTexto, 510);
+            ETSIDI::printxy("- Entraras de forma automatica en la Plataforma de la Arena 3D.", xTexto, 460);
+            ETSIDI::printxy("- Mueve a tu campeon en tiempo real usando las FLECHAS del teclado.", xTexto, 410);
+            ETSIDI::printxy("- Ejecuta tus ataques y disparos laser pulsando la barra ESPACIO.", xTexto, 340);
+            ETSIDI::printxy("- Ciclo de fuerzas: las casillas de tu color te otorgan bonus de vitalidad", xTexto, 290);
+            ETSIDI::printxy("- asi como las casillas de color contrario, te lo haran mas dificil ", xTexto, 240);
+            ETSIDI::printxy("- asi como las casillas de color contrario, te lo haran mas dificil ", xTexto, 190);
+            break;
+
+        case PODERES: 
+            ETSIDI::printxy("- Coloca el cursor del juego sobre tu Hechicero principal.", xTexto, 510);
+            ETSIDI::printxy("- Canaliza la Fuerza pulsando las teclas numericas del 1 al 6:", xTexto, 460);
+            ETSIDI::printxy("  [1] Curacion  [2] Teletransporte  [3] Alteracion Cronologica ", xTexto, 420);
+            ETSIDI::printxy("  [4] Confusion Mental  [5] Espiritu de la Fuerza  [6] Carbonita ", xTexto, 380);
+            ETSIDI::printxy("- Mueve la mira dorada del hechizo y confirma con ENTER o ESPACIO.", xTexto, 310);
+            ETSIDI::printxy("- Nota: Cada poder consume la accion y se usa una vez por partida.", xTexto, 260);
+            break;
+
+        case PUNTUACION: 
+            ETSIDI::printxy("- El dano sufrido por tus tropas se conserva al regresar al tablero.", xTexto, 510);
+            ETSIDI::printxy("- Las unidades regeneran vitalidad de forma pasiva descansando ", xTexto, 460);
+            ETSIDI::printxy("  sobre los Puntos de Poder o casillas afines a su Fuerza.", xTexto, 410);
+            ETSIDI::printxy("- Al finalizar el juego, tu score dependera del tiempo total,", xTexto, 340);
+            break;
+        default:
+            break;
+        }
+
+        glPopMatrix(); glMatrixMode(GL_PROJECTION); glPopMatrix(); glMatrixMode(GL_MODELVIEW);
+
+       
+        dibujaTexto(440, 110, "ATRAS", 2);
+    }
 }
