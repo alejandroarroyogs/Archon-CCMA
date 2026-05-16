@@ -87,13 +87,13 @@ void Tablero::inicializa() {
     }
 
     casillas[0][0] = new Drone(1);
-    casillas[0][1] = new CaballeroJedi(1);
+    casillas[0][1] = new Chewbacca(1);
     casillas[0][2] = new Tirador(1);
-    casillas[0][3] = new Skywalker(1);
+    casillas[0][3] = new CaballeroJedi(1);
     casillas[0][4] = new BabyYoda(1);
     casillas[0][5] = new Skywalker(1);
     casillas[0][6] = new Tirador(1);
-    casillas[0][7] = new CaballeroJedi(1);
+    casillas[0][7] = new Chewbacca(1);
     casillas[0][8] = new Drone(1);
 
     for (int j = 0; j < TAM_TABLERO; j++) {
@@ -101,13 +101,13 @@ void Tablero::inicializa() {
     }
 
     casillas[8][0] = new Drone(2);
-    casillas[8][1] = new CaballeroJedi(2);
+    casillas[8][1] = new Chewbacca(2);
     casillas[8][2] = new Tirador(2);
-    casillas[8][3] = new DarthVader(2);
+	casillas[8][3] = new CaballeroJedi(2);
     casillas[8][4] = new DarthVader(2);
     casillas[8][5] = new DarthVader(2);
     casillas[8][6] = new Tirador(2);
-    casillas[8][7] = new CaballeroJedi(2);
+    casillas[8][7] = new Chewbacca(2);
     casillas[8][8] = new Drone(2);
 
     for (int j = 0; j < TAM_TABLERO; j++) {
