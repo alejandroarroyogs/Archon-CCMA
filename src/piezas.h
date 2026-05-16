@@ -29,6 +29,7 @@ public:
     bool EsRoja();
 
     virtual bool MovimientoValido(int filaO, int colO, int filaD, int colD) = 0;
+    virtual bool EsVoladora() const { return false; }
     virtual void Dibujar(float x, float z) = 0;
     virtual void DibujarCombate(float x, float z, bool flash) = 0;
 

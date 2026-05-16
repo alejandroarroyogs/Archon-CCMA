@@ -11,9 +11,8 @@ public:
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override {
         int df = abs(filaD - filaO);
         int dc = abs(colD - colO);
-        if (df <= 1 && dc <= 1 && (df != 0 || dc != 0)) return true;
-        if ((df == 2 && dc == 0) || (df == 0 && dc == 2)) return true;
-        return false;
+        if (df == 0 && dc == 0) return false;
+        return (df <= 4 && dc <= 4);
     }
 
     void Dibujar(float x, float z) override {

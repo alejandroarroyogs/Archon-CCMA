@@ -15,11 +15,8 @@ public:
         int df = abs(filaD - filaO);
         int dc = abs(colD - colO);
 
-        // Se mueve hasta 2 casillas (df y dc <= 2) y evita quedarse en el sitio
-        if (df <= 2 && dc <= 2 && (df != 0 || dc != 0))
-            return true;
-
-        return false;
+        if (df == 0 && dc == 0) return false;
+        return (df <= 3 && dc <= 3);
     }
 
     void Dibujar(float x, float z) override
