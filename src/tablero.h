@@ -28,6 +28,8 @@ class Tablero {
     std::string mensajeErrorHechizo;
     int timerMensajeError;
 
+    bool CaminoLibre(int f0, int c0, int fD, int cD);
+
 public:
     Pieza* casillas[TAM_TABLERO][TAM_TABLERO];
     Tablero();

@@ -15,12 +15,7 @@ public:
         int dc = colD - colO;
 
         if (df == 0 && dc == 0) return false;
-        // Movimiento rectilíneo
-        if (df == 0 || dc == 0) return true;
-        // Movimiento diagonal
-        if (abs(df) == abs(dc)) return true;
-
-        return false;
+        return (df <= 3 && dc <= 3);
     }
 
     void Dibujar(float x, float z) override

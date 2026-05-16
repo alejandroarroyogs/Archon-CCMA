@@ -283,18 +283,30 @@ void Tablero::tecla(unsigned char key) {
 
                 if (piezaDestino == nullptr) {
                     if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
-                        casillas[filaSeleccionada][colSeleccionada] = piezaOrigen;
-                        casillas[filaOrigen][colOrigen] = nullptr;
-                        piezaSeleccionada = false;
-                        actualizarTurnosPrision();
-                        turnoActual = (turnoActual == 1) ? 2 : 1;
+                        if (piezaOrigen->EsVoladora() || CaminoLibre(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
+                            casillas[filaSeleccionada][colSeleccionada] = piezaOrigen;
+                            casillas[filaOrigen][colOrigen] = nullptr;
+                            piezaSeleccionada = false;
+                            actualizarTurnosPrision();
+                            turnoActual = (turnoActual == 1) ? 2 : 1;
+                        }
+                        else {
+                            mensajeErrorHechizo = "CAMINO BLOQUEADO POR OTRA PIEZA";
+                            timerMensajeError = 120;
+                        }
                     }
                 }
                 else if (piezaDestino->GetBando() != turnoActual) {
                     if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
-                        mundo.arena.inicializa(piezaOrigen, piezaDestino, turnoActual);
-                        estado = COMBATE;
-                        piezaSeleccionada = false;
+                        if (piezaOrigen->EsVoladora() || CaminoLibre(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
+                            mundo.arena.inicializa(piezaOrigen, piezaDestino, turnoActual);
+                            estado = COMBATE;
+                            piezaSeleccionada = false;
+                        }
+                        else {
+                            mensajeErrorHechizo = "CAMINO BLOQUEADO POR OTRA PIEZA";
+                            timerMensajeError = 120;
+                        }
                     }
                 }
                 else if (filaSeleccionada == filaOrigen && colSeleccionada == colOrigen) {
@@ -542,4 +554,26 @@ void Tablero::dibujaBarraVida(float x, float z, int vidaActual, int vidaMax) {
     glVertex3f(x + ancho / 2.0f, yBase + alto, z); glVertex3f(x - ancho / 2.0f, yBase + alto, z);
     glEnd();
     glEnable(GL_DEPTH_TEST); glEnable(GL_LIGHTING);
+}
+
+bool Tablero::CaminoLibre(int f0, int c0, int fD, int cD) {
+    int df = abs(fD - f0);
+    int dc = abs(cD - c0);
+
+    int stepF = (fD > f0) ? 1 : ((fD < f0) ? -1 : 0);
+    int stepC = (cD > c0) ? 1 : ((cD < c0) ? -1 : 0);
+
+    if (df == 0 || dc == 0 || df == dc) {
+        int f = f0 + stepF;
+        int c = c0 + stepC;
+
+        while (f != fD || c != cD) {
+            if (casillas[f][c] != nullptr) {
+                return false;
+            }
+            f += stepF;
+            c += stepC;
+        }
+    }
+    return true; 
 }

@@ -16,12 +16,10 @@ public:
 
         if (adf == 0 && adc == 0) return false;
 
-        // Recto hasta 3 o Diagonal hasta 3
-        if ((adf == 0 && adc <= 3) || (adc == 0 && adf <= 3)) return true;
-        if (adf == adc && adf <= 3) return true;
-
-        return false;
+        return (adf <= 3 && adc <= 3);
     }
+
+    bool EsVoladora() const override { return true; }
 
     void Dibujar(float x, float z) override
     {
