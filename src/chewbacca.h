@@ -27,7 +27,7 @@ public:
 
         glColor3f(0.4f, 0.2f, 0.05f);
 
-        glScalef(3.0f, 3.0f, 3.0f);
+        glScalef(2.0f, 2.0f, 2.0f);
         modelo.dibuja();
 
         glPopMatrix();
