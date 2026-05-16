@@ -134,8 +134,6 @@ void Interfaz::movimientoRaton(int x, int y)
         else ratontexto = -1;
     }
     else if (estado == INSTRUC) {
-        // CORRECCIÓN DE LA COLISIÓN: unificamos la detección del botón ATRÁS (y = 110)
-        // Damos un margen de seguridad amplio y centrado en la pantalla (X: 400 a 600, Y: 90 a 160)
         if (mvX >= 400 && mvX <= 600 && mvY >= 90 && mvY <= 160) {
             ratontexto = 2;
         }
@@ -230,7 +228,7 @@ void Interfaz::dibujaInstrucciones()
         int xTexto = 180;
 
         switch (subMenuActual) {
-        case OBJETIVO: // [cite: 123, 124, 125]
+        case OBJETIVO: 
             ETSIDI::printxy("- MISION PRINCIPAL: Lidera tus fuerzas hacia la victoria total.", xTexto, 510);
             ETSIDI::printxy("- CONDICION DE VICTORIA 1: Elimina por completo todas las piezas ", xTexto, 450);
             ETSIDI::printxy("  de la faccion enemiga en intensos duelos dentro de la arena.", xTexto, 415);
@@ -246,16 +244,17 @@ void Interfaz::dibujaInstrucciones()
             ETSIDI::printxy("  desplazamiento y restricciones de terreno unicos.", xTexto, 300);
             break;
 
-        case COMBATE: // [cite: 109, 126]
+        case COMBATE: 
             ETSIDI::printxy("- Al moverte a una casilla ocupada por un rival, iniciara el duelo.", xTexto, 510);
             ETSIDI::printxy("- Entraras de forma automatica en la Plataforma de la Arena 3D.", xTexto, 460);
             ETSIDI::printxy("- Mueve a tu campeon en tiempo real usando las FLECHAS del teclado.", xTexto, 410);
             ETSIDI::printxy("- Ejecuta tus ataques y disparos laser pulsando la barra ESPACIO.", xTexto, 340);
-            ETSIDI::printxy("- Recordar el ciclo, las casillas de tu color te otorgan bonus de vitalidad", xTexto, 290);
+            ETSIDI::printxy("- Ciclo de fuerzas: las casillas de tu color te otorgan bonus de vitalidad", xTexto, 290);
             ETSIDI::printxy("- asi como las casillas de color contrario, te lo haran mas dificil ", xTexto, 240);
+            ETSIDI::printxy("- asi como las casillas de color contrario, te lo haran mas dificil ", xTexto, 190);
             break;
 
-        case PODERES: // [cite: 152, 165]
+        case PODERES: 
             ETSIDI::printxy("- Coloca el cursor del juego sobre tu Hechicero principal.", xTexto, 510);
             ETSIDI::printxy("- Canaliza la Fuerza pulsando las teclas numericas del 1 al 6:", xTexto, 460);
             ETSIDI::printxy("  [1] Curacion  [2] Teletransporte  [3] Alteracion Cronologica ", xTexto, 420);
@@ -264,12 +263,11 @@ void Interfaz::dibujaInstrucciones()
             ETSIDI::printxy("- Nota: Cada poder consume la accion y se usa una vez por partida.", xTexto, 260);
             break;
 
-        case PUNTUACION: // [cite: 111, 137]
-            ETSIDI::printxy("- El danio sufrido por tus tropas se conserva al regresar al tablero.", xTexto, 510);
+        case PUNTUACION: 
+            ETSIDI::printxy("- El dano sufrido por tus tropas se conserva al regresar al tablero.", xTexto, 510);
             ETSIDI::printxy("- Las unidades regeneran vitalidad de forma pasiva descansando ", xTexto, 460);
             ETSIDI::printxy("  sobre los Puntos de Poder o casillas afines a su Fuerza.", xTexto, 410);
             ETSIDI::printxy("- Al finalizar el juego, tu score dependera del tiempo total,", xTexto, 340);
-            ETSIDI::printxy("- Intenta batir el record y entrar en el TOP de la galaxia.", xTexto, 300);
             break;
         default:
             break;
@@ -277,7 +275,7 @@ void Interfaz::dibujaInstrucciones()
 
         glPopMatrix(); glMatrixMode(GL_PROJECTION); glPopMatrix(); glMatrixMode(GL_MODELVIEW);
 
-        // 3º BOTÓN ATRÁS INTERNO
+       
         dibujaTexto(440, 110, "ATRAS", 2);
     }
 }
