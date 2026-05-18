@@ -2,6 +2,7 @@
 #include "piezas.h"
 #include "freeglut.h"
 #include "modeloobj.h"
+#include "ETSIDI.h"  
 
 class Tirador : public Pieza {
     ModeloOBJ modelo;
@@ -28,6 +29,8 @@ public:
 
         glDisable(GL_LIGHTING);      
         glEnable(GL_TEXTURE_2D);    
+        glBindTexture(GL_TEXTURE_2D,
+            ETSIDI::getTexture("recursos/colors.png").id);
         glColor3f(1.0f, 1.0f, 1.0f);  
 
         glScalef(3.5f, 3.5f, 3.5f);
@@ -35,7 +38,6 @@ public:
 
         glDisable(GL_TEXTURE_2D);    
         glEnable(GL_LIGHTING);
-
         glPopMatrix();
     }
 

@@ -23,8 +23,8 @@ public:
         glPushMatrix();
         glTranslatef(x, 0.0f, z);
 
-        glDisable(GL_TEXTURE_2D);  
-        glEnable(GL_LIGHTING);     
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_LIGHTING);
         glEnable(GL_COLOR_MATERIAL);
 
         glColor3f(0.4f, 0.2f, 0.05f);

@@ -23,10 +23,15 @@ ModeloOBJ::ModeloOBJ(const std::string& ruta_archivo) {
             iss >> v.x >> v.y >> v.z;
             vertices.push_back(v);
         }
-        else if (tipo == "vn") { // --- NUEVO: Normal ---
+        else if (tipo == "vn") { // Normales de textura
             Vertice3D n;
             iss >> n.x >> n.y >> n.z;
             normales.push_back(n);
+        }
+        else if (tipo == "vt") {  // Coordenadas de textura
+            TexCoord tc;
+            iss >> tc.u >> tc.v;
+            texcoords.push_back(tc);
         }
         else if (tipo == "f") {
             // Es una cara
@@ -40,6 +45,7 @@ ModeloOBJ::ModeloOBJ(const std::string& ruta_archivo) {
                 std::getline(ss, n_idx, '/');
 
                 if (!v_idx.empty()) c.indices_vertices.push_back(std::stoi(v_idx) - 1);
+                if (!t_idx.empty()) c.indices_textura.push_back(std::stoi(t_idx) - 1);
                 if (!n_idx.empty()) c.indices_normales.push_back(std::stoi(n_idx) - 1);
                
             }
@@ -52,11 +58,17 @@ void ModeloOBJ::dibuja() const {
     for (const auto& cara : caras) {
         glBegin(GL_POLYGON);
         for (size_t i = 0; i < cara.indices_vertices.size(); ++i) {
-            // Enviamos la normal para que la luz funcione
+            // Normal
             if (i < cara.indices_normales.size()) {
                 int nIdx = cara.indices_normales[i];
                 glNormal3d(normales[nIdx].x, normales[nIdx].y, normales[nIdx].z);
             }
+            // Coordenada de textura (NUEVO)
+            if (i < cara.indices_textura.size()) {
+                int tIdx = cara.indices_textura[i];
+                glTexCoord2d(texcoords[tIdx].u, texcoords[tIdx].v);
+            }
+            // Vértice
             int vIdx = cara.indices_vertices[i];
             glVertex3d(vertices[vIdx].x, vertices[vIdx].y, vertices[vIdx].z);
         }

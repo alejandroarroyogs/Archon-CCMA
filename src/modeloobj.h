@@ -7,16 +7,23 @@ struct Vertice3D {
     double x, y, z;
 };
 
+// Estructura para coordenadas de textura UV
+struct TexCoord {
+    double u, v;
+};
+
 // Estructura auxiliar para guardar las caras 
 struct Cara {
     std::vector<int> indices_vertices;
     std::vector<int> indices_normales;
+    std::vector<int> indices_textura;
 };
 
 class ModeloOBJ {
 private:
     std::vector<Vertice3D> vertices;
     std::vector<Vertice3D> normales;
+    std::vector<TexCoord> texcoords;
     std::vector<Cara> caras;
 
 public:
