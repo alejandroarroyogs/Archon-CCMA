@@ -14,7 +14,6 @@ public:
         int df = filaD - filaO;
         int dc = colD - colO;
 
-        // Se mueve recto (horizontal o vertical) hasta 2 casillas
         if (df == 0 && abs(dc) <= 2 && dc != 0) return true;
         if (dc == 0 && abs(df) <= 2 && df != 0) return true;
 
@@ -25,17 +24,17 @@ public:
     {
         glPushMatrix();
         glTranslatef(x, 0.0f, z);
+        if (EsRoja()) glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
 
-        if (EsAzul()) glColor3f(0.2f, 0.8f, 1.0f);
-        else {
-            glColor3f(1.0f, 0.2f, 0.2f);
-            glRotatef(180.0f, 0, 1, 0);
-        }
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_COLOR_MATERIAL);
 
-        glDisable(GL_LIGHTING);
+        if (EsAzul()) glColor3f(0.6f, 0.6f, 1.0f);
+        else glColor3f(1.0f, 0.6f, 0.6f);
+
         glScalef(0.005f, 0.005f, 0.005f);
         modelo.dibuja();
-        glEnable(GL_LIGHTING);
 
         glPopMatrix();
     }

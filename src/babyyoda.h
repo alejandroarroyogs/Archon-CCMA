@@ -14,7 +14,6 @@ public:
     {
         int df = abs(filaD - filaO);
         int dc = abs(colD - colO);
-
         if (df == 0 && dc == 0) return false;
         return (df <= 3 && dc <= 3);
     }
@@ -24,15 +23,15 @@ public:
         glPushMatrix();
         glTranslatef(x, 0.0f, z);
 
-        glDisable(GL_LIGHTING);
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_COLOR_MATERIAL);
 
         glColor3f(0.2f, 0.5f, 0.2f);
 
         glScalef(1.0f, 1.0f, 1.0f);
-
         modelo.dibuja();
 
-        glEnable(GL_LIGHTING);
         glPopMatrix();
     }
 

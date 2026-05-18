@@ -19,19 +19,17 @@ public:
     void Dibujar(float x, float z) override {
         glPushMatrix();
         glTranslatef(x, 0.0f, z);
-        if (EsRoja()) {
-            glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-            glTranslatef(0.6f, 0.0f, 0.2f);
-        }
-        else {
-            glTranslatef(0.6f, 0.0f, 0.2f);
-        }
+
+        if (EsRoja()) glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+        glTranslatef(0.6f, 0.0f, 0.2f);
 
         glDisable(GL_LIGHTING);      
         glEnable(GL_TEXTURE_2D);    
         glBindTexture(GL_TEXTURE_2D,
             ETSIDI::getTexture("recursos/colors.png").id);
-        glColor3f(1.0f, 1.0f, 1.0f);  
+
+        if (EsAzul()) glColor3f(0.6f, 0.6f, 1.0f);
+        else glColor3f(1.0f, 0.6f, 0.6f);
 
         glScalef(3.5f, 3.5f, 3.5f);
         modelo.dibuja();

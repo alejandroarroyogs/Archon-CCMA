@@ -19,17 +19,18 @@ public:
     {
         glPushMatrix();
         glTranslatef(x, 0.0f, z);
+        if (EsRoja()) glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
 
-        glDisable(GL_LIGHTING);
-        if (EsAzul()) glColor3f(0.2f, 0.8f, 1.0f);
-        else {
-            glColor3f(1.0f, 0.2f, 0.2f);
-            glRotatef(180.0f, 0, 1, 0);
-        }
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_COLOR_MATERIAL);
+
+        if (EsAzul()) glColor3f(0.6f, 0.6f, 1.0f);
+        else glColor3f(1.0f, 0.6f, 0.6f);
 
         glScalef(0.7f, 0.7f, 0.7f);
         modelo.dibuja();
-        glEnable(GL_LIGHTING);
+
         glPopMatrix();
     }
 

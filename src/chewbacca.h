@@ -27,7 +27,8 @@ public:
         glEnable(GL_LIGHTING);
         glEnable(GL_COLOR_MATERIAL);
 
-        glColor3f(0.4f, 0.2f, 0.05f);
+        if (EsAzul()) glColor3f(0.6f, 0.6f, 1.0f);
+        else glColor3f(1.0f, 0.6f, 0.6f);
 
         glScalef(2.0f, 2.0f, 2.0f);
         modelo.dibuja();

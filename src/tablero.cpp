@@ -103,9 +103,9 @@ void Tablero::inicializa() {
     casillas[8][0] = new Drone(2);
     casillas[8][1] = new Chewbacca(2);
     casillas[8][2] = new Tirador(2);
-	casillas[8][3] = new CaballeroJedi(2);
+	casillas[8][3] = new Skywalker(2);
     casillas[8][4] = new DarthVader(2);
-    casillas[8][5] = new DarthVader(2);
+    casillas[8][5] = new CaballeroJedi(2);
     casillas[8][6] = new Tirador(2);
     casillas[8][7] = new Chewbacca(2);
     casillas[8][8] = new Drone(2);
