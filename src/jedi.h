@@ -19,24 +19,19 @@ public:
         glPushMatrix();
         glTranslatef(x, 0.0f, z);
         if (EsRoja()) glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-        glDisable(GL_LIGHTING);
-        if (EsAzul()) glColor3f(0.2f, 0.8f, 1.0f);
-        else glColor3f(1.0f, 0.2f, 0.2f);
+
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_COLOR_MATERIAL);
+
+        if (EsAzul()) glColor3f(0.6f, 0.6f, 1.0f);
+        else glColor3f(1.0f, 0.6f, 0.6f);
+
         glScalef(2.5f, 2.5f, 2.5f);
         modelo.dibuja();
-        glEnable(GL_LIGHTING);
+
         glPopMatrix();
     }
 
-    void DibujarCombate(float x, float z, bool flash) override {
-        glPushMatrix();
-        glTranslatef(x, 0.0f, z);
-        if (EsAzul()) glColor3f(0.2f, 0.8f, 1.0f);
-        else {
-            glColor3f(1.0f, 0.2f, 0.2f);
-            glRotatef(180.0f, 0, 1, 0);
-        }
-        modelo.dibuja();
-        glPopMatrix();
-    }
+    void DibujarCombate(float x, float z, bool flash) override { Dibujar(x, z); }
 };

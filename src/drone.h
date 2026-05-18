@@ -13,9 +13,7 @@ public:
     {
         int adf = abs(filaD - filaO);
         int adc = abs(colD - colO);
-
         if (adf == 0 && adc == 0) return false;
-
         return (adf <= 3 && adc <= 3);
     }
 
@@ -25,16 +23,19 @@ public:
     {
         glPushMatrix();
         glTranslatef(x, 0.0f, z);
-
         if (EsRoja()) glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
 
-        glDisable(GL_LIGHTING);
-        if (EsAzul()) glColor3f(0.2f, 0.8f, 1.0f);
-        else glColor3f(1.0f, 0.4f, 0.4f);
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_COLOR_MATERIAL);
 
+        if (EsAzul()) glColor3f(0.6f, 0.6f, 1.0f);
+        else glColor3f(1.0f, 0.6f, 0.6f);
+
+        glNormal3f(0.0f, 1.0f, 0.0f);
         glScalef(0.03f, 0.03f, 0.03f);
         modelo.dibuja();
-        glEnable(GL_LIGHTING);
+
         glPopMatrix();
     }
 
