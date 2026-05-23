@@ -8,6 +8,8 @@
 #include "jugador.h"
 #include "controlIA.h"
 #include "fin.h"
+#include <fstream>
+#include <iomanip>
 
 Estado estado = MENU;
 int modoJuego = 0;
@@ -28,6 +30,7 @@ Mundo::~Mundo() {
         delete p;
     }
     listaPiezas.clear();
+    limpiarMemoriaDinamica();
 }
 
 void Mundo::Inicializar() {
@@ -51,11 +54,6 @@ void Mundo::Dibujar()
         interfaz.eligeDificultad();
         break;
     case COMBATE:
-        // Si entramos en combate y la música no está sonando, la encendemos
-        if (!musicaCombateLanzada) {
-            arena.ponMusica();
-            musicaCombateLanzada = true;
-        }
         arena.dibuja();
         break;
     case JUGANDO:
@@ -92,6 +90,7 @@ void Mundo::tecla(unsigned char key)
         arena.setTurno(tablero.turnoActual);
         break;
     }
+   
 }
 void Mundo::teclaLiberada(unsigned char key)
 {
@@ -103,27 +102,27 @@ void Mundo::teclaLiberada(unsigned char key)
 void Mundo::Timer(int value)
 {
     if (estado == JUGANDO) {
-        // Si la arena nos avisó que el combate acabó, avanzamos el turno AHORA
-            if (combateFinalizado) {
-                tablero.avanzarTurno();
-                combateFinalizado = false;
-            }
-            tablero.actualizarMovimiento();
+        // Tu timer acumula el tiempo real de juego (25ms = 0.025 segundos)
+        cronometro += 0.025f;
 
-        // Lógica de la IA
+        if (combateFinalizado) {
+            tablero.avanzarTurno();
+            combateFinalizado = false;
+        }
+        tablero.actualizarMovimiento();
+
         if (modoJuego == 1 && tablero.turnoActual == 2 && j2->esIA()) {
             static int contadorEspera = 0;
             contadorEspera++;
-
-            if (contadorEspera > 30) { 
+            if (contadorEspera > 30) {
                 turnoIA();
                 contadorEspera = 0;
-                tablero.turnoActual = 1; 
+                tablero.turnoActual = 1;
             }
         }
     }
     else if (estado == COMBATE) {
-        arena.actualiza(); 
+        arena.actualiza();
     }
 
     glutPostRedisplay();
@@ -131,6 +130,7 @@ void Mundo::Timer(int value)
 
 void Mundo::inicializarPartida()
 {
+    cronometro = 0.0f;
 
     if (j1) { delete j1; j1 = nullptr; }
     if (j2) { delete j2; j2 = nullptr; }
@@ -158,4 +158,56 @@ void Mundo::cambiaCiclo()
 void Mundo::turnoIA()
 {
     ControlIA::ejecutarturno(tablero, interfaz.nivel());
+}
+
+void Mundo::registrarFinPartida(std::string ganador)
+{
+    // 1. RESERVA DE MEMORIA DINÁMICA: Creamos el registro en el Heap
+    RegistroPartida* nuevaPartida = new RegistroPartida();
+    nuevaPartida->ganador = ganador;
+    nuevaPartida->duracion = cronometro;
+
+    // Guardamos el puntero en el historial de la sesión actual
+    historial.push_back(nuevaPartida);
+
+    // 2. PERSISTENCIA EN DISCO (Escritura): Volcamos la última partida al .txt
+    std::ofstream archivoOut("registro_partidas.txt", std::ios::app);
+    if (archivoOut.is_open()) {
+        archivoOut << "GANADOR: " << nuevaPartida->ganador
+            << " | DURACION: " << std::fixed << std::setprecision(1)
+            << nuevaPartida->duracion<< " segundos.\n";
+        archivoOut.close();
+    }
+
+    // 3. PERSISTENCIA EN DISCO (Lectura): Escaneamos todo el histórico para el recuento global
+    std::ifstream archivoIn("registro_partidas.txt");
+    std::string linea;
+    int victoriasFuerza = 0;
+    int victoriasSith = 0;
+
+    while (std::getline(archivoIn, linea)) {
+        if (linea.find("GANADOR: JEDI") != std::string::npos) {
+            victoriasFuerza++;
+        }
+        if (linea.find("GANADOR: SITH") != std::string::npos) {
+            victoriasSith++;
+        }
+    }
+    archivoIn.close();
+
+    // 4. IMPRESIÓN POR CONSOLA DEL MARCADOR HISTÓRICO
+    std::cout << "\n==================================================" << std::endl;
+    std::cout << "          HISTORIAL GLOBAL DE VICTORIAS           " << std::endl;
+    std::cout << "==================================================" << std::endl;
+    std::cout << "  VICTORIAS DE LA FUERZA (JEDI): " << victoriasFuerza << std::endl;
+    std::cout << "  VICTORIAS DEL IMPERIO  (SITH): " << victoriasSith << std::endl;
+    std::cout << "==================================================\n" << std::endl;
+}
+void Mundo::limpiarMemoriaDinamica()
+{
+    // Liberación estricta de la memoria dinámica para evitar leaks
+    for (size_t i = 0; i < historial.size(); ++i) {
+        delete historial[i];
+    }
+    historial.clear();
 }
