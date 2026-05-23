@@ -3,6 +3,7 @@
 #include "ETSIDI.h"
 #include "mundo.h"
 
+
 void Interfaz::dibujaTexto(float x, float y, const char* texto, int idBoton)
 {
     glMatrixMode(GL_PROJECTION);
@@ -81,18 +82,6 @@ void Interfaz::gestionRaton(int boton, int estdo, int x, int y)
                 subMenuActual = INICIO_INSTRUC; // Siempre empezamos en la pantalla de la imagen
             }
         }
-        else if (estado == SELEC_MODO) {
-            if (ratontexto == 0) {
-                modoJuego = 1;
-                mundo.inicializarPartida();
-                estado = JUGANDO;
-            }
-            else if (ratontexto == 1) {
-                modoJuego = 2;
-                mundo.inicializarPartida();
-                estado = JUGANDO;
-            }
-        }
         else if (estado == INSTRUC) {
             if (ratontexto == 2) {
                 // Si estamos en un submenú de texto, volvemos a la pantalla de tu imagen
@@ -110,7 +99,37 @@ void Interfaz::gestionRaton(int boton, int estdo, int x, int y)
             else if (ratontexto == 13) subMenuActual = PODERES;
             else if (ratontexto == 14) subMenuActual = PUNTUACION;
         }
-
+        else if (estado == SELEC_MODO) {
+            if (ratontexto == 0) {
+                modoJuego = 1;
+                estado = SELEC_DIFICULTAD;
+            }
+            else if (ratontexto == 1) {
+                modoJuego = 2;
+                mundo.inicializarPartida(); // El modo 2 jugadores sí arranca directo
+                estado = JUGANDO;
+            }
+        }
+        else if (estado == SELEC_DIFICULTAD) {
+            if (ratontexto == 0) {
+                dificultadIA = FACIL;
+                mundo.inicializarPartida();
+                estado = JUGANDO;
+            }
+            else if (ratontexto == 1) {
+                dificultadIA = MEDIO;
+                mundo.inicializarPartida();
+                estado = JUGANDO;
+            }
+            else if (ratontexto == 2) {
+                dificultadIA = DIFICIL;
+                mundo.inicializarPartida();
+                estado = JUGANDO;
+            }
+            else if (ratontexto == 3) {
+                estado = SELEC_MODO; // Botón ATRÁS por si se arrepiente
+            }
+        }
         glutPostRedisplay();
     }
 }
@@ -155,6 +174,15 @@ void Interfaz::movimientoRaton(int x, int y)
             ratontexto = -1;
         }
     }
+    else if (estado == SELEC_DIFICULTAD) {
+        if (mvX >= 400 && mvX <= 600 && mvY >= 440 && mvY <= 510) ratontexto = 0; //FACIL
+        else if (mvX >= 400 && mvX <= 600 && mvY >= 320 && mvY <= 390) ratontexto = 1;//MEDIO
+        else if (mvX >= 380 && mvX <= 620 && mvY >= 200 && mvY <= 270) ratontexto = 2;//DIFIZ
+        else if (mvX >= 30 && mvX <= 200 && mvY >= 30 && mvY <= 110) ratontexto = 3;//ATRAS
+
+        else ratontexto = -1;
+    }
+
 
     glutPostRedisplay();
 }
@@ -278,4 +306,14 @@ void Interfaz::dibujaInstrucciones()
        
         dibujaTexto(440, 110, "ATRAS", 2);
     }
+}
+
+void Interfaz::eligeDificultad()
+{
+    dibujaFondo();
+    dibujaTexto(120, 620, "SELECCIONA DIFICULTAD", -1);
+    dibujaTexto(415, 450, "FACIL", 0);
+    dibujaTexto(415, 330, "MEDIO", 1);
+    dibujaTexto(390, 210, "DIFICIL", 2);
+    dibujaTexto(50, 50, "ATRAS", 3);
 }

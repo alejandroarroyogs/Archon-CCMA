@@ -380,3 +380,6 @@ Release/
 *.filters
 *.exe
 bin/Archon.exe
+bin/Archon.exe
+*.filters
+*.filters

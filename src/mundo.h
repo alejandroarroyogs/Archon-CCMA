@@ -6,17 +6,27 @@
 #include "interfaz.h"
 #include "jugador.h" 
 #include "fin.h"
+#include <string>
+#include <vector>
 
 // Estado del juego
-enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO };
+enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO, SELEC_DIFICULTAD };
 extern Estado estado;
 extern int modoJuego;
+
+struct RegistroPartida {
+    std::string ganador;
+    float duracion;
+};
+
 
 class Mundo
 {
     jugador* j1;
     jugador* j2;
     bool musicaCombateLanzada = false;
+    std::vector<RegistroPartida*> historial;
+    float cronometro;
 
 public:
     Mundo();
@@ -36,6 +46,8 @@ public:
     void cambiaCiclo();
     //MOVIMIENTO IAA
     void turnoIA();
-
+    //MEMORIA
+    void registrarFinPartida(std::string ganador);
+    void limpiarMemoriaDinamica();
 };
 
