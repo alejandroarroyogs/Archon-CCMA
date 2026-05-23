@@ -66,6 +66,8 @@ public:
     bool piezaSeleccionada;
     int filaOrigen, colOrigen;
     int turnoActual;
+    int turnoGlobal; // Nuevo: controla el ciclo del tablero
+    void avanzarTurno(); // Nuevo: centraliza el cambio de turno y cura unidades
 
     // Movimiento general
     int getTurno() { return turnoActual; }
