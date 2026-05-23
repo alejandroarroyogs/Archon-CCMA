@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-Pieza::Pieza(int b, int v, int d) : bando(b), vida(v), vidaMax(v), danio(d) {}
+Pieza::Pieza(int b, int v, int d) : bando(b), vida(v), vidaMax(v), danio(d), ataque(17), armadura(2) {}
 Pieza::~Pieza() {}
 
 int Pieza::GetBando() { return bando; }
