@@ -11,14 +11,13 @@ public:
 
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override
     {
-        int df = filaD - filaO;
-        int dc = colD - colO;
-
-        if (df == 0 && abs(dc) <= 2 && dc != 0) return true;
-        if (dc == 0 && abs(df) <= 2 && df != 0) return true;
-
-        return false;
+        int df = abs(filaD - filaO);
+        int dc = abs(colD - colO);
+        if (df == 0 && dc == 0) return false;
+        return (df <= 4 && dc <= 4);
     }
+
+    bool EsVoladora() const override { return true; } 
 
     void Dibujar(float x, float z) override
     {

@@ -8,12 +8,17 @@ class Skywalker : public Pieza
 public:
     Skywalker(int b) : Pieza(b, 12, 5), modelo("recursos/skywalker.obj") {}
 
+
+
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override
     {
         int df = abs(filaD - filaO);
         int dc = abs(colD - colO);
-        return (df <= 2 && dc <= 2 && (df != 0 || dc != 0));
+        if (df == 0 && dc == 0) return false;
+        return (df <= 5 && dc <= 5); 
     }
+
+    bool EsVoladora() const override { return true; }
 
     void Dibujar(float x, float z) override
     {

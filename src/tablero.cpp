@@ -28,6 +28,7 @@ Tablero::Tablero() {
     filaOrigen = 0;
     colOrigen = 0;
     turnoActual = 1;
+    turnoGlobal = 0;
 
     seleccionandoHechizo = false;
     indiceHechizoSeleccionado = -1;
@@ -136,13 +137,42 @@ void Tablero::dibuja() {
 
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
-            bool esEsquina5x5 = (i == 2 || i == 6) && (j == 2 || j == 6);
-            bool esCentroAbsoluto = (i == 4 && j == 4);
+            // MAPA DE TIPOS DE CASILLAS ARCHON REINVENTADO (0 = Fija, 1 = Cambiante, 2 = Poder)
+            // MAPA DE TIPOS DE CASILLAS
+            int tipoMapa[9][9] = {
+                {0, 0, 0, 1, 2, 1, 0, 0, 0},
+                {0, 0, 1, 0, 1, 0, 1, 0, 0},
+                {0, 1, 0, 0, 1, 0, 0, 1, 0},
+                {1, 0, 0, 0, 1, 0, 0, 0, 1},
+                {2, 1, 1, 1, 2, 1, 1, 1, 2},
+                {1, 0, 0, 0, 1, 0, 0, 0, 1},
+                {0, 1, 0, 0, 1, 0, 0, 1, 0},
+                {0, 0, 1, 0, 1, 0, 1, 0, 0},
+                {0, 0, 0, 1, 2, 1, 0, 0, 0}
+            };
 
-            if (esEsquina5x5 || esCentroAbsoluto) glColor3ub(255, 215, 0);
+            bool esCasillaLuz = ((i + j) % 2 == 0); // Ajedrez normal
+
+            if (tipoMapa[i][j] == 2) {
+                glColor3ub(255, 215, 0); // Puntos de Poder (Dorados fijos)
+            }
+            else if (tipoMapa[i][j] == 1) {
+                // Iluminadas con el color del bando que mueve
+                if (turnoActual == 1) {
+                    glColor3ub(20, 100, 220); // Azul (Turno Luz)
+                }
+                else {
+                    glColor3ub(200, 30, 30);  // Rojo (Turno Oscuridad)
+                }
+            }
             else {
-                if ((i + j) % 2 == 0) glColor3ub(60, 60, 60);
-                else glColor3ub(180, 180, 180);
+                // Ajedrez normal (Tonos grises y oscuros neutros)
+                if (esCasillaLuz) {
+                    glColor3ub(200, 200, 200); // Casilla Clara
+                }
+                else {
+                    glColor3ub(50, 50, 50);    // Casilla Oscura
+                }
             }
 
             float x = (float)(j - 4) * 2.0f;
@@ -287,8 +317,8 @@ void Tablero::tecla(unsigned char key) {
                             casillas[filaSeleccionada][colSeleccionada] = piezaOrigen;
                             casillas[filaOrigen][colOrigen] = nullptr;
                             piezaSeleccionada = false;
-                            actualizarTurnosPrision();
-                            turnoActual = (turnoActual == 1) ? 2 : 1;
+                            avanzarTurno();
+                            
                         }
                         else {
                             mensajeErrorHechizo = "CAMINO BLOQUEADO POR OTRA PIEZA";
@@ -424,7 +454,7 @@ void Tablero::confirmarObjetivoHechizo() {
             if (hechizo->aplica(mundo, objetivo)) {
                 hechizo->setUsado(true); seleccionandoHechizo = false;
                 indiceHechizoSeleccionado = -1; faseExchangeSegunda = false;
-                actualizarTurnosPrision(); turnoActual = (turnoActual == 1) ? 2 : 1;
+                avanzarTurno();
             }
         }
     }
@@ -433,7 +463,7 @@ void Tablero::confirmarObjetivoHechizo() {
         if (hechizo->aplica(mundo, objetivo)) {
             hechizo->setUsado(true); seleccionandoHechizo = false;
             indiceHechizoSeleccionado = -1;
-            actualizarTurnosPrision(); turnoActual = (turnoActual == 1) ? 2 : 1;
+            avanzarTurno();
         }
     }
 }
@@ -490,42 +520,82 @@ void Tablero::dibujaInterfazHechizos() {
         Pieza* pBajoCursor = getPiezaEnCursor();
         if (pBajoCursor != nullptr) {
             ETSIDI::setTextColor(1.0f, 1.0f, 1.0f); ETSIDI::setFont("fuentes/jedisf.ttf", 20);
-            char info[64]; sprintf(info, "OBJ: %s", (pBajoCursor->GetBando() == turnoActual) ? "ALIADO" : "ENEMIGO");
-            ETSIDI::printxy(info, (int)xTexto, 750);
-            sprintf(info, "VIDA: %d%%", pBajoCursor->GetVida()); ETSIDI::printxy(info, (int)xTexto, 720);
+            char info[64];
+
+            // 1. Alianza (Aliado / Enemigo)
+            sprintf(info, "OBJ: %s", (pBajoCursor->GetBando() == turnoActual) ? "ALIADO" : "ENEMIGO");
+            ETSIDI::printxy(info, (int)xTexto, 760);
+
+            // 2. Vitalidad
+            sprintf(info, "VIDA: %d%%", pBajoCursor->GetVida());
+            ETSIDI::printxy(info, (int)xTexto, 735);
+
+            const char* tipoTexto = "TERRESTRE";
+            int rangoMov = 3;
+
+            if (dynamic_cast<BabyYoda*>(pBajoCursor) != nullptr || dynamic_cast<DarthVader*>(pBajoCursor) != nullptr) {
+                tipoTexto = "HECHICERO";
+                rangoMov = 3;
+            }
+            else if (dynamic_cast<Skywalker*>(pBajoCursor) != nullptr) {
+                tipoTexto = "VOLADORA";
+                rangoMov = 5;
+            }
+            else if (dynamic_cast<CaballeroJedi*>(pBajoCursor) != nullptr || dynamic_cast<Tirador*>(pBajoCursor) != nullptr) {
+                tipoTexto = (dynamic_cast<CaballeroJedi*>(pBajoCursor) != nullptr) ? "VOLADORA" : "TERRESTRE";
+                rangoMov = 4;
+            }
+            else if (dynamic_cast<Drone*>(pBajoCursor) != nullptr) {
+                tipoTexto = "VOLADORA";
+                rangoMov = 3;
+            }
+            else {
+                // Jedi, Chewbacca, etc.
+                tipoTexto = "TERRESTRE";
+                rangoMov = 3;
+            }
+
+            // 3. Dibujar Tipo de Pieza
+            sprintf(info, "TIPO: %s", tipoTexto);
+            ETSIDI::printxy(info, (int)xTexto, 710);
+
+            // 4. Dibujar Rango de Movimiento
+            sprintf(info, "RANGO: %d", rangoMov);
+            ETSIDI::printxy(info, (int)xTexto, 685);
         }
-    }
 
-    ETSIDI::setTextColor(1.0f, 1.0f, 0.0f); ETSIDI::setFont("fuentes/jedisf.ttf", 26);
-    ETSIDI::printxy("PODERES", (int)xTexto, 650);
+        // Título de poderes e impresión del listado (se mantiene igual)
+        ETSIDI::setTextColor(1.0f, 1.0f, 0.0f); ETSIDI::setFont("fuentes/jedisf.ttf", 26);
+        ETSIDI::printxy("PODERES", (int)xTexto, 650);
 
-    std::vector<Hechizo*>& lista = (turnoActual == 1) ? hechizosAzules : hechizosRojos;
-    for (int i = 0; i < (int)lista.size(); i++) {
-        float yPos = 580.0f - ((float)i * 60.0f);
-        if (lista[i]->estaUsado()) ETSIDI::setTextColor(0.5f, 0.5f, 0.5f);
-        else (turnoActual == 1) ? ETSIDI::setTextColor(0.4f, 1.0f, 0.0f) : ETSIDI::setTextColor(1.0f, 0.4f, 0.4f);
+        std::vector<Hechizo*>& lista = (turnoActual == 1) ? hechizosAzules : hechizosRojos;
+        for (int i = 0; i < (int)lista.size(); i++) {
+            float yPos = 580.0f - ((float)i * 60.0f);
+            if (lista[i]->estaUsado()) ETSIDI::setTextColor(0.5f, 0.5f, 0.5f);
+            else (turnoActual == 1) ? ETSIDI::setTextColor(0.4f, 1.0f, 0.0f) : ETSIDI::setTextColor(1.0f, 0.4f, 0.4f);
 
-        ETSIDI::setFont("fuentes/jedisf.ttf", 18);
-        char buffer[64]; sprintf(buffer, "[%d] %s", i + 1, lista[i]->getNombre().c_str());
-        ETSIDI::printxy(buffer, (int)xTexto, (int)yPos);
-        if (lista[i]->estaUsado()) {
-            ETSIDI::setFont("fuentes/jedisf.ttf", 14); ETSIDI::printxy("   AGOTADO", (int)xTexto, (int)(yPos - 20.0f));
+            ETSIDI::setFont("fuentes/jedisf.ttf", 18);
+            char buffer[64]; sprintf(buffer, "[%d] %s", i + 1, lista[i]->getNombre().c_str());
+            ETSIDI::printxy(buffer, (int)xTexto, (int)yPos);
+            if (lista[i]->estaUsado()) {
+                ETSIDI::setFont("fuentes/jedisf.ttf", 14); ETSIDI::printxy("   AGOTADO", (int)xTexto, (int)(yPos - 20.0f));
+            }
         }
-    }
 
-    if (timerMensajeError > 0 && !mensajeErrorHechizo.empty()) {
-        timerMensajeError--;
-        glMatrixMode(GL_PROJECTION); glPushMatrix(); glLoadIdentity(); gluOrtho2D(0, 1000, 0, 800);
-        glMatrixMode(GL_MODELVIEW); glPushMatrix(); glLoadIdentity();
-        glDisable(GL_LIGHTING); glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        float factorColor = 0.6f + 0.4f * sinf((float)timerMensajeError * 0.2f);
-        ETSIDI::setTextColor(1.0f * factorColor, 0.1f, 0.1f); ETSIDI::setFont("fuentes/jedisf.ttf", 30);
-        ETSIDI::printxy(mensajeErrorHechizo.c_str(), 180, 730);
+        if (timerMensajeError > 0 && !mensajeErrorHechizo.empty()) {
+            timerMensajeError--;
+            glMatrixMode(GL_PROJECTION); glPushMatrix(); glLoadIdentity(); gluOrtho2D(0, 1000, 0, 800);
+            glMatrixMode(GL_MODELVIEW); glPushMatrix(); glLoadIdentity();
+            glDisable(GL_LIGHTING); glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            float factorColor = 0.6f + 0.4f * sinf((float)timerMensajeError * 0.2f);
+            ETSIDI::setTextColor(1.0f * factorColor, 0.1f, 0.1f); ETSIDI::setFont("fuentes/jedisf.ttf", 30);
+            ETSIDI::printxy(mensajeErrorHechizo.c_str(), 180, 730);
+            glPopMatrix(); glMatrixMode(GL_PROJECTION); glPopMatrix(); glMatrixMode(GL_MODELVIEW);
+        }
+
         glPopMatrix(); glMatrixMode(GL_PROJECTION); glPopMatrix(); glMatrixMode(GL_MODELVIEW);
+        glEnable(GL_DEPTH_TEST); glEnable(GL_LIGHTING);
     }
-
-    glPopMatrix(); glMatrixMode(GL_PROJECTION); glPopMatrix(); glMatrixMode(GL_MODELVIEW);
-    glEnable(GL_DEPTH_TEST); glEnable(GL_LIGHTING);
 }
 
 void Tablero::dibujaBarraVida(float x, float z, int vidaActual, int vidaMax) {
@@ -576,4 +646,50 @@ bool Tablero::CaminoLibre(int f0, int c0, int fD, int cD) {
         }
     }
     return true; 
+}
+void Tablero::avanzarTurno() {
+    turnoActual = (turnoActual == 1) ? 2 : 1;
+    turnoGlobal++;
+    actualizarTurnosPrision();
+
+    int tipoMapa[9][9] = {
+        {0, 0, 0, 1, 2, 1, 0, 0, 0},
+        {0, 0, 1, 0, 1, 0, 1, 0, 0},
+        {0, 1, 0, 0, 1, 0, 0, 1, 0},
+        {1, 0, 0, 0, 1, 0, 0, 0, 1},
+        {2, 1, 1, 1, 2, 1, 1, 1, 2},
+        {1, 0, 0, 0, 1, 0, 0, 0, 1},
+        {0, 1, 0, 0, 1, 0, 0, 1, 0},
+        {0, 0, 1, 0, 1, 0, 1, 0, 0},
+        {0, 0, 0, 1, 2, 1, 0, 0, 0}
+    };
+
+    for (int i = 0; i < TAM_TABLERO; i++) {
+        for (int j = 0; j < TAM_TABLERO; j++) {
+            Pieza* p = casillas[i][j];
+            if (p != nullptr && p->EstaViva()) {
+
+                bool curar = false;
+
+                if (tipoMapa[i][j] == 2) {
+                    curar = true; // Los puntos dorados siempre curan a quien se pare encima
+                }
+                else if (tipoMapa[i][j] == 1) {
+                    // Las cambiantes curan si son de tu color en este turno exacto
+                    if (p->EsAzul() && turnoActual == 1) curar = true;
+                    if (p->EsRoja() && turnoActual == 2) curar = true;
+                }
+                else {
+                    // El ajedrez normal: claras curan Luz, oscuras curan Oscuridad
+                    bool esLuz = ((i + j) % 2 == 0);
+                    if (p->EsAzul() && esLuz) curar = true;
+                    if (p->EsRoja() && !esLuz) curar = true;
+                }
+
+                if (curar) {
+                    p->recuperarVida(15);
+                }
+            }
+        }
+    }
 }

@@ -138,7 +138,7 @@ void Mundo::inicializarPartida()
 
 void Mundo::cambiaCiclo()
 {
-    tablero.turnoActual = (tablero.turnoActual == 1) ? 2 : 1;
+    tablero.turnoGlobal += 2;
 }
 
 void Mundo::turnoIA()
