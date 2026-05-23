@@ -82,18 +82,6 @@ void Interfaz::gestionRaton(int boton, int estdo, int x, int y)
                 subMenuActual = INICIO_INSTRUC; // Siempre empezamos en la pantalla de la imagen
             }
         }
-        else if (estado == SELEC_MODO) {
-            if (ratontexto == 0) {
-                modoJuego = 1;
-                mundo.inicializarPartida();
-                estado = JUGANDO;
-            }
-            else if (ratontexto == 1) {
-                modoJuego = 2;
-                mundo.inicializarPartida();
-                estado = JUGANDO;
-            }
-        }
         else if (estado == INSTRUC) {
             if (ratontexto == 2) {
                 // Si estamos en un submenú de texto, volvemos a la pantalla de tu imagen

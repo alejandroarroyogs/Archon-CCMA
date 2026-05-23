@@ -47,6 +47,9 @@ void Mundo::Dibujar()
     case SELEC_MODO:
         interfaz.eligeModo();
         break;
+    case SELEC_DIFICULTAD:
+        interfaz.eligeDificultad();
+        break;
     case COMBATE:
         // Si entramos en combate y la música no está sonando, la encendemos
         if (!musicaCombateLanzada) {
@@ -66,10 +69,7 @@ void Mundo::Dibujar()
         }
         fin.dibuja();
         break;
-
-     case SELEC_DIFICULTAD:
-            interfaz.eligeDificultad();
-            break;
+     
     }
    
 
