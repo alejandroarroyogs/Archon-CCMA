@@ -1,8 +1,11 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "arena.h"
 #include "piezas.h"
 #include "tablero.h"
 #include "ETSIDI.h"
 #include <cmath>
+#include "mundo.h"
 
 #include "jedi.h"
 #include "tirador.h"
@@ -17,10 +20,16 @@ Arena::Arena()
 {
     atacante = nullptr;
     defensor = nullptr;
-
     flashAtacante = 0;
     flashDefensor = 0;
-   
+
+    velocidad = 0.2f;
+    cooldownDanio = 0;
+    for (int i = 0; i < 256; i++) {
+        teclas[i] = false;
+        teclasEspeciales[i] = false;
+	}
+
     if (estrellas.empty()) {
         for (int i = 0; i < 200; i++) {
             Estrella* e = new Estrella;
@@ -46,13 +55,22 @@ void Arena::inicializa(Pieza* a, Pieza* b, int turnoInicial)
     defensor = b;
     turno = turnoInicial;
 
+    // GUARDAMOS LAS COORDENADAS FIJAS DEL TABLERO
+    extern Mundo mundo;
+    fOrigen = mundo.tablero.filaOrigen;
+    cOrigen = mundo.tablero.colOrigen;
+    fDestino = mundo.tablero.filaSeleccionada;
+    cDestino = mundo.tablero.colSeleccionada;
 
-    // --- DAÑO DE PRUEBA: Empiezan dañados al 50% ---
-    if (atacante != nullptr) {
-        atacante->SetVida(50);
-    }
-    if (defensor != nullptr) {
-        defensor->SetVida(50);
+    // Posiciones iniciales opuestas
+    xA = -5.0f; zA = 0.0f;
+    xD = 5.0f;  zD = 0.0f;
+    cooldownDanio = 0;
+
+    // Esto evita que los personajes se muevan solos por arrastrar teclas del combate anterior
+    for (int i = 0; i < 256; i++) {
+        teclas[i] = false;
+        teclasEspeciales[i] = false;
     }
     
 }
@@ -69,9 +87,8 @@ void Arena::stopMusica()
 
 void Arena::dibuja()
 {
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-   
+
     // Seguridad para pruebas
     if (atacante == nullptr || defensor == nullptr) {
         static Drone dronePruebaJedi(1);
@@ -104,40 +121,39 @@ void Arena::dibuja()
 
     dibujaPlataforma();
 
-    // --- ENFRENTAMIENTO CON OFFSETS INDIVIDUALES ---
     if (atacante != nullptr && defensor != nullptr) {
-        float xA = -4.0f; // Posicion Atacante
-        float xD = 4.0f;  // Posicion Defensor
 
-        // -----------------------------------------------------------
-        // AJUSTA ESTOS VALORES SI NO SE MIRAN DE FRENTE:
-        // Si el Atacante mira a la cámara, prueba 90 o -90.
-        // Si el Atacante mira atrás, prueba 180.
-        float offsetAtacante = 180.0f;
-        float offsetDefensor = 0.0f;
-        // -----------------------------------------------------------
+        // Lógica "Street Fighter": Se miran fijamente en el eje X ignorando la profundidad
+        bool atacanteIzquierda = (xA <= xD);
 
-        // A) ATACANTE (Lado izquierdo)
+        // A) ATACANTE
         glPushMatrix();
-        glTranslatef(xA, -3.7f, 0.0f);
-        // Calculamos ángulo hacia el defensor
-        float angA = atan2(xD - xA, 0.0f) * 180.0f / 3.14159f;
-        glRotatef(angA + offsetAtacante, 0.0f, 1.0f, 0.0f);
+        glTranslatef(xA, -3.7f, zA);
+        float angA = 0.0f;
+        if (atacanteIzquierda) angA = atacante->EsAzul() ? 90.0f : -90.0f; // Mira a la Derecha (+X)
+        else angA = atacante->EsAzul() ? -90.0f : 90.0f;                   // Mira a la Izquierda (-X)
+        glRotatef(angA, 0.0f, 1.0f, 0.0f);
         glScalef(2.0f, 2.0f, 2.0f);
         atacante->DibujarCombate(0.0f, 0.0f, false);
         glPopMatrix();
 
-        // B) DEFENSOR (Lado derecho)
+        // B) DEFENSOR
         glPushMatrix();
-        glTranslatef(xD, -3.7f, 0.0f);
-        // Calculamos ángulo hacia el atacante
-        float angD = atan2(xA - xD, 0.0f) * 180.0f / 3.14159f;
-        glRotatef(angD + offsetDefensor, 0.0f, 1.0f, 0.0f);
+        glTranslatef(xD, -3.7f, zD);
+        float angD = 0.0f;
+        if (!atacanteIzquierda) angD = defensor->EsAzul() ? 90.0f : -90.0f; // Mira a la Derecha (+X)
+        else angD = defensor->EsAzul() ? -90.0f : 90.0f;                    // Mira a la Izquierda (-X)
+        glRotatef(angD, 0.0f, 1.0f, 0.0f);
         glScalef(2.0f, 2.0f, 2.0f);
         defensor->DibujarCombate(0.0f, 0.0f, false);
         glPopMatrix();
     }
-}void Arena::dibujaPlataforma()
+
+    BarraVida();
+}
+
+
+void Arena::dibujaPlataforma()
 {
     GLfloat mat_ambient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
     GLfloat mat_diffuse[] = { 0.3f, 0.3f, 0.3f, 1.0f };
@@ -198,43 +214,67 @@ void Arena::BarraVida()
     glDisable(GL_BLEND);
     glDisable(GL_DEPTH_TEST);
 
-    glColor3f(1.0f, 1.0f, 1.0f);
-
-    // Barra Atacante
+    // ================= BARRA ATACANTE =================
     glColor3f(0.2f, 0.2f, 0.2f);
-    glRectf(50, 720, 350, 740);
+    glRectf(50, 710, 350, 730); // Fondo oscuro
 
     if (vidaA > 0.0f) {
-        glColor3f(0.0f, 1.0f, 0.0f);
-        glRectf(50, 720, 50 + (300.0f * vidaA), 740);
+        if (vidaA > 0.4f) glColor3f(0.0f, 1.0f, 0.0f); // Verde
+        else glColor3f(1.0f, 0.0f, 0.0f);              // Rojo (Poca vida)
+        glRectf(50, 710, 50 + (300.0f * vidaA), 730);
     }
 
     glColor3f(1.0f, 1.0f, 1.0f);
     glLineWidth(2.0f);
-    glBegin(GL_LINE_LOOP);
-    glVertex2f(50, 720);
-    glVertex2f(350, 720);
-    glVertex2f(350, 740);
-    glVertex2f(50, 740);
+    glBegin(GL_LINE_LOOP); // Borde blanco
+    glVertex2f(50, 710); glVertex2f(350, 710);
+    glVertex2f(350, 730); glVertex2f(50, 730);
     glEnd();
 
-    // Barra Defensor
+    // ================= BARRA DEFENSOR =================
     glColor3f(0.2f, 0.2f, 0.2f);
-    glRectf(650, 720, 950, 740);
+    glRectf(650, 710, 950, 730); // Fondo oscuro
 
     if (vidaD > 0.0f) {
-        glColor3f(0.0f, 1.0f, 0.0f);
-        glRectf(650, 720, 650 + (300.0f * vidaD), 740);
+        if (vidaD > 0.4f) glColor3f(0.0f, 1.0f, 0.0f); // Verde
+        else glColor3f(1.0f, 0.0f, 0.0f);              // Rojo (Poca vida)
+        glRectf(650, 710, 650 + (300.0f * vidaD), 730);
     }
 
     glColor3f(1.0f, 1.0f, 1.0f);
-    glBegin(GL_LINE_LOOP);
-    glVertex2f(650, 720);
-    glVertex2f(950, 720);
-    glVertex2f(950, 740);
-    glVertex2f(650, 740);
+    glBegin(GL_LINE_LOOP); // Borde blanco
+    glVertex2f(650, 710); glVertex2f(950, 710);
+    glVertex2f(950, 730); glVertex2f(650, 730);
     glEnd();
 
+    // ================= TEXTOS FLOTANTES =================
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_TEXTURE_2D);
+
+    ETSIDI::setFont("fuentes/jedisf.ttf", 22);
+
+    // Textos Atacante (Color de la facción)
+    if (atacante->GetBando() == 1) ETSIDI::setTextColor(0.2f, 0.8f, 1.0f);
+    else ETSIDI::setTextColor(1.0f, 0.2f, 0.2f);
+    ETSIDI::printxy("ATACANTE", 50, 740);
+
+    char bufA[32]; sprintf(bufA, "HP: %d", vidaAtacante);
+    ETSIDI::setTextColor(1.0f, 1.0f, 1.0f);
+    ETSIDI::printxy(bufA, 250, 740);
+
+    // Textos Defensor (Color de la facción)
+    if (defensor->GetBando() == 1) ETSIDI::setTextColor(0.2f, 0.8f, 1.0f);
+    else ETSIDI::setTextColor(1.0f, 0.2f, 0.2f);
+    ETSIDI::printxy("DEFENSOR", 650, 740);
+
+    char bufD[32]; sprintf(bufD, "HP: %d", vidaDefensor);
+    ETSIDI::setTextColor(1.0f, 1.0f, 1.0f);
+    ETSIDI::printxy(bufD, 850, 740);
+
+    // Restaurar estados OpenGL
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
 
@@ -243,7 +283,6 @@ void Arena::BarraVida()
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
 }
-
 
 void Arena::dibujaTexto(float x, float y, const char* texto)
 {
@@ -305,3 +344,112 @@ void Arena::dibujaFondo()
     glEnd();
     glEnable(GL_LIGHTING);
 }
+
+
+void Arena::actualiza()
+ {
+    if (atacante == nullptr || defensor == nullptr) return;
+
+    // 1. MOVIMIENTO ATACANTE (W, A, S, D)
+    if (teclas['w'] || teclas['W']) zA -= velocidad;
+    if (teclas['s'] || teclas['S']) zA += velocidad;
+    if (teclas['a'] || teclas['A']) xA -= velocidad;
+    if (teclas['d'] || teclas['D']) xA += velocidad;
+
+    // 2. MOVIMIENTO DEFENSOR (Flechas)
+    if (teclasEspeciales[GLUT_KEY_UP])    zD -= velocidad;
+    if (teclasEspeciales[GLUT_KEY_DOWN])  zD += velocidad;
+    if (teclasEspeciales[GLUT_KEY_LEFT])  xD -= velocidad;
+    if (teclasEspeciales[GLUT_KEY_RIGHT]) xD += velocidad;
+
+    // Límites de la plataforma para no caer al vacío
+    if (xA > 7.0f) xA = 7.0f; if (xA < -7.0f) xA = -7.0f;
+    if (zA > 3.5f) zA = 3.5f; if (zA < -3.5f) zA = -3.5f;
+    if (xD > 7.0f) xD = 7.0f; if (xD < -7.0f) xD = -7.0f;
+    if (zD > 3.5f) zD = 3.5f; if (zD < -3.5f) zD = -3.5f;
+
+    // 3. GESTIÓN DE COLISIÓN ÚNICA (ESCARAMUZA)
+    float difX = xA - xD;
+    float difZ = zA - zD;
+    float distancia = sqrt((difX * difX) + (difZ * difZ));
+    float radioColision = 1.5f;
+
+    if (distancia < radioColision) {
+        // ¡CHOQUE! Aplicamos daño cruzado con mitigación de armadura
+        int danoAlDefensor = atacante->GetAtaque() - defensor->GetArmadura();
+        int danoAlAtacante = defensor->GetAtaque() - atacante->GetArmadura();
+
+        if (danoAlDefensor > 0) defensor->RecibirDanio(danoAlDefensor);
+        if (danoAlAtacante > 0) atacante->RecibirDanio(danoAlAtacante);
+
+        // --- 4. LÓGICA ROBUSTA DE POSICIONAMIENTO ADYACENTE EN EL TABLERO ---
+        extern Mundo mundo;
+
+        // CASO A: El defensor muere y el atacante sobrevive -> Ocupa la casilla del defensor
+        if (!defensor->EstaViva() && atacante->EstaViva()) {
+            mundo.tablero.casillas[fDestino][cDestino] = atacante;
+            mundo.tablero.casillas[fOrigen][cOrigen] = nullptr;
+        }
+        // CASO B: El atacante muere y el defensor sobrevive -> El atacante desaparece del mapa
+        else if (!atacante->EstaViva() && defensor->EstaViva()) {
+            mundo.tablero.casillas[fOrigen][cOrigen] = nullptr;
+        }
+        // CASO C: Ambos mueren en el choque simultáneo -> Ambas casillas quedan vacías
+        else if (!atacante->EstaViva() && !defensor->EstaViva()) {
+            mundo.tablero.casillas[fDestino][cDestino] = nullptr;
+            mundo.tablero.casillas[fOrigen][cOrigen] = nullptr;
+        }
+        // CASO D: Ambos sobreviven -> El atacante se queda adyacente al defensor
+        else if (atacante->EstaViva() && defensor->EstaViva()) {
+
+            int mejorF = fOrigen;
+            int mejorC = cOrigen;
+            float distMin = 9999.0f;
+
+            // Buscamos candidatos alrededor del DEFENSOR (donde ocurrió el choque)
+            for (int df = -1; df <= 1; df++) {
+                for (int dc = -1; dc <= 1; dc++) {
+                    if (df == 0 && dc == 0) continue;
+
+                    int fCand = fDestino + df;
+                    int cCand = cDestino + dc;
+
+                    if (fCand >= 0 && fCand < 9 && cCand >= 0 && cCand < 9) {
+                        // Es un sitio válido si está vacío O si es la casilla donde estaba el atacante
+                        if (mundo.tablero.casillas[fCand][cCand] == nullptr ||
+                            (fCand == fOrigen && cCand == cOrigen)) {
+
+                            // Distancia desde el atacante al candidato (queremos el que esté más cerca del atacante)
+                            float dist = sqrt(pow(fCand - fOrigen, 2) + pow(cCand - cOrigen, 2));
+
+                            if (dist < distMin) {
+                                distMin = dist;
+                                mejorF = fCand;
+                                mejorC = cCand;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Realizamos el movimiento a la mejor casilla encontrada
+            mundo.tablero.casillas[mejorF][mejorC] = atacante;
+            if (mejorF != fOrigen || mejorC != cOrigen) {
+                mundo.tablero.casillas[fOrigen][cOrigen] = nullptr;
+            }
+        }
+
+        // --- 5. FIN DEL COMBATE Y CAMBIO DE TURNO ---
+        extern Mundo mundo;
+        mundo.tablero.setBloqueoCuracion(true); // Bloqueamos curación justo antes de avanzar
+        mundo.tablero.avanzarTurno();
+
+        extern Estado estado;
+        estado = JUGANDO;
+    }
+}
+
+void Arena::keyDown(unsigned char key) { teclas[key] = true; }
+void Arena::keyUp(unsigned char key) { teclas[key] = false; }
+void Arena::specialKeyDown(int key) { teclasEspeciales[key] = true; }
+void Arena::specialKeyUp(int key) { teclasEspeciales[key] = false; }

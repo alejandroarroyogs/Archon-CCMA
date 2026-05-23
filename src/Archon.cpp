@@ -11,18 +11,23 @@ void OnDraw(void);
 void OnTimer(int value);
 
 void OnKeyboardDown(unsigned char key, int x, int y) {
-    if (key == 27) exit(0); // Esc para salir
+    if (key == 27) exit(0); // ESC para salir
 
-    if (estado == COMBATE) {
-        if (key >= '1' && key <= '9') {
-            int indiceHechizo = key - '1';
-            std::cout << "[TECLADO COMBATE] Lanzando hechizo numero: " << key << " (indice " << indiceHechizo << ")" << std::endl;
-           
-        }
-    }
-    else {
-        mundo.tecla(key);
-    }
+    if (estado == COMBATE) mundo.arena.keyDown(key);
+    else mundo.tecla(key);
+}
+
+void OnKeyboardUp(unsigned char key, int x, int y) {
+    if (estado == COMBATE) mundo.arena.keyUp(key);
+    else mundo.teclaLiberada(key);
+}
+
+void OnSpecialKeyboardDown(int key, int x, int y) {
+    if (estado == COMBATE) mundo.arena.specialKeyDown(key);
+}
+
+void OnSpecialKeyboardUp(int key, int x, int y) {
+    if (estado == COMBATE) mundo.arena.specialKeyUp(key);
 }
 
 void OnMouseClick(int button, int state, int x, int y) {
@@ -58,7 +63,9 @@ int main(int argc, char* argv[])
     glutDisplayFunc(OnDraw);
     glutTimerFunc(25, OnTimer, 0);
     glutKeyboardFunc(OnKeyboardDown);
-    glutKeyboardUpFunc([](unsigned char key, int x, int y) { mundo.teclaLiberada(key); });
+    glutKeyboardUpFunc(OnKeyboardUp);
+    glutSpecialFunc(OnSpecialKeyboardDown);
+    glutSpecialUpFunc(OnSpecialKeyboardUp);
     glutMouseFunc(OnMouseClick);
     glutPassiveMotionFunc(OnPassiveMotion);
     mundo.Inicializar();

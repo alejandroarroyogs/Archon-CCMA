@@ -30,8 +30,10 @@ Tablero::Tablero() {
     turnoActual = 1;
     turnoGlobal = 0;
 
+
     seleccionandoHechizo = false;
     indiceHechizoSeleccionado = -1;
+    bloqueoCuracion = false; 
 
     mensajeErrorHechizo = "";
     timerMensajeError = 0;
@@ -647,40 +649,39 @@ bool Tablero::CaminoLibre(int f0, int c0, int fD, int cD) {
     }
     return true; 
 }
-void Tablero::avanzarTurno() {
+void Tablero::avanzarTurno()
+{
     turnoActual = (turnoActual == 1) ? 2 : 1;
     turnoGlobal++;
     actualizarTurnosPrision();
 
     int tipoMapa[9][9] = {
-        {0, 0, 0, 1, 2, 1, 0, 0, 0},
-        {0, 0, 1, 0, 1, 0, 1, 0, 0},
-        {0, 1, 0, 0, 1, 0, 0, 1, 0},
-        {1, 0, 0, 0, 1, 0, 0, 0, 1},
-        {2, 1, 1, 1, 2, 1, 1, 1, 2},
-        {1, 0, 0, 0, 1, 0, 0, 0, 1},
-        {0, 1, 0, 0, 1, 0, 0, 1, 0},
-        {0, 0, 1, 0, 1, 0, 1, 0, 0},
-        {0, 0, 0, 1, 2, 1, 0, 0, 0}
+        {0, 0, 0, 1, 2, 1, 0, 0, 0}, {0, 0, 1, 0, 1, 0, 1, 0, 0}, {0, 1, 0, 0, 1, 0, 0, 1, 0},
+        {1, 0, 0, 0, 1, 0, 0, 0, 1}, {2, 1, 1, 1, 2, 1, 1, 1, 2}, {1, 0, 0, 0, 1, 0, 0, 0, 1},
+        {0, 1, 0, 0, 1, 0, 0, 1, 0}, {0, 0, 1, 0, 1, 0, 1, 0, 0}, {0, 0, 0, 1, 2, 1, 0, 0, 0}
     };
 
     for (int i = 0; i < TAM_TABLERO; i++) {
         for (int j = 0; j < TAM_TABLERO; j++) {
             Pieza* p = casillas[i][j];
-            if (p != nullptr && p->EstaViva()) {
+
+            // FILTRO ESTRICTO: Solo piezas vivas Y del bando que mueve
+            if (p != nullptr && p->EstaViva() && p->GetBando() == turnoActual) {
+
+                // Si la arena nos ha pedido bloquear la curación (post-combate), saltamos
+                if (bloqueoCuracion) continue;
 
                 bool curar = false;
 
+                // Lógica de curación
                 if (tipoMapa[i][j] == 2) {
-                    curar = true; // Los puntos dorados siempre curan a quien se pare encima
+                    curar = true;
                 }
                 else if (tipoMapa[i][j] == 1) {
-                    // Las cambiantes curan si son de tu color en este turno exacto
-                    if (p->EsAzul() && turnoActual == 1) curar = true;
-                    if (p->EsRoja() && turnoActual == 2) curar = true;
+                    // Solo cura si es del color activo
+                    curar = true;
                 }
                 else {
-                    // El ajedrez normal: claras curan Luz, oscuras curan Oscuridad
                     bool esLuz = ((i + j) % 2 == 0);
                     if (p->EsAzul() && esLuz) curar = true;
                     if (p->EsRoja() && !esLuz) curar = true;
@@ -692,4 +693,6 @@ void Tablero::avanzarTurno() {
             }
         }
     }
+    // IMPORTANTE: Asegúrate de que el bloqueo se quite al final de este turno
+    bloqueoCuracion = false;
 }

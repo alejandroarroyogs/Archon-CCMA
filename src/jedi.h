@@ -6,7 +6,7 @@
 class Jedi : public Pieza {
     ModeloOBJ modelo;
 public:
-    Jedi(int b) : Pieza(b, 5, 2), modelo("recursos/jedi.obj") {}
+    Jedi(int b) : Pieza(b, 100, 2), modelo("recursos/jedi.obj") {}
 
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override {
         int df = abs(filaD - filaO);

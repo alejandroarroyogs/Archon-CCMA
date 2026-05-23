@@ -29,6 +29,7 @@ class Tablero {
     int timerMensajeError;
 
     bool CaminoLibre(int f0, int c0, int fD, int cD);
+    bool bloqueoCuracion;
 
 public:
     Pieza* casillas[TAM_TABLERO][TAM_TABLERO];
@@ -43,6 +44,7 @@ public:
     void teclaLiberada(unsigned char key);
     void actualizarMovimiento();
     void dibujaBarraVida(float x, float z, int vidaActual, int vidaMax);
+
 
     // Lógica de lanzamiento y selección
     void lanzarHechizo(int indice);
@@ -67,7 +69,8 @@ public:
     int filaOrigen, colOrigen;
     int turnoActual;
     int turnoGlobal; // Nuevo: controla el ciclo del tablero
-    void avanzarTurno(); // Nuevo: centraliza el cambio de turno y cura unidades
+    void setBloqueoCuracion(bool bloqueo) { bloqueoCuracion = bloqueo; }
+    void avanzarTurno();
 
     // Movimiento general
     int getTurno() { return turnoActual; }

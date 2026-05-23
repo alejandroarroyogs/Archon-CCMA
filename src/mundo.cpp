@@ -11,6 +11,7 @@
 
 Estado estado = JUGANDO;
 int modoJuego = 0;
+bool combateFinalizado = false;
 
 Mundo::Mundo() {
     j1 = 0;
@@ -96,23 +97,30 @@ void Mundo::teclaLiberada(unsigned char key)
 void Mundo::Timer(int value)
 {
     if (estado == JUGANDO) {
-        tablero.actualizarMovimiento();
+        // Si la arena nos avisó que el combate acabó, avanzamos el turno AHORA
+            if (combateFinalizado) {
+                tablero.avanzarTurno();
+                combateFinalizado = false;
+            }
+            tablero.actualizarMovimiento();
 
-        // Si es Modo 1 Jugador Y es el turno del bando 2 Y ese jugador es IA
+        // Lógica de la IA
         if (modoJuego == 1 && tablero.turnoActual == 2 && j2->esIA()) {
             static int contadorEspera = 0;
             contadorEspera++;
 
-            if (contadorEspera > 30) { // Espera medio segundo aprox
+            if (contadorEspera > 30) { 
                 turnoIA();
                 contadorEspera = 0;
-                tablero.turnoActual = 1; // Devolvemos el turno al humano
+                tablero.turnoActual = 1; 
             }
         }
     }
+    else if (estado == COMBATE) {
+        arena.actualiza(); 
+    }
+
     glutPostRedisplay();
-
-
 }
 
 void Mundo::inicializarPartida()

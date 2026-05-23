@@ -10,16 +10,22 @@ class Pieza {
     friend class Arena;
     friend class Hechizo;
 
+    int ataque;
+    int armadura;
+
 
 public:
     Pieza(int b, int v, int d);
     virtual ~Pieza();
 
-   // Pieza(int v) : bando(1), vida(v), vidaMax(v), danio(0) {}
+
 
     int GetBando();
     int GetVida();
     int GetDanio();
+
+    int GetAtaque() { return ataque; }
+    int GetArmadura() { return armadura; }
 
     void SetVida(int v);
     void RecibirDanio(int d);
