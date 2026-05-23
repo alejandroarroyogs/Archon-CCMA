@@ -6,9 +6,10 @@
 #include "interfaz.h"
 #include "jugador.h" 
 #include "fin.h"
+#include "controlIA.h"
 
 // Estado del juego
-enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO };
+enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO, SELEC_DIFICULTAD };
 extern Estado estado;
 extern int modoJuego;
 

@@ -2,12 +2,14 @@
 #include <vector>
 #include "freeglut.h"
 #include "hechizos.h"
+#include "controlIA.h"
 
 class Interfaz
 {
     int ratontexto = -1; //-1 ninguno, 0 jugar, 1 instrucc
     enum SubMenu { INICIO_INSTRUC, OBJETIVO, MOVIMIENTO, COMBATE, PODERES, PUNTUACION };
     SubMenu subMenuActual = INICIO_INSTRUC;
+    Dificultad dificultadIA;
 
 public:
     void gestionRaton(int boton, int estdo, int x, int y);
@@ -17,6 +19,8 @@ public:
     void eligeModo();
     void dibujaMenu();
     void dibujaInstrucciones();
+    void eligeDificultad();
+    Dificultad nivel() { return dificultadIA; }
 };
 
 

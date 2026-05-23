@@ -66,7 +66,13 @@ void Mundo::Dibujar()
         }
         fin.dibuja();
         break;
+
+     case SELEC_DIFICULTAD:
+            interfaz.eligeDificultad();
+            break;
     }
+   
+
 }
 
 void Mundo::tecla(unsigned char key)
@@ -151,5 +157,5 @@ void Mundo::cambiaCiclo()
 
 void Mundo::turnoIA()
 {
-    ControlIA::ejecutarturno(tablero);
+    ControlIA::ejecutarturno(tablero, interfaz.nivel());
 }
