@@ -71,23 +71,20 @@ Tablero::Tablero() {
     piezaARevivir = nullptr;
 
     // CARGA DE LOS 7 HECHIZOS DEFINITIVOS (Mapeados a las teclas 1-7)
-    hechizosAzules.push_back(new HechizoHeal());        // [0] Tecla 1
-    hechizosAzules.push_back(new HechizoTeleport());    // [1] Tecla 2
-    hechizosAzules.push_back(new HechizoShiftTime());   // [2] Tecla 3
-    hechizosAzules.push_back(new HechizoExchange());    // [3] Tecla 4
-
-    // Si tienes una clase específica para el Espiritu de la Fuerza, ponla aquí, si no, repito uno para que compile.
-    hechizosAzules.push_back(new HechizoHeal());        // [4] Tecla 5 (Sustituye por HechizoEspiritu)
-    hechizosAzules.push_back(new HechizoImprison());    // [5] Tecla 6
-    hechizosAzules.push_back(new HechizoRevive());      // [6] Tecla 7 (NUEVO RESURRECCIÓN)
+    // CARGA DE LOS 6 HECHIZOS DEFINITIVOS (Mapeados a las teclas 1-6)
+    hechizosAzules.push_back(new HechizoHeal());        // [0] Tecla 1: Curación de la Fuerza
+    hechizosAzules.push_back(new HechizoTeleport());    // [1] Tecla 2: Salto Hiperespacial
+    hechizosAzules.push_back(new HechizoShiftTime());   // [2] Tecla 3: Alteración Cronológica
+    hechizosAzules.push_back(new HechizoExchange());    // [3] Tecla 4: Confusión Mental
+    hechizosAzules.push_back(new HechizoImprison());    // [4] Tecla 5: Bloqueo Carbonita
+    hechizosAzules.push_back(new HechizoRevive());      // [5] Tecla 6: Resurrección (NUEVO ORDEN)
 
     hechizosRojos.push_back(new HechizoHeal());
     hechizosRojos.push_back(new HechizoTeleport());
     hechizosRojos.push_back(new HechizoShiftTime());
     hechizosRojos.push_back(new HechizoExchange());
-    hechizosRojos.push_back(new HechizoHeal());         // [4] Tecla 5 (Sustituye por HechizoEspiritu)
     hechizosRojos.push_back(new HechizoImprison());
-    hechizosRojos.push_back(new HechizoRevive());       // [6] Tecla 7 (NUEVO RESURRECCIÓN)
+    hechizosRojos.push_back(new HechizoRevive());
 }
 
 Tablero::~Tablero() {
@@ -310,7 +307,7 @@ void Tablero::tecla(unsigned char key) {
 
     if (!seleccionandoHechizo) {
         // PERMITIMOS TECLAS DEL 1 AL 7 PARA ACTIVAR LOS PODERES
-        if (key >= '1' && key <= '7') {
+        if (key >= '1' && key <= '6') {
             int indiceHechizo = key - '1';
             lanzarHechizo(indiceHechizo);
             return;
@@ -444,8 +441,8 @@ void Tablero::lanzarHechizo(int indice) {
         timerMensajeError = 100; return;
     }
 
-    // === LÓGICA ESPECIAL PARA REVIVIR (ÍNDICE 6) ===
-    if (indice == 6) {
+    // === LÓGICA ESPECIAL PARA REVIVIR (ÍNDICE 5) ===
+    if (indice == 5) {
         int fHechicero = filaSeleccionada;
         int cHechicero = colSeleccionada;
 
@@ -549,12 +546,11 @@ void Tablero::confirmarObjetivoHechizo() {
             }
         }
     }
-    // === RESOLUCIÓN DE RESURRECCIÓN (Índice 6) ===
-    else if (indiceHechizoSeleccionado == 6) {
+    // === RESOLUCIÓN DE RESURRECCIÓN (AHORA Índice 5) ===
+    else if (indiceHechizoSeleccionado == 5) {
         if (faseReviveMenu) {
             piezaARevivir = cementerioActual[indiceMenuRevive];
 
-            // Si solo hay un hueco libre adyacente, la bajamos ahí directamente
             if (casillasLibresRevive.size() == 1) {
                 piezaARevivir->SetVida(piezaARevivir->GetVidaMax());
                 casillas[casillasLibresRevive[0].first][casillasLibresRevive[0].second] = piezaARevivir;
@@ -564,7 +560,6 @@ void Tablero::confirmarObjetivoHechizo() {
                 avanzarTurno();
             }
             else {
-                // Hay varios huecos, cerramos menú y pasamos el control de la mira dorada al tablero
                 faseReviveMenu = false;
                 faseReviveCasilla = true;
                 filaSeleccionada = casillasLibresRevive[0].first;
@@ -573,7 +568,6 @@ void Tablero::confirmarObjetivoHechizo() {
             return;
         }
         else if (faseReviveCasilla) {
-            // Verificamos si la casilla sobre la que dio ENTER está en el vector de casillas libres permitidas
             bool casillaAdyacenteValida = false;
             for (auto& par : casillasLibresRevive) {
                 if (par.first == filaSeleccionada && par.second == colSeleccionada) {
@@ -586,11 +580,10 @@ void Tablero::confirmarObjetivoHechizo() {
                 timerMensajeError = 120; return;
             }
 
-            // Revivimos oficialmente
             piezaARevivir->SetVida(piezaARevivir->GetVidaMax());
             casillas[filaSeleccionada][colSeleccionada] = piezaARevivir;
 
-            hechizo->setUsado(true);
+            hechizo->setUsado(true); // Se marca como usado automáticamente el hechizo actual
             cancelarSeleccionHechizo();
             avanzarTurno();
             return;
