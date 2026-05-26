@@ -8,6 +8,7 @@
 #include "fin.h"
 #include <string>
 #include <vector>
+#include "logica.h"
 
 // Estado del juego
 enum Estado { MENU, JUGANDO, COMBATE, INSTRUC, GAMEOVER, SELEC_MODO, SELEC_DIFICULTAD };
@@ -27,6 +28,8 @@ class Mundo
     bool musicaCombateLanzada = false;
     std::vector<RegistroPartida*> historial;
     float cronometro;
+    bool FinJuego;
+    int bandoGanador = 0;
 
 public:
     Mundo();
@@ -37,6 +40,7 @@ public:
     Tablero tablero;
     Arena arena;
     Fin fin;
+    Logica logica;
     std::vector<Pieza*>listaPiezas;
     
     void tecla(unsigned char key);

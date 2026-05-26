@@ -10,10 +10,12 @@
 #include "fin.h"
 #include <fstream>
 #include <iomanip>
+#include "logica.h"
 
 Estado estado = MENU;
 int modoJuego = 0;
 bool combateFinalizado = false;
+int ganador = 0;
 
 Mundo::Mundo() {
     j1 = 0;
@@ -66,6 +68,7 @@ void Mundo::Dibujar()
             musicaCombateLanzada = true;
         }
         fin.dibuja();
+     
         break;
      
     }
@@ -110,6 +113,7 @@ void Mundo::Timer(int value)
             combateFinalizado = false;
         }
         tablero.actualizarMovimiento();
+        logica.comprobarVictoria(tablero);
 
         if (modoJuego == 1 && tablero.turnoActual == 2 && j2->esIA()) {
             static int contadorEspera = 0;
@@ -158,19 +162,17 @@ void Mundo::cambiaCiclo()
 void Mundo::turnoIA()
 {
     ControlIA::ejecutarturno(tablero, interfaz.nivel());
+
 }
 
 void Mundo::registrarFinPartida(std::string ganador)
 {
-    // 1. RESERVA DE MEMORIA DINÁMICA: Creamos el registro en el Heap
     RegistroPartida* nuevaPartida = new RegistroPartida();
     nuevaPartida->ganador = ganador;
     nuevaPartida->duracion = cronometro;
-
-    // Guardamos el puntero en el historial de la sesión actual
     historial.push_back(nuevaPartida);
 
-    // 2. PERSISTENCIA EN DISCO (Escritura): Volcamos la última partida al .txt
+    // escritura
     std::ofstream archivoOut("registro_partidas.txt", std::ios::app);
     if (archivoOut.is_open()) {
         archivoOut << "GANADOR: " << nuevaPartida->ganador
@@ -179,7 +181,7 @@ void Mundo::registrarFinPartida(std::string ganador)
         archivoOut.close();
     }
 
-    // 3. PERSISTENCIA EN DISCO (Lectura): Escaneamos todo el histórico para el recuento global
+    // lectura
     std::ifstream archivoIn("registro_partidas.txt");
     std::string linea;
     int victoriasFuerza = 0;
@@ -195,7 +197,7 @@ void Mundo::registrarFinPartida(std::string ganador)
     }
     archivoIn.close();
 
-    // 4. IMPRESIÓN POR CONSOLA DEL MARCADOR HISTÓRICO
+    //impresión
     std::cout << "\n==================================================" << std::endl;
     std::cout << "          HISTORIAL GLOBAL DE VICTORIAS           " << std::endl;
     std::cout << "==================================================" << std::endl;

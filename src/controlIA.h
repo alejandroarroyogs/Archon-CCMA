@@ -15,5 +15,7 @@ public:
 		int punt;
 	};
 	static void ejecutarturno(Tablero& tablero, Dificultad nivel);
+	static bool getPtoPoder(Tablero& tablero, int f, int c) { return PtoPoder(tablero, f, c); }
+
 };
 
