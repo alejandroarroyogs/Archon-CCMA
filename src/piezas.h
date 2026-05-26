@@ -15,13 +15,14 @@ class Pieza {
 
 
 public:
-    Pieza(int b, int v, int d);
+    Pieza(int b, int v, int atq, int arm);
     virtual ~Pieza();
 
 
 
     int GetBando();
     int GetVida();
+    int GetVidaMax() { return vidaMax; } 
     int GetDanio();
 
     int GetAtaque() { return ataque; }

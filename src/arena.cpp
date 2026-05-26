@@ -191,13 +191,15 @@ void Arena::BarraVida()
     int vidaAtacante = atacante->GetVida();
     int vidaDefensor = defensor->GetVida();
 
+    // Validaciones de seguridad adaptadas a la VidaMax de cada pieza
     if (vidaAtacante < 0) vidaAtacante = 0;
-    if (vidaAtacante > 100) vidaAtacante = 100;
+    if (vidaAtacante > atacante->GetVidaMax()) vidaAtacante = atacante->GetVidaMax();
     if (vidaDefensor < 0) vidaDefensor = 0;
-    if (vidaDefensor > 100) vidaDefensor = 100;
+    if (vidaDefensor > defensor->GetVidaMax()) vidaDefensor = defensor->GetVidaMax();
 
-    float vidaA = (float)vidaAtacante / 100.0f;
-    float vidaD = (float)vidaDefensor / 100.0f;
+    // CÁLCULO DE ESCALADO REAL PROPORCIONAL
+    float vidaA = (float)vidaAtacante / (float)atacante->GetVidaMax();
+    float vidaD = (float)vidaDefensor / (float)defensor->GetVidaMax();
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -259,18 +261,20 @@ void Arena::BarraVida()
     else ETSIDI::setTextColor(1.0f, 0.2f, 0.2f);
     ETSIDI::printxy("ATACANTE", 50, 740);
 
-    char bufA[32]; sprintf(bufA, "HP: %d", vidaAtacante);
+    // Cambiado para mostrar (Actual / Máxima)
+    char bufA[32]; sprintf(bufA, "HP: %d / %d", vidaAtacante, atacante->GetVidaMax());
     ETSIDI::setTextColor(1.0f, 1.0f, 1.0f);
-    ETSIDI::printxy(bufA, 250, 740);
+    ETSIDI::printxy(bufA, 210, 740);
 
     // Textos Defensor (Color de la facción)
     if (defensor->GetBando() == 1) ETSIDI::setTextColor(0.2f, 0.8f, 1.0f);
     else ETSIDI::setTextColor(1.0f, 0.2f, 0.2f);
     ETSIDI::printxy("DEFENSOR", 650, 740);
 
-    char bufD[32]; sprintf(bufD, "HP: %d", vidaDefensor);
+    // Cambiado para mostrar (Actual / Máxima)
+    char bufD[32]; sprintf(bufD, "HP: %d / %d", vidaDefensor, defensor->GetVidaMax());
     ETSIDI::setTextColor(1.0f, 1.0f, 1.0f);
-    ETSIDI::printxy(bufD, 850, 740);
+    ETSIDI::printxy(bufD, 810, 740);
 
     // Restaurar estados OpenGL
     glDisable(GL_BLEND);

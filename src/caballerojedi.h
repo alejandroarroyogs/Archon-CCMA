@@ -7,8 +7,8 @@ class CaballeroJedi : public Pieza
 {
     ModeloOBJ modelo;
 public:
-    CaballeroJedi(int b) : Pieza(b, 10, 4), modelo("recursos/caballerojedi.obj") {}
 
+    CaballeroJedi(int b) : Pieza(b, 100, 40, 5), modelo("recursos/caballerojedi.obj") {}
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override
     {
         int df = abs(filaD - filaO);

@@ -36,12 +36,11 @@ bool HechizoHeal::aplica(Mundo& m, Pieza* p) {
         std::cout << "[CURACIÓN] ¡No puedes curar a una pieza enemiga!" << std::endl;
         return false;
     }
-
-    // 4. Aplicar la curación restaurando la salud al máximo (100)
-    p->SetVida(100);
+    // 4. Aplicar la curación restaurando la salud a su máximo real
+    p->SetVida(p->GetVidaMax());
     _yaUsado = true;
 
-    std::cout << "[CURACIÓN] ¡Hechizo ejecutado con éxito! Unidad aliada curada al 100%." << std::endl;
+    std::cout << "[CURACIÓN] ¡Hechizo ejecutado con éxito! Unidad aliada curada al maximo." << std::endl;
     return true;
 }
 

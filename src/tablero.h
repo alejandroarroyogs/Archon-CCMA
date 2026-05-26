@@ -3,6 +3,7 @@
 #include "hechizos.h"
 #include <vector>
 #include <string>
+#include <utility>
 
 extern class Mundo mundo;
 
@@ -62,6 +63,15 @@ public:
     bool faseExchangeSegunda;          // False = Seleccionando primera pieza, True = Seleccionando segunda pieza
     int filaExchangeOrigen;            // Guarda la fila de la primera pieza seleccionada
     int colExchangeOrigen;             // Guarda la columna de la primera pieza seleccionada
+
+    // --- Estado para el Hechizo de Revivir ---
+    bool faseReviveMenu;
+    int indiceMenuRevive;
+    bool faseReviveCasilla;
+    Pieza* piezaARevivir;
+    std::vector<Pieza*> cementerioActual;
+    std::vector<std::pair<int, int>> casillasLibresRevive;
+
 
     static int getTamTablero() { return TAM_TABLERO; }
     int filaSeleccionada, colSeleccionada;
