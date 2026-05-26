@@ -27,6 +27,8 @@ class Mundo
     bool musicaCombateLanzada = false;
     std::vector<RegistroPartida*> historial;
     float cronometro;
+    bool FinJuego;
+    int bandoGanador = 0;
 
 public:
     Mundo();

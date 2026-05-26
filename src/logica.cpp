@@ -2,6 +2,10 @@
 #include "tablero.h"
 #include "mundo.h"
 #include "controlIA.h"
+#include "arena.h"
+
+extern int ganador;
+extern Estado estado;
 
 Logica::Logica(Tablero* t)
 {
@@ -111,9 +115,17 @@ int Logica::comprobarVictoria(Tablero& tablero)
             }
         }
     }
-    if (controlptoJedi == 5) return 1;
-    if (controlptoSith == 5) return 2;
-    if (Sith == 0 && Jedi > 0) return 1;
-    if (Jedi == 0 && Sith > 0) return 2;
+    if (controlptoJedi == 5 || (Sith == 0 && Jedi > 0)) {
+        ganador = 1;
+        estado = GAMEOVER;
+        mundo.registrarFinPartida("JEDI");
+        return 1;
+    }
+    if (controlptoSith == 5 || (Jedi == 0 && Sith > 0)) {
+        ganador = 2;
+        estado = GAMEOVER;
+        mundo.registrarFinPartida("SITH");
+        return 2;
+    }
     else return 0;
 }

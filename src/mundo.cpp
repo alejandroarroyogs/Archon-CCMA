@@ -14,6 +14,7 @@
 Estado estado = MENU;
 int modoJuego = 0;
 bool combateFinalizado = false;
+int ganador = 0;
 
 Mundo::Mundo() {
     j1 = 0;
@@ -66,6 +67,7 @@ void Mundo::Dibujar()
             musicaCombateLanzada = true;
         }
         fin.dibuja();
+     
         break;
      
     }

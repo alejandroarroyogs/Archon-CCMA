@@ -2,6 +2,7 @@
 #include "ETSIDI.h"
 #include "freeglut.h"
 
+extern int ganador;
 
 void Fin::escribe(float x, float y, const char* texto)
 {
