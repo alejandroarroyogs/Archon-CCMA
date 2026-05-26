@@ -1,6 +1,7 @@
 #include "logica.h"
 #include "tablero.h"
 #include "mundo.h"
+#include "controlIA.h"
 
 Logica::Logica(Tablero* t)
 {
@@ -15,6 +16,7 @@ void Logica::actualizarMovimiento() {
     if (tablero->teclasPulsadas['d'] || tablero->teclasPulsadas['D']) { if (tablero->colSeleccionada > 0) { tablero->colSeleccionada--; seHaMovido = true; } }
     if (seHaMovido) tablero->cooldownMovimiento = 2;
 }
+
 void Logica::tecla(unsigned char key)
 {
     tablero->teclasPulsadas[key] = true;
@@ -85,4 +87,33 @@ void Logica::tecla(unsigned char key)
 void Logica::teclaLiberada(unsigned char key)
 {
     tablero->teclasPulsadas[key] = false;
+}
+int Logica::comprobarVictoria(Tablero& tablero)
+{
+    int Jedi = 0;
+    int Sith = 0;
+    int controlptoJedi = 0;
+    int controlptoSith = 0;
+    
+    int tam = Tablero::getTamTablero();
+
+    for (int f = 0; f < tam; f++) {
+        for (int c = 0; c < tam; c++) {
+            Pieza* p = tablero.casillas[f][c];
+
+            if (p != nullptr) {
+                if (p->GetBando() == 1) Jedi++;
+                if (p->GetBando() == 2) Sith++;
+            }
+            if (ControlIA::getPtoPoder(tablero, f, c)) {
+                if (p->GetBando() == 1) controlptoJedi++;
+                if (p->GetBando() == 2) controlptoSith++;
+            }
+        }
+    }
+    if (controlptoJedi == 5) return 1;
+    if (controlptoSith == 5) return 2;
+    if (Sith == 0 && Jedi > 0) return 1;
+    if (Jedi == 0 && Sith > 0) return 2;
+    else return 0;
 }
