@@ -8,8 +8,7 @@ class BabyYoda : public Pieza
     ModeloOBJ modelo;
 
 public:
-    BabyYoda(int b) : Pieza(b, 25, 6), modelo("recursos/babyyoda.obj") {}
-
+    BabyYoda(int b) : Pieza(b, 150, 30, 10), modelo("recursos/babyyoda.obj") {}
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override
     {
         int df = abs(filaD - filaO);

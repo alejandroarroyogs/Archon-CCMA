@@ -6,8 +6,8 @@ class Skywalker : public Pieza
 {
     ModeloOBJ modelo;
 public:
-    Skywalker(int b) : Pieza(b, 12, 5), modelo("recursos/skywalker.obj") {}
 
+    Skywalker(int b) : Pieza(b, 120, 30, 5), modelo("recursos/skywalker.obj") {}
 
 
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override

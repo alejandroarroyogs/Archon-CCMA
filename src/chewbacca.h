@@ -7,7 +7,7 @@ class Chewbacca : public Pieza
 {
     ModeloOBJ modelo;
 public:
-    Chewbacca(int b) : Pieza(b, 22, 4), modelo("recursos/chewbacca.obj") {}
+    Chewbacca(int b) : Pieza(b, 200, 20, 15), modelo("recursos/chewbacca.obj") {}
 
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override
     {

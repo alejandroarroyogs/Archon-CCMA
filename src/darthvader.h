@@ -7,7 +7,8 @@ class DarthVader : public Pieza
 {
     ModeloOBJ modelo;
 public:
-    DarthVader(int b) : Pieza(b, 30, 7), modelo("recursos/darthvader.obj") {}
+
+    DarthVader(int b) : Pieza(b, 150, 30, 10), modelo("recursos/darthvader.obj") {}
 
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override
     {

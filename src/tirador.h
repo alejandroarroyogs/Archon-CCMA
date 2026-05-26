@@ -7,8 +7,8 @@
 class Tirador : public Pieza {
     ModeloOBJ modelo;
 public:
-    Tirador(int b) : Pieza(b, 6, 5), modelo("recursos/tirador.obj") {}
 
+    Tirador(int b) : Pieza(b, 70 , 50 , 0), modelo("recursos/tirador.obj") {}
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override {
         int df = abs(filaD - filaO);
         int dc = abs(colD - colO);
