@@ -10,6 +10,7 @@
 #include "fin.h"
 #include <fstream>
 #include <iomanip>
+#include "logica.h"
 
 Estado estado = MENU;
 int modoJuego = 0;
@@ -112,6 +113,7 @@ void Mundo::Timer(int value)
             combateFinalizado = false;
         }
         tablero.actualizarMovimiento();
+        logica.comprobarVictoria(tablero);
 
         if (modoJuego == 1 && tablero.turnoActual == 2 && j2->esIA()) {
             static int contadorEspera = 0;
@@ -160,6 +162,7 @@ void Mundo::cambiaCiclo()
 void Mundo::turnoIA()
 {
     ControlIA::ejecutarturno(tablero, interfaz.nivel());
+
 }
 
 void Mundo::registrarFinPartida(std::string ganador)

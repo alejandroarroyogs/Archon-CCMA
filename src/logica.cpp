@@ -7,6 +7,9 @@
 extern int ganador;
 extern Estado estado;
 
+Logica::Logica()
+{}
+
 Logica::Logica(Tablero* t)
 {
     tablero = t;
@@ -103,8 +106,11 @@ int Logica::comprobarVictoria(Tablero& tablero)
 
     for (int f = 0; f < tam; f++) {
         for (int c = 0; c < tam; c++) {
+            if (f >= tam || c >= tam || f < 0 || c < 0) continue;
             Pieza* p = tablero.casillas[f][c];
-
+            if (p == nullptr) {
+                continue;
+            }
             if (p != nullptr) {
                 if (p->GetBando() == 1) Jedi++;
                 if (p->GetBando() == 2) Sith++;
