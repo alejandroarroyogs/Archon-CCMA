@@ -12,7 +12,7 @@
 #include <iomanip>
 #include "logica.h"
 
-Estado estado = SELEC_DIFICULTAD;
+Estado estado = JUGANDO;
 int modoJuego = 0;
 bool combateFinalizado = false;
 int ganador = 0;
