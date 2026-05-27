@@ -121,7 +121,9 @@ void Mundo::Timer(int value)
             if (contadorEspera > 30) {
                 turnoIA();
                 contadorEspera = 0;
+                if (estado != COMBATE) {
                 tablero.turnoActual = 1;
+                }
             }
         }
     }

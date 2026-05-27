@@ -23,7 +23,7 @@ Arena::Arena()
     flashAtacante = 0;
     flashDefensor = 0;
 
-    velocidad = 0.2f;
+    velocidad = 0.08f;
     cooldownDanio = 0;
     for (int i = 0; i < 256; i++) {
         teclas[i] = false;
@@ -72,7 +72,9 @@ void Arena::inicializa(Pieza* a, Pieza* b, int turnoInicial)
         teclas[i] = false;
         teclasEspeciales[i] = false;
     }
-    
+
+    contadorTregua = 200; // 3s cuenta atrás + 2s tregua (ticks x 25ms)
+
 }
 
 void Arena::ponMusica()
@@ -150,6 +152,7 @@ void Arena::dibuja()
     }
 
     BarraVida();
+    dibujaContador();
 }
 
 
@@ -354,19 +357,50 @@ void Arena::actualiza()
  {
     if (atacante == nullptr || defensor == nullptr) return;
 
+    if (contadorTregua > 0) contadorTregua--;
+
     // 1. MOVIMIENTO ATACANTE (W, A, S, D)
+    if (atacante->GetBando() == 1) {
+    // Jugador humano: WASD
     if (teclas['w'] || teclas['W']) zA -= velocidad;
     if (teclas['s'] || teclas['S']) zA += velocidad;
     if (teclas['a'] || teclas['A']) xA -= velocidad;
     if (teclas['d'] || teclas['D']) xA += velocidad;
+    }
+    else {
+        //IA avanza hacia defensor
+        if (contadorTregua <= 0) {
+            float dirX = xD - xA;
+            float dirZ = zD - zA;
+            float dist = sqrt(dirX * dirX + dirZ * dirZ);
+            if (dist > 0.1f) {
+                xA += (dirX / dist) * velocidad;
+                zA += (dirZ / dist) * velocidad;
+            }
+        }
+    }
 
     // 2. MOVIMIENTO DEFENSOR (Flechas)
+    if (defensor->GetBando() == 1) {
     if (teclasEspeciales[GLUT_KEY_UP])    zD -= velocidad;
     if (teclasEspeciales[GLUT_KEY_DOWN])  zD += velocidad;
     if (teclasEspeciales[GLUT_KEY_LEFT])  xD -= velocidad;
     if (teclasEspeciales[GLUT_KEY_RIGHT]) xD += velocidad;
+    }
+    else {
+        // IA avanza hacia el atacante
+        if (contadorTregua <= 0) {
+            float dirX = xA - xD;
+            float dirZ = zA - zD;
+            float dist = sqrt(dirX * dirX + dirZ * dirZ);
+            if (dist > 0.1f) {
+                xD += (dirX / dist) * velocidad;
+                zD += (dirZ / dist) * velocidad;
+            }
+        }
+    }
 
-    // Límites de la plataforma para no caer al vacío
+    // Límites de la plataforma
     if (xA > 7.0f) xA = 7.0f; if (xA < -7.0f) xA = -7.0f;
     if (zA > 3.5f) zA = 3.5f; if (zA < -3.5f) zA = -3.5f;
     if (xD > 7.0f) xD = 7.0f; if (xD < -7.0f) xD = -7.0f;
@@ -451,6 +485,53 @@ void Arena::actualiza()
         extern Estado estado;
         estado = JUGANDO;
     }
+}
+
+void Arena::dibujaContador()
+{
+    if (contadorTregua <= 0) return;
+
+    const char* texto = "";
+    if (contadorTregua > 160) texto = "3";
+    else if (contadorTregua > 120) texto = "2";
+    else if (contadorTregua > 80)  texto = "1";
+    else                           texto = "FIGHT!";
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix(); glLoadIdentity();
+    gluOrtho2D(0, 1000, 0, 800);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix(); glLoadIdentity();
+
+    glDisable(GL_LIGHTING);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_TEXTURE_2D);
+
+    if (contadorTregua > 80) {
+        ETSIDI::setTextColor(1.0f, 1.0f, 0.0f); // Amarillo
+    }
+    else {
+        ETSIDI::setTextColor(0.0f, 1.0f, 0.2f); // Verde
+    }
+
+    ETSIDI::setFont("fuentes/jedisf.ttf", 90);
+
+    if (contadorTregua > 80) {
+        ETSIDI::printxy(texto, 460, 500); // 3, 2, 1
+    }
+    else {
+        ETSIDI::printxy(texto, 340, 500); // FIGHT!
+    }
+
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
 }
 
 void Arena::keyDown(unsigned char key) { teclas[key] = true; }
