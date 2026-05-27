@@ -34,6 +34,8 @@ private:
 	//Origen y destino del movimiento
 	int fOrigen, cOrigen, fDestino, cDestino;
 
+	int contadorTregua;
+
 public:
 	// Arrays para detectar teclas mantenidas
 	bool teclas[256];
@@ -60,4 +62,5 @@ public:
 	void setTurno(int t) { turno = t; }
 	void inicializaEstrellas(int cantidad);
 	void dibujaFondo();
+	void dibujaContador();
 };

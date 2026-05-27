@@ -63,6 +63,7 @@ void ControlIA::ejecutarturno(Tablero& tablero, Dificultad nivel)
                     for (int dc = 0; dc < tam; dc++) {
 
                         if (p->MovimientoValido(f, c, df, dc)) {
+                            if (!p->EsVoladora() && !tablero.CaminoLibre(f, c, df, dc)) continue;
                             Pieza* objetivo = tablero.casillas[df][dc];
 
                             Mov m;
@@ -151,8 +152,27 @@ void ControlIA::ejecutarturno(Tablero& tablero, Dificultad nivel)
 
     //MOVER PIEZA
     if (jugadaEncontrada) {
-        tablero.casillas[jugadaFinal.fD][jugadaFinal.cD] = tablero.casillas[jugadaFinal.f0][jugadaFinal.c0];
-        tablero.casillas[jugadaFinal.f0][jugadaFinal.c0] = nullptr;
+        Pieza* pOrigen = tablero.casillas[jugadaFinal.f0][jugadaFinal.c0];
+        Pieza* pDestino = tablero.casillas[jugadaFinal.fD][jugadaFinal.cD];
+
+        if (pDestino != nullptr && pDestino->GetBando() != miBando) {
+            // Hay enemigo en el destino: lanzar combate en la Arena
+            tablero.filaOrigen = jugadaFinal.f0;
+            tablero.colOrigen = jugadaFinal.c0;
+            tablero.filaSeleccionada = jugadaFinal.fD;
+            tablero.colSeleccionada = jugadaFinal.cD;
+
+            extern Mundo mundo;
+            mundo.arena.inicializa(pOrigen, pDestino, miBando);
+            extern Estado estado;
+            estado = COMBATE;
+            cout << "IA: Entrando en la Arena de combate." << endl;
+        }
+        else {
+            // Casilla vacía: movimiento simple
+            tablero.casillas[jugadaFinal.fD][jugadaFinal.cD] = pOrigen;
+            tablero.casillas[jugadaFinal.f0][jugadaFinal.c0] = nullptr;
+        }
     }
     else {
         cout << "IA: No se han encontrado movimientos viables esta ronda." << endl;
