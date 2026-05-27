@@ -81,6 +81,7 @@ public:
     int turnoGlobal; // Nuevo: controla el ciclo del tablero
     void setBloqueoCuracion(bool bloqueo) { bloqueoCuracion = bloqueo; }
     void avanzarTurno();
+    void dibujaMovimientoValido();
 
     // Movimiento general
     int getTurno() { return turnoActual; }

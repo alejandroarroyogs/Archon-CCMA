@@ -25,7 +25,7 @@ public:
 
         glDisable(GL_LIGHTING);      
         glEnable(GL_TEXTURE_2D);    
-       // glBindTexture(GL_TEXTURE_2D,
+        //glBindTexture(GL_TEXTURE_2D,
          //  ETSIDI::getTexture("recursos/tirador.png").id);
 
         if (EsAzul()) glColor3f(0.6f, 0.6f, 1.0f);

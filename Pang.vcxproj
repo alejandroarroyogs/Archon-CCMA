@@ -160,6 +160,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="bin\diagramas\Piezas.cd" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>

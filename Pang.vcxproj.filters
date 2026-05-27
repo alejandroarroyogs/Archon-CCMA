@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+    <None Include="bin\diagramas\Piezas.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\arena.cpp">
