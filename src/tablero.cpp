@@ -223,9 +223,11 @@ void Tablero::dibuja() {
                 }
 
                 dibujaBarraVida(x, z, casillas[i][j]->GetVida(), casillas[i][j]->GetVidaMax());
+                dibujaMovimientoValido();
                 glDisable(GL_LIGHTING);
             }
         }
+        
     }
 
     // === DIBUJO DEL CURSOR DE SELECCIÓN ===
@@ -905,4 +907,63 @@ void Tablero::avanzarTurno()
         }
     }
     bloqueoCuracion = false;
+}
+
+void Tablero::dibujaMovimientoValido()
+{
+    // Si no hay ninguna pieza seleccionada, no hay nada que calcular ni dibujarif 
+    if (!piezaSeleccionada) return;
+
+    Pieza* piezaOrigen = casillas[filaOrigen][colOrigen];
+    if (piezaOrigen == nullptr) return;
+
+    glDisable(GL_LIGHTING);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    for (int i = 0; i < TAM_TABLERO; i++) {
+        for (int j = 0; j < TAM_TABLERO; j++) {
+            // Saltamos la propia casilla donde está la pieza
+            if (i == filaOrigen && j == colOrigen) continue;
+
+            if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, i, j)) {
+
+                // 2. Validar que el camino no esté obstruido (a menos que vuele)
+                if (piezaOrigen->EsVoladora() || CaminoLibre(filaOrigen, colOrigen, i, j)) {
+
+                    Pieza* piezaDestino = casillas[i][j];
+
+                    // 3. Determinar el color según lo que haya en la casilla destino
+                    if (piezaDestino == nullptr) {
+                        // Casilla vacía: Movimiento normal (El verde brillante del primer código)
+                        glColor4f(0.0f, 1.0f, 0.0f, 0.25f);
+                    }
+                    else if (piezaDestino->GetBando() != turnoActual) {
+                        // ¡Casilla con enemigo! Si se la puede comer, cambia a Rojo brillante
+                        glColor4f(1.0f, 0.0f, 0.0f, 0.35f);
+                    }
+                    else {
+                        // Si es una pieza aliada, no te la puedes comer ni mover ahí
+                        continue;
+                    }
+
+                    float x = (float)(j - 4) * 2.0f;
+                    float z = (float)(i - 4) * 2.0f;
+
+                    glPushMatrix();
+                    glTranslatef(x, 0.02f, z); // Un pelín elevado sobre el suelo (0.02f) para evitar Z-fighting
+                    glBegin(GL_QUADS);
+                    glVertex3f(-0.9f, 0.0f, -0.9f);
+                    glVertex3f(0.9f, 0.0f, -0.9f);
+                    glVertex3f(0.9f, 0.0f, 0.9f);
+                    glVertex3f(-0.9f, 0.0f, 0.9f);
+                    glEnd();
+                    glPopMatrix();
+                }
+            }
+        }
+    }
+
+    glDisable(GL_BLEND);
+    glEnable(GL_LIGHTING);
 }
