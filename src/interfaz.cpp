@@ -312,8 +312,8 @@ void Interfaz::eligeDificultad()
 {
     dibujaFondo();
     dibujaTexto(120, 620, "SELECCIONA DIFICULTAD", -1);
-    dibujaTexto(415, 450, "FACIL", 0);
+    dibujaTexto(410, 450, "FACIL", 0);
     dibujaTexto(415, 330, "MEDIO", 1);
-    dibujaTexto(390, 210, "DIFICIL", 2);
-    dibujaTexto(50, 50, "ATRAS", 3);
+    dibujaTexto(400, 210, "DIFICIL", 3);
+    dibujaTexto(50, 50, "ATRAS", 2);
 }
