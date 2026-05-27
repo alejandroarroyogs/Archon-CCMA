@@ -133,5 +133,32 @@ int Logica::comprobarVictoria(Tablero& tablero)
         mundo.registrarFinPartida("SITH");
         return 2;
     }
+    // NUEVO: última pieza encarcelada 
+    if (Jedi == 1 && Sith > 0) {
+        for (int f = 0; f < tam; f++) {
+            for (int c = 0; c < tam; c++) {
+                Pieza* p = tablero.casillas[f][c];
+                if (p != nullptr && p->GetBando() == 1 && p->estaEncarcelada) {
+                    ganador = 2;
+                    estado = GAMEOVER;
+                    mundo.registrarFinPartida("SITH");
+                    return 2;
+                }
+            }
+        }
+    }
+    if (Sith == 1 && Jedi > 0) {
+        for (int f = 0; f < tam; f++) {
+            for (int c = 0; c < tam; c++) {
+                Pieza* p = tablero.casillas[f][c];
+                if (p != nullptr && p->GetBando() == 2 && p->estaEncarcelada) {
+                    ganador = 1;
+                    estado = GAMEOVER;
+                    mundo.registrarFinPartida("JEDI");
+                    return 1;
+                }
+            }
+        }
+    }
     else return 0;
 }
