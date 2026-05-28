@@ -757,7 +757,7 @@ void Tablero::dibujaInterfazHechizos() {
         // ====================================================================================
         // === DIBUJADO DE LA FASE REVIVIR (MENÚ LATERAL DEL CEMENTERIO Y CUADRADOS VERDES) ===
         // ====================================================================================
-        if (seleccionandoHechizo && indiceHechizoSeleccionado == 6) {
+        if (seleccionandoHechizo && indiceHechizoSeleccionado == 5) {
 
             // Fase de Listado: Dibujamos en el lado opuesto de la pantalla
             if (faseReviveMenu) {
