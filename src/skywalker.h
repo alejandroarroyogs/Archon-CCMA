@@ -16,7 +16,7 @@ public:
         int df = abs(filaD - filaO);
         int dc = abs(colD - colO);
         if (df == 0 && dc == 0) return false;
-        return (df <= 5 && dc <= 5); 
+        return ((df + dc) <= 5); 
     }
 
     bool EsVoladora() const override { return true; }

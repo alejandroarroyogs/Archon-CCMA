@@ -15,7 +15,7 @@ public:
         int df = abs(filaD - filaO);
         int dc = abs(colD - colO);
         if (df == 0 && dc == 0) return false;
-        return (df <= 4 && dc <= 4);
+        return ((df + dc) <= 4);
     }
 
     void Dibujar(float x, float z) override {

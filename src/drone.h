@@ -14,7 +14,7 @@ public:
         int adf = abs(filaD - filaO);
         int adc = abs(colD - colO);
         if (adf == 0 && adc == 0) return false;
-        return (adf <= 3 && adc <= 3);
+        return ((adf + adc) <= 3);
     }
 
     bool EsVoladora() const override { return true; }
