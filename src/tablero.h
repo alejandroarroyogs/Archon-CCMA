@@ -79,6 +79,11 @@ public:
     int filaOrigen, colOrigen;
     int turnoActual;
     int turnoGlobal; // Nuevo: controla el ciclo del tablero
+    static const int NUM_ESTRELLAS = 1200;
+
+    float estrellasX[NUM_ESTRELLAS];
+    float estrellasY[NUM_ESTRELLAS];
+    float estrellasZ[NUM_ESTRELLAS];
     void setBloqueoCuracion(bool bloqueo) { bloqueoCuracion = bloqueo; }
     void avanzarTurno();
     void dibujaMovimientoValido();
