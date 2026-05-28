@@ -17,6 +17,8 @@
 #include "skywalker.h"
 #include "drone.h"
 #include "chewbacca.h"
+#include <ctime>
+#include <cstdlib>
 
 // =========================================================================
 // VARIABLES ESTÁTICAS PARA EL HECHIZO "REVIVIR" (NIGROMANTE)
@@ -86,6 +88,15 @@ Tablero::Tablero() {
     hechizosRojos.push_back(new HechizoExchange());
     hechizosRojos.push_back(new HechizoImprison());
     hechizosRojos.push_back(new HechizoRevive());
+
+    srand((unsigned)time(NULL));
+
+    for (int i = 0; i < NUM_ESTRELLAS; i++)
+    {
+        estrellasX[i] = (rand() % 80) - 40.0f;
+        estrellasY[i] = (rand() % 60);
+        estrellasZ[i] = (rand() % 80) - 40.0f;
+    }
 }
 
 Tablero::~Tablero() {
@@ -167,6 +178,28 @@ void Tablero::dibuja() {
     glLightfv(GL_LIGHT0, GL_POSITION, luz_posicion);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, luz_difusa);
     glDisable(GL_LIGHTING);
+
+    glDisable(GL_DEPTH_TEST);
+    glPointSize(3.5f);
+
+    glBegin(GL_POINTS);
+
+    for (int i = 0; i < NUM_ESTRELLAS; i++)
+    {
+        float brillo = 0.7f +
+            0.3f * sin(glutGet(GLUT_ELAPSED_TIME) / 300.0f + i);
+
+        glColor3f(brillo, brillo, brillo);
+
+        glVertex3f(
+            estrellasX[i],
+            estrellasY[i],
+            estrellasZ[i]
+        );
+    }
+
+    glEnd();
+    glEnable(GL_DEPTH_TEST);
 
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
