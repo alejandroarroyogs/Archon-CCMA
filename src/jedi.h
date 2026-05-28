@@ -12,7 +12,7 @@ public:
         int df = abs(filaD - filaO);
         int dc = abs(colD - colO);
         if (df == 0 && dc == 0) return false;
-        return (abs(df) <= 2 && abs(dc) <= 2);
+        return ((df + dc) <= 3);
     }
 
     void Dibujar(float x, float z) override {

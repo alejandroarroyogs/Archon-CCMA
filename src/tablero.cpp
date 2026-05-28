@@ -7,6 +7,7 @@
 #include "ETSIDI.h"
 #include <iostream>
 #include <utility> // Necesario para guardar las casillas libres (pares de coordenadas)
+#include <queue>
 
 #include "jedi.h"
 #include "tirador.h"
@@ -334,7 +335,7 @@ void Tablero::tecla(unsigned char key) {
 
                 if (piezaDestino == nullptr) {
                     if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
-                        if (piezaOrigen->EsVoladora() || CaminoLibre(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
+                        if (CaminoLibre(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
                             casillas[filaSeleccionada][colSeleccionada] = piezaOrigen;
                             casillas[filaOrigen][colOrigen] = nullptr;
                             piezaSeleccionada = false;
@@ -352,7 +353,7 @@ void Tablero::tecla(unsigned char key) {
                 }
                 else if (piezaDestino->GetBando() != turnoActual) {
                     if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
-                        if (piezaOrigen->EsVoladora() || CaminoLibre(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
+                        if (CaminoLibre(filaOrigen, colOrigen, filaSeleccionada, colSeleccionada)) {
                             mundo.arena.inicializa(piezaOrigen, piezaDestino, turnoActual);
                             estado = COMBATE;
                             piezaSeleccionada = false;
@@ -845,25 +846,60 @@ void Tablero::dibujaBarraVida(float x, float z, int vidaActual, int vidaMax) {
 }
 
 bool Tablero::CaminoLibre(int f0, int c0, int fD, int cD) {
-    int df = abs(fD - f0);
-    int dc = abs(cD - c0);
+    Pieza* p = casillas[f0][c0];
+    if (p == nullptr) return false;
 
-    int stepF = (fD > f0) ? 1 : ((fD < f0) ? -1 : 0);
-    int stepC = (cD > c0) ? 1 : ((cD < c0) ? -1 : 0);
+    // 1. Asignamos el rango máximo a cada tipo de pieza para esculpir el rombo correcto
+    int rangoMaximo = 3;
+    if (dynamic_cast<Skywalker*>(p) != nullptr) rangoMaximo = 5;
+    else if (dynamic_cast<Tirador*>(p) != nullptr) rangoMaximo = 4;
+    else if (dynamic_cast<CaballeroJedi*>(p) != nullptr) rangoMaximo = 4;
+    else if (dynamic_cast<Jedi*>(p) != nullptr) rangoMaximo = 3; // El Jedi tiene menos movilidad
+    // Drone, Chewbacca, BabyYoda y DarthVader se quedan con el rango 3 por defecto
 
-    if (df == 0 || dc == 0 || df == dc) {
-        int f = f0 + stepF;
-        int c = c0 + stepC;
+    // 2. Verificamos si la pieza tiene la habilidad de volar/teletransportarse
+    bool esVoladorOMago = (p->EsVoladora() || dynamic_cast<BabyYoda*>(p) != nullptr || dynamic_cast<DarthVader*>(p) != nullptr);
 
-        while (f != fD || c != cD) {
-            if (casillas[f][c] != nullptr) {
-                return false;
+    // 3. BFS para TODAS las piezas. Esto garantiza el rango en forma de Rombo (Manhattan)
+    struct Nodo { int f, c, dist; };
+    std::queue<Nodo> q;
+    bool visitado[9][9] = { false };
+
+    q.push({ f0, c0, 0 });
+    visitado[f0][c0] = true;
+
+    int dirF[] = { -1, 1, 0, 0 };
+    int dirC[] = { 0, 0, -1, 1 };
+
+    while (!q.empty()) {
+        Nodo actual = q.front();
+        q.pop();
+
+        if (actual.f == fD && actual.c == cD) {
+            return true; // Se encontró ruta válida
+        }
+
+        // Expandir solo si estamos dentro del límite de pasos de la unidad
+        if (actual.dist < rangoMaximo) {
+            for (int i = 0; i < 4; i++) {
+                int nf = actual.f + dirF[i];
+                int nc = actual.c + dirC[i];
+
+                if (nf >= 0 && nf < TAM_TABLERO && nc >= 0 && nc < TAM_TABLERO) {
+                    if (!visitado[nf][nc]) {
+                        // LA MAGIA ESTÁ AQUÍ: 
+                        // Si vuela, puede pasar por encima de la casilla sin importar quién esté.
+                        // Si camina, la casilla debe estar vacía (o ser el enemigo al que vamos a atacar).
+                        if (esVoladorOMago || casillas[nf][nc] == nullptr || (nf == fD && nc == cD)) {
+                            visitado[nf][nc] = true;
+                            q.push({ nf, nc, actual.dist + 1 });
+                        }
+                    }
+                }
             }
-            f += stepF;
-            c += stepC;
         }
     }
-    return true;
+    return false;
 }
 
 void Tablero::avanzarTurno()
@@ -929,7 +965,7 @@ void Tablero::dibujaMovimientoValido()
             if (piezaOrigen->MovimientoValido(filaOrigen, colOrigen, i, j)) {
 
                 // 2. Validar que el camino no esté obstruido (a menos que vuele)
-                if (piezaOrigen->EsVoladora() || CaminoLibre(filaOrigen, colOrigen, i, j)) {
+                if (CaminoLibre(filaOrigen, colOrigen, i, j)) {
 
                     Pieza* piezaDestino = casillas[i][j];
 
