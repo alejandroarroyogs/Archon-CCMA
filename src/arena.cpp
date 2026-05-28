@@ -369,7 +369,7 @@ void Arena::actualiza()
         if (teclas['a'] || teclas['A']) xA -= velocidad;
         if (teclas['d'] || teclas['D']) xA += velocidad;
     }
-    else if (modoJuego == 0) {
+    else if (modoJuego == 2) {
         // Bando 2 humano como atacante: flechas
         if (teclasEspeciales[GLUT_KEY_UP])    zA -= velocidad;
         if (teclasEspeciales[GLUT_KEY_DOWN])  zA += velocidad;
@@ -396,7 +396,7 @@ void Arena::actualiza()
         if (teclas['a'] || teclas['A']) xD -= velocidad;
         if (teclas['d'] || teclas['D']) xD += velocidad;
     }
-    else if (modoJuego == 0) {
+    else if (modoJuego == 2) {
         // Bando 2 humano como defensor: flechas
         if (teclasEspeciales[GLUT_KEY_UP])    zD -= velocidad;
         if (teclasEspeciales[GLUT_KEY_DOWN])  zD += velocidad;
