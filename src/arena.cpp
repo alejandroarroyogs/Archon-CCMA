@@ -357,19 +357,27 @@ void Arena::actualiza()
  {
     if (atacante == nullptr || defensor == nullptr) return;
 
-    if (contadorTregua > 0) contadorTregua--;
+    extern int modoJuego;
+    extern Mundo mundo;
+    extern Estado estado;
 
-    // 1. MOVIMIENTO ATACANTE (W, A, S, D)
+    if (contadorTregua > 0) contadorTregua--;
+    // 1. MOVIMIENTO BANDO 1 (siempre WASD)
     if (atacante->GetBando() == 1) {
-    // Jugador humano: WASD
-    if (teclas['w'] || teclas['W']) zA -= velocidad;
-    if (teclas['s'] || teclas['S']) zA += velocidad;
-    if (teclas['a'] || teclas['A']) xA -= velocidad;
-    if (teclas['d'] || teclas['D']) xA += velocidad;
+        if (teclas['w'] || teclas['W']) zA -= velocidad;
+        if (teclas['s'] || teclas['S']) zA += velocidad;
+        if (teclas['a'] || teclas['A']) xA -= velocidad;
+        if (teclas['d'] || teclas['D']) xA += velocidad;
+    }
+    else if (modoJuego == 0) {
+        // Bando 2 humano como atacante: flechas
+        if (teclasEspeciales[GLUT_KEY_UP])    zA -= velocidad;
+        if (teclasEspeciales[GLUT_KEY_DOWN])  zA += velocidad;
+        if (teclasEspeciales[GLUT_KEY_LEFT])  xA -= velocidad;
+        if (teclasEspeciales[GLUT_KEY_RIGHT]) xA += velocidad;
     }
     else {
-        //IA avanza hacia defensor
-        if (contadorTregua <= 0) {
+        if (contadorTregua <= 0 && modoJuego == 1) {
             float dirX = xD - xA;
             float dirZ = zD - zA;
             float dist = sqrt(dirX * dirX + dirZ * dirZ);
@@ -380,16 +388,23 @@ void Arena::actualiza()
         }
     }
 
-    // 2. MOVIMIENTO DEFENSOR (Flechas)
+    // 2. MOVIMIENTO BANDO 2 (siempre flechas si humano)
     if (defensor->GetBando() == 1) {
-    if (teclasEspeciales[GLUT_KEY_UP])    zD -= velocidad;
-    if (teclasEspeciales[GLUT_KEY_DOWN])  zD += velocidad;
-    if (teclasEspeciales[GLUT_KEY_LEFT])  xD -= velocidad;
-    if (teclasEspeciales[GLUT_KEY_RIGHT]) xD += velocidad;
+        // Bando 1 como defensor: WASD
+        if (teclas['w'] || teclas['W']) zD -= velocidad;
+        if (teclas['s'] || teclas['S']) zD += velocidad;
+        if (teclas['a'] || teclas['A']) xD -= velocidad;
+        if (teclas['d'] || teclas['D']) xD += velocidad;
+    }
+    else if (modoJuego == 0) {
+        // Bando 2 humano como defensor: flechas
+        if (teclasEspeciales[GLUT_KEY_UP])    zD -= velocidad;
+        if (teclasEspeciales[GLUT_KEY_DOWN])  zD += velocidad;
+        if (teclasEspeciales[GLUT_KEY_LEFT])  xD -= velocidad;
+        if (teclasEspeciales[GLUT_KEY_RIGHT]) xD += velocidad;
     }
     else {
-        // IA avanza hacia el atacante
-        if (contadorTregua <= 0) {
+        if (contadorTregua <= 0 && modoJuego == 1) {
             float dirX = xA - xD;
             float dirZ = zA - zD;
             float dist = sqrt(dirX * dirX + dirZ * dirZ);
@@ -478,11 +493,8 @@ void Arena::actualiza()
         }
 
         // --- 5. FIN DEL COMBATE Y CAMBIO DE TURNO ---
-        extern Mundo mundo;
         mundo.tablero.setBloqueoCuracion(true); // Bloqueamos curación justo antes de avanzar
         mundo.tablero.avanzarTurno();
-
-        extern Estado estado;
         estado = JUGANDO;
     }
 }
