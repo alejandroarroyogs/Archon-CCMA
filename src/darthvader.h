@@ -5,10 +5,11 @@
 
 class DarthVader : public Pieza
 {
-    ModeloOBJ modelo;
+    inline static ModeloOBJ modelo{ "recursos/darthvader.obj" };
+
 public:
 
-    DarthVader(int b) : Pieza(b, 150, 30, 10), modelo("recursos/darthvader.obj") {}
+    DarthVader(int b) : Pieza(b, 150, 30, 10) {}
 
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override
     {

@@ -1,13 +1,14 @@
 #pragma once
 #include "piezas.h"
 #include "freeglut.h"
+#include "modeloobj.h"
 
 class Skywalker : public Pieza
 {
-    ModeloOBJ modelo;
+    inline static ModeloOBJ modelo{ "recursos/skywalker.obj" };
 public:
 
-    Skywalker(int b) : Pieza(b, 120, 30, 5), modelo("recursos/skywalker.obj") {}
+    Skywalker(int b) : Pieza(b, 120, 30, 5) {}
 
 
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override

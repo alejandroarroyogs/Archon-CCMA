@@ -5,10 +5,12 @@
 #include "ETSIDI.h"  
 
 class Tirador : public Pieza {
-    ModeloOBJ modelo;
+
+    inline static ModeloOBJ modelo{ "recursos/tirador.obj" };
+
 public:
 
-    Tirador(int b) : Pieza(b, 70 , 50 , 0), modelo("recursos/tirador.obj") {}
+    Tirador(int b) : Pieza(b, 70 , 50 , 0) {}
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override {
         int df = abs(filaD - filaO);
         int dc = abs(colD - colO);
