@@ -5,10 +5,11 @@
 
 class CaballeroJedi : public Pieza
 {
-    ModeloOBJ modelo;
+    inline static ModeloOBJ modelo{ "recursos/caballerojedi.obj" };
+
 public:
 
-    CaballeroJedi(int b) : Pieza(b, 100, 40, 5), modelo("recursos/caballerojedi.obj") {}
+    CaballeroJedi(int b) : Pieza(b, 100, 40, 5) {}
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override
     {
         int df = abs(filaD - filaO);

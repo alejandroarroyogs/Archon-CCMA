@@ -3,10 +3,13 @@
 #include "freeglut.h"
 #include "modeloobj.h"
 
+
 class Jedi : public Pieza {
-    ModeloOBJ modelo;
+
+    inline static ModeloOBJ modelo{ "recursos/jedi.obj" };
+
 public:
-    Jedi(int b) : Pieza(b, 50, 20, 0), modelo("recursos/jedi.obj") {}
+    Jedi(int b) : Pieza(b, 50, 20, 0) {}
 
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override {
         int df = abs(filaD - filaO);

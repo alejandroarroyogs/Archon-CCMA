@@ -5,9 +5,10 @@
 
 class Chewbacca : public Pieza
 {
-    ModeloOBJ modelo;
+    inline static ModeloOBJ modelo{ "recursos/chewbacca.obj" };
+
 public:
-    Chewbacca(int b) : Pieza(b, 200, 20, 15), modelo("recursos/chewbacca.obj") {}
+    Chewbacca(int b) : Pieza(b, 200, 20, 15) {}
 
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override
     {

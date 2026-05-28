@@ -5,9 +5,10 @@
 
 class Drone : public Pieza
 {
-    ModeloOBJ modelo;
+    inline static ModeloOBJ modelo{ "recursos/drone.obj" };
+
 public:
-    Drone(int b) : Pieza(b, 80, 25, 5), modelo("recursos/drone.obj") {}
+    Drone(int b) : Pieza(b, 80, 25, 5) {}
     bool MovimientoValido(int filaO, int colO, int filaD, int colD) override
     {
         int adf = abs(filaD - filaO);
