@@ -34,7 +34,7 @@ void Interfaz::dibujaTexto(float x, float y, const char* texto, int idBoton)
     if (idBoton >= 10 && idBoton <= 14) {
         ETSIDI::setFont("fuentes/jedisf.ttf", 36); // Tamaño simétrico para los 5 submenús
     }
-    else if (idBoton == 2) {
+    else if (idBoton == 3) {
         ETSIDI::setFont("fuentes/jedisf.ttf", 32); // Tamaño para el botón ATRÁS
     }
     else {
@@ -83,8 +83,8 @@ void Interfaz::gestionRaton(int boton, int estdo, int x, int y)
             }
         }
         else if (estado == INSTRUC) {
-            if (ratontexto == 2) {
-                // Si estamos en un submenú de texto, volvemos a la pantalla de tu imagen
+            if (ratontexto == 3) {
+                
                 if (subMenuActual != INICIO_INSTRUC) {
                     subMenuActual = INICIO_INSTRUC;
                 }
@@ -108,6 +108,9 @@ void Interfaz::gestionRaton(int boton, int estdo, int x, int y)
                 modoJuego = 2;
                 mundo.inicializarPartida(); // El modo 2 jugadores sí arranca directo
                 estado = JUGANDO;
+            }
+            else if (ratontexto == 3) {
+                estado = MENU;
             }
         }
         else if (estado == SELEC_DIFICULTAD) {
@@ -150,11 +153,12 @@ void Interfaz::movimientoRaton(int x, int y)
     else if (estado == SELEC_MODO) {
         if (mvX >= 420 && mvX <= 580 && mvY >= 370 && mvY <= 440) ratontexto = 0;
         else if (mvX >= 280 && mvX <= 720 && mvY >= 210 && mvY <= 280) ratontexto = 1;
+        else if (mvX >= 30 && mvX <= 200 && mvY >= 30 && mvY <= 110) ratontexto = 3; 
         else ratontexto = -1;
     }
     else if (estado == INSTRUC) {
-        if (mvX >= 400 && mvX <= 600 && mvY >= 90 && mvY <= 160) {
-            ratontexto = 2;
+        if (mvX >= 30 && mvX <= 200 && mvY >= 30 && mvY <= 110) {
+            ratontexto = 3;
         }
         // Si no se está tocando el botón ATRÁS, comprobamos los 5 submenús (solo si estamos en la pantalla índice)
         else if (subMenuActual == INICIO_INSTRUC) {
@@ -201,6 +205,8 @@ void Interfaz::eligeModo()
     dibujaTexto(265, 600, "MODO DE JUEGO", -1);
     dibujaTexto(430, 380, "JEDI", 0);
     dibujaTexto(285, 220, "JEDI vs SITH", 1);
+    dibujaTexto(50, 50, "ATRAS", 3);
+
 }
 
 void Interfaz::dibujaInstrucciones()
@@ -217,7 +223,7 @@ void Interfaz::dibujaInstrucciones()
         dibujaTexto(390, 280, "PODERES", 13);
         dibujaTexto(365, 200, "PUNTUACION", 14);
 
-        dibujaTexto(440, 110, "ATRAS", 2);
+        dibujaTexto(50, 50, "ATRAS", 3);
     }
     // === PANTALLAS DE CONTENIDO: CUADRO EXPLICATIVO CON MARCO AZUL ===
     else {
@@ -304,7 +310,7 @@ void Interfaz::dibujaInstrucciones()
         glPopMatrix(); glMatrixMode(GL_PROJECTION); glPopMatrix(); glMatrixMode(GL_MODELVIEW);
 
        
-        dibujaTexto(440, 110, "ATRAS", 2);
+        dibujaTexto(50, 50, "ATRAS", 3);
     }
 }
 
@@ -314,6 +320,6 @@ void Interfaz::eligeDificultad()
     dibujaTexto(120, 620, "SELECCIONA DIFICULTAD", -1);
     dibujaTexto(410, 450, "FACIL", 0);
     dibujaTexto(415, 330, "MEDIO", 1);
-    dibujaTexto(400, 210, "DIFICIL", 3);
-    dibujaTexto(50, 50, "ATRAS", 2);
+    dibujaTexto(400, 210, "DIFICIL", 2);
+    dibujaTexto(50, 50, "ATRAS", 3);
 }
