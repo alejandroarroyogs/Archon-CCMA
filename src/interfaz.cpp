@@ -268,8 +268,7 @@ void Interfaz::dibujaInstrucciones()
             ETSIDI::printxy("  de la faccion enemiga en intensos duelos dentro de la arena.", xTexto, 415);
             ETSIDI::printxy("- CONDICION DE VICTORIA 2: Conquista y asegura de forma simultanea ", xTexto, 345);
             ETSIDI::printxy("  los 5 Puntos de Poder luminosos distribuidos por el mapa.", xTexto, 310);
-            ETSIDI::printxy("- CONDICION DE VICTORIA 3: Rodea de fichas aliadas al hechicero ", xTexto, 240);
-            ETSIDI::printxy("  enemigo.", xTexto, 205);
+            ETSIDI::printxy("- CONDICION DE VICTORIA 3: Ultima pieza encarcelada en carbonita ", xTexto, 240);
             break;
 
         case MOVIMIENTO:
