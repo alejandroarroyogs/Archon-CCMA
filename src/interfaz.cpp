@@ -268,6 +268,8 @@ void Interfaz::dibujaInstrucciones()
             ETSIDI::printxy("  de la faccion enemiga en intensos duelos dentro de la arena.", xTexto, 415);
             ETSIDI::printxy("- CONDICION DE VICTORIA 2: Conquista y asegura de forma simultanea ", xTexto, 345);
             ETSIDI::printxy("  los 5 Puntos de Poder luminosos distribuidos por el mapa.", xTexto, 310);
+            ETSIDI::printxy("- CONDICION DE VICTORIA 3: Rodea de fichas aliadas al hechicero ", xTexto, 240);
+            ETSIDI::printxy("  enemigo.", xTexto, 205);
             break;
 
         case MOVIMIENTO:
@@ -285,7 +287,6 @@ void Interfaz::dibujaInstrucciones()
             ETSIDI::printxy("- Ejecuta tus ataques y disparos laser pulsando la barra ESPACIO.", xTexto, 340);
             ETSIDI::printxy("- Ciclo de fuerzas: las casillas de tu color te otorgan bonus de vitalidad", xTexto, 290);
             ETSIDI::printxy("- asi como las casillas de color contrario, te lo haran mas dificil ", xTexto, 240);
-            ETSIDI::printxy("- asi como las casillas de color contrario, te lo haran mas dificil ", xTexto, 190);
             break;
 
         case PODERES: 
