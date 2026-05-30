@@ -1,26 +1,34 @@
 # Archon CCMA
 
-## Captura del juego
+Variación del juego Archon con ambientación en Star Wars. Proyecto final de Informática Industrial — ETSIDI UPM, curso 2025-2026.
 
-![Archon](screenshot.png)
+Equipo CCMA: Alejandro Arroyo, Cristina Boned, Marcos Garrido, Carlos Bravo.
 
-Archon CCMA es un proyecto desarrollado en C++ utilizando OpenGL y FreeGLUT.
+---
 
-El objetivo del proyecto es desarrollar un juego interactivo con representación gráfica y control mediante teclado. El programa permite visualizar un tablero en pantalla y gestionar la interacción del usuario con los distintos elementos del juego.
+## Qué es
 
-Actualmente el proyecto incluye:
+Archon es un híbrido de estrategia por turnos y combate en tiempo real. El tablero funciona como un ajedrez temático: mover piezas, controlar puntos de poder, lanzar hechizos. Pero cuando dos piezas se encuentran, en lugar de eliminar automáticamente a la más débil, se abre una arena de combate donde los jugadores se enfrentan en tiempo real.
 
-- Representación gráfica del tablero
-- Sistema de selección de piezas
-- Validación de movimientos
-- Gestión de turnos
-- Renderizado en tiempo real con OpenGL
+Nuestra versión sustituye la ambientación original por el universo Star Wars: Baby Yoda y los Jedis contra Darth Vader y los Siths. Los hechizos pasan a llamarse Curación de la Fuerza, Salto Hiperespacial, Alteración Cronológica, Confusión Mental, Bloqueo Carbonita y Espíritu de la Fuerza.
 
-El proyecto está diseñado para poder ampliarse con nuevas funcionalidades y mecánicas del juego a medida que avance el desarrollo.
+## Cómo se juega
 
-Tecnologías utilizadas:
+- **WASD** — mover el cursor por el tablero
+- **Espacio** — seleccionar pieza / confirmar movimiento
+- **Teclas 1-6** — lanzar hechizos (solo con el cursor sobre el líder propio)
+- **Q** — cancelar selección
+- **WASD / flechas** — mover la pieza en la arena de combate
+- **Clic** — navegar los menús
 
-- C++
-- OpenGL
-- FreeGLUT
-- Visual Studio
+Hay modo de un jugador contra la IA (con tres niveles de dificultad) y modo de dos jugadores en el mismo teclado.
+
+## Cómo ejecutar
+
+Descomprimir y hacer doble clic en `bin/Archon.exe`. Requiere Windows 10/11 de 64 bits. No necesita instalación.
+
+Para compilar desde código fuente, abrir `Archon.sln` con Visual Studio y compilar en configuración `Debug x64` o `Release x64`.
+
+## Tecnologías
+
+C++ · OpenGL · FreeGLUT · ETSIDI (texturas, audio, texto) · FMOD
