@@ -33,14 +33,14 @@ void Fin::dibuja()
 {
     dibujaFondo();
     if (ganador == 1) {
-        escribe(100, 500, "THE FORCE IS STRONG WITH YOU");
-        escribe(100, 400, "VICTORIA");
+        escribe(100, 500, "MAY THE FORCE BE WITH YOU");
+        escribe(100, 400, "VICTORY");
     }
     else {
         escribe(100, 500, "YOU LACK FAITH");
         escribe(100, 400, "GAME OVER");
     }
-    escribe(100, 300, "SCORE: 5000");
+    
 }
 
 void Fin::dibujaFondo()
