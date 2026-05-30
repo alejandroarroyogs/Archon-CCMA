@@ -7,7 +7,6 @@ struct Vertice3D {
     double x, y, z;
 };
 
-// Estructura para coordenadas de textura UV
 struct TexCoord {
     double u, v;
 };

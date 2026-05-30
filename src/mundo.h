@@ -48,8 +48,8 @@ public:
     void Timer(int value);
     void inicializarPartida();
     void cambiaCiclo();
-    //MOVIMIENTO IAA
     void turnoIA();
+
     //MEMORIA
     void registrarFinPartida(std::string ganador);
     void limpiarMemoriaDinamica();
